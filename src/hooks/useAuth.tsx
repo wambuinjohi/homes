@@ -75,8 +75,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       
       // Clear browser storage manually
       console.log("🗑️ Clearing browser storage");
-      localStorage.removeItem('sb-kdpqimetajnhcqseajok-auth-token');
-      sessionStorage.removeItem('sb-kdpqimetajnhcqseajok-auth-token');
+      localStorage.removeItem('sb-tbmzwmgsvshfdxdoyrcr-auth-token');
+      sessionStorage.removeItem('sb-tbmzwmgsvshfdxdoyrcr-auth-token');
       
       // Attempt to sign out from Supabase with global scope
       console.log("☁️ Calling Supabase signOut with global scope");

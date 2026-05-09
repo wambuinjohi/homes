@@ -23,7 +23,7 @@ export const generateCSP = (): string => {
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "font-src 'self' https://fonts.gstatic.com data:",
     "img-src 'self' data: https: blob:",
-    "connect-src 'self' https://kdpqimetajnhcqseajok.supabase.co wss://kdpqimetajnhcqseajok.supabase.co https://*.supabase.co",
+    "connect-src 'self' https://tbmzwmgsvshfdxdoyrcr.supabase.co wss://tbmzwmgsvshfdxdoyrcr.supabase.co https://*.supabase.co",
     "frame-ancestors 'self'", // Changed from 'none' to allow Lovable iframe
     "base-uri 'self'",
     "form-action 'self'",
@@ -91,7 +91,7 @@ export const SECURITY_CONFIG = {
   // API security
   requireApiKeyForPublicEndpoints: true,
   enableCORS: true,
-  allowedOrigins: ['https://kdpqimetajnhcqseajok.supabase.co'],
+  allowedOrigins: ['https://tbmzwmgsvshfdxdoyrcr.supabase.co'],
   
   // Audit logging
   logSecurityEvents: true,

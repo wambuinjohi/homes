@@ -1,4 +1,3 @@
-
 // Self-hosted telemetry utility for sending data to central monitoring
 // This should be included in self-hosted deployments
 
@@ -292,7 +291,7 @@ export default SelfHostedTelemetry;
 // Example usage:
 /*
 const telemetry = new SelfHostedTelemetry({
-  centralUrl: 'https://kdpqimetajnhcqseajok.supabase.co',
+  centralUrl: 'https://tbmzwmgsvshfdxdoyrcr.supabase.co',
   instanceId: 'uuid-from-registration',
   writeKey: 'secret-write-key',
   enabled: process.env.NODE_ENV === 'production'

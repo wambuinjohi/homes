@@ -13,7 +13,7 @@ serve(async (req) => {
   try {
     const accessToken = Deno.env.get('SUPABASE_ACCESS_TOKEN');
     const resendApiKey = Deno.env.get('RESEND_API_KEY');
-    const projectRef = 'kdpqimetajnhcqseajok';
+    const projectRef = 'tbmzwmgsvshfdxdoyrcr';
 
     if (!accessToken) {
       throw new Error('SUPABASE_ACCESS_TOKEN is not configured');

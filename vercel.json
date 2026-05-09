@@ -8,7 +8,7 @@
     },
     {
       "source": "/supabase/:path*",
-      "destination": "https://kdpqimetajnhcqseajok.supabase.co/:path*"
+      "destination": "https://tbmzwmgsvshfdxdoyrcr.supabase.co/:path*"
     },
     {
       "source": "/:path*",

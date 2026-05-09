@@ -10,8 +10,8 @@
     const { createClient } = await import('https://esm.sh/@supabase/supabase-js@2');
     
     const supabase = createClient(
-      'https://kdpqimetajnhcqseajok.supabase.co',
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtkcHFpbWV0YWpuaGNxc2Vham9rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQwMDQxMTAsImV4cCI6MjA2OTU4MDExMH0.VkqXvocYAYO6RQeDaFv8wVrq2xoKKfQ8UVj41az7ZSk'
+      'https://tbmzwmgsvshfdxdoyrcr.supabase.co',
+      'sb_publishable_d9PzsYP9E6qVHj1T2njHXw_HY0QJS45'
     );
     
     console.log('📱 Invoking test-sms function...');
