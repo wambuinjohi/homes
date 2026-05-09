@@ -1,4 +1,4 @@
-project_id = "kdpqimetajnhcqseajok"
+project_id = "tbmzwmgsvshfdxdoyrcr"
 
 [api]
 enabled = true
@@ -10,7 +10,7 @@ max_rows = 1000
 [auth]
 enabled = true
 port = 54322
-external_url = "https://kdpqimetajnhcqseajok.supabase.co"
+external_url = "https://tbmzwmgsvshfdxdoyrcr.supabase.co"
 
 [auth.email]
 enabled = true
