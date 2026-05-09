@@ -1,0 +1,257 @@
+/* Import Design System */
+@import './styles/design-system.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    /* Background / Surface Colors - SaaS Theme */
+    --background: 210 20% 96%; /* Light Gray #F4F6F8 */
+    --foreground: 0 0% 17%; /* Main Text #2C2C2C */
+
+    --card: 0 0% 100%; /* White #FFFFFF */
+    --card-foreground: 0 0% 17%; /* Main Text #2C2C2C */
+
+    --popover: 0 0% 100%; /* White #FFFFFF */
+    --popover-foreground: 0 0% 17%; /* Main Text #2C2C2C */
+
+    /* Primary Brand - Navy */
+    --primary: 220 100% 15%; /* Navy */
+    --primary-foreground: 0 0% 100%; /* White text on navy */
+
+    /* Secondary - Light backgrounds */
+    --secondary: 210 20% 96%; /* Light Gray */
+    --secondary-foreground: 0 0% 17%; /* Main Text */
+
+    --muted: 210 20% 96%; /* Light Gray */
+    --muted-foreground: 0 0% 49%; /* Muted Labels */
+
+    /* Accent - Orange for CTAs */
+    --accent: 20 100% 60%; /* Orange */
+    --accent-foreground: 0 0% 100%; /* White text on orange */
+
+    /* Status Colors */
+    --destructive: 4 78% 56%; /* Error #E53935 */
+    --destructive-foreground: 0 0% 100%;
+
+    --success: 122 41% 49%; /* Success #4CAF50 */
+    --success-foreground: 0 0% 100%;
+
+    --warning: 42 96% 61%; /* Warning #FBAF3D */
+    --warning-foreground: 0 0% 17%; /* Dark text on warning */
+
+    /* Borders and Inputs */
+    --border: 0 0% 88%; /* Light Border Gray #E0E0E0 */
+    --input: 0 0% 100%; /* White inputs */
+    --ring: 209 100% 62%; /* Accent Blue focus ring */
+
+    --radius: 0.75rem;
+
+    /* Modal-specific colors for View/Edit modes */
+    --modal-background: 210 20% 96%; /* #F4F6F8 */
+    --modal-card: 0 0% 100%; /* #FFFFFF */
+    --modal-view-accent: 210 38% 17%; /* #1B2B3C Navy for view mode */
+    --modal-edit-accent: 209 100% 62%; /* #3AA6FF Blue for edit mode */
+    --modal-input-bg: 210 14% 98%; /* #F9FAFB Light input background */
+    --modal-label: 0 0% 17%; /* #2C2C2C */
+    --modal-value: 0 0% 17%; /* #2C2C2C */
+    --modal-muted-label: 0 0% 49%; /* #7C7C7C */
+
+    /* SaaS Color Tints for KPI Cards */
+    --tint-blue: 209 100% 97%; /* Light blue #EAF4FF */
+    --tint-green: 122 41% 95%; /* Light green #E8F5E9 */
+    --tint-amber: 42 96% 93%; /* Light amber #FFF3E0 */
+    --tint-gray: 0 0% 96%; /* Light gray #F5F5F5 */
+    --tint-red: 4 78% 95%; /* Light red #FDECEC */
+
+    /* Modern Gradient Colors for Cards */
+    --gradient-blue: linear-gradient(135deg, #3AA6FF 0%, #2196F3 100%);
+    --gradient-green: linear-gradient(135deg, #4CAF50 0%, #2E7D32 100%);
+    --gradient-orange: linear-gradient(135deg, #FBAF3D 0%, #F57C00 100%);
+    --gradient-purple: linear-gradient(135deg, #9C27B0 0%, #673AB7 100%);
+    --gradient-red: linear-gradient(135deg, #E53935 0%, #C62828 100%);
+    --gradient-navy: linear-gradient(135deg, #1B2B3C 0%, #0D1B2A 100%);
+    
+    /* Card Color Variants */
+    --card-blue: 209 100% 62%;
+    --card-green: 122 41% 49%;
+    --card-orange: 42 96% 61%;
+    --card-purple: 291 64% 42%;
+    --card-red: 4 78% 56%;
+    --card-navy: 210 38% 17%;
+    
+    /* Shadows for modern depth */
+    --shadow-colored: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-elevated: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+
+    /* Sidebar - Using Deep Navy for professional look */
+    --sidebar-background: 215 45% 12%; /* Deep Navy #0D1B2A */
+    --sidebar-foreground: 0 0% 100%; /* White text */
+    --sidebar-primary: 25 95% 53%; /* Orange accents */
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 215 45% 18%; /* Slightly lighter navy for hover */
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 215 45% 22%; /* Navy border */
+    --sidebar-ring: 25 95% 53%; /* Orange focus ring */
+  }
+
+  .dark {
+    --background: 210 38% 17%;
+    --foreground: 0 0% 100%;
+
+    --card: 210 38% 20%;
+    --card-foreground: 0 0% 100%;
+
+    --popover: 210 38% 20%;
+    --popover-foreground: 0 0% 100%;
+
+    --primary: 209 100% 62%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 210 38% 22%;
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 210 38% 22%;
+    --muted-foreground: 0 0% 70%;
+
+    --accent: 209 100% 62%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 4 78% 56%;
+    --destructive-foreground: 0 0% 100%;
+
+    --success: 122 41% 49%;
+    --success-foreground: 0 0% 100%;
+
+    --warning: 42 96% 61%;
+    --warning-foreground: 210 38% 17%;
+
+    --border: 210 38% 25%;
+    --input: 210 38% 22%;
+    --ring: 209 100% 62%;
+
+    --sidebar-background: 210 38% 17%;
+    --sidebar-foreground: 0 0% 100%;
+    --sidebar-primary: 209 100% 62%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 210 38% 22%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 210 38% 25%;
+    --sidebar-ring: 209 100% 62%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+@layer components {
+  /* Modern Card Variants */
+  .card-gradient-blue {
+    background: linear-gradient(135deg, hsl(209, 100%, 62%) 0%, hsl(210, 100%, 55%) 100%);
+    @apply text-white border-0 shadow-lg;
+  }
+  
+  .card-gradient-green {
+    background: linear-gradient(135deg, hsl(122, 41%, 49%) 0%, hsl(122, 41%, 35%) 100%);
+    @apply text-white border-0 shadow-lg;
+  }
+  
+  .card-gradient-orange {
+    background: linear-gradient(135deg, hsl(20, 100%, 60%) 0%, hsl(20, 100%, 50%) 100%);
+    @apply text-white border-0 shadow-lg;
+  }
+  
+  .card-gradient-purple {
+    background: var(--gradient-purple);
+    @apply text-white border-0 shadow-lg;
+  }
+  
+  .card-gradient-red {
+    background: linear-gradient(135deg, hsl(4, 78%, 56%) 0%, hsl(4, 78%, 40%) 100%);
+    @apply text-white border-0 shadow-lg;
+  }
+  
+  .card-gradient-navy {
+    background: linear-gradient(135deg, hsl(220, 100%, 15%) 0%, hsl(220, 100%, 25%) 100%);
+    @apply text-white border-0 shadow-lg;
+  }
+
+  /* Enhanced payment status cards */
+  .card-payment-total {
+    background: linear-gradient(135deg, hsl(122, 41%, 49%) 0%, hsl(142, 71%, 45%) 100%);
+    @apply text-white border-0 shadow-lg backdrop-blur-sm;
+  }
+
+  .card-payment-pending {
+    background: linear-gradient(135deg, hsl(45, 93%, 58%) 0%, hsl(38, 92%, 50%) 100%);
+    @apply text-white border-0 shadow-lg backdrop-blur-sm;
+  }
+
+  .card-payment-overdue {
+    background: linear-gradient(135deg, hsl(4, 78%, 56%) 0%, hsl(0, 65%, 51%) 100%);
+    @apply text-white border-0 shadow-lg backdrop-blur-sm;
+  }
+
+  /* Payment method cards */
+  .card-payment-method {
+    background: linear-gradient(135deg, hsl(209, 100%, 62%) 0%, hsl(217, 91%, 60%) 100%);
+    @apply text-white border-0 shadow-lg backdrop-blur-sm;
+  }
+
+  .card-auto-pay {
+    background: linear-gradient(135deg, hsl(240, 100%, 65%) 0%, hsl(248, 95%, 70%) 100%);
+    @apply text-white border-0 shadow-lg backdrop-blur-sm;
+  }
+
+  .card-reminders {
+    background: linear-gradient(135deg, hsl(20, 100%, 60%) 0%, hsl(24, 95%, 53%) 100%);
+    @apply text-white border-0 shadow-lg backdrop-blur-sm;
+  }
+
+  /* Header Gradient */
+  .header-gradient {
+    background: linear-gradient(135deg, #1B2B3C 0%, #3AA6FF 100%);
+    @apply text-white border-b-0 shadow-md;
+  }
+
+  /* Icon backgrounds for cards */
+  .icon-bg-white {
+    @apply bg-white/20 p-2 rounded-lg backdrop-blur-sm;
+  }
+
+  /* Add grey gradient for branded cards */
+  .card-gradient-grey {
+    background: linear-gradient(135deg, hsl(210, 40%, 96%) 0%, hsl(210, 40%, 86%) 100%);
+    @apply text-foreground border-0 shadow-lg;
+  }
+}
+
+/* Line clamp utilities */
+@layer utilities {
+  .line-clamp-1 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+  }
+  
+  .line-clamp-2 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+}

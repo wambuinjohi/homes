@@ -1,0 +1,288 @@
+/* Standardized Button & Form Design System */
+@layer components {
+  /* Button Base Styles */
+  .btn-base {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  /* Button Size Variants */
+  .btn-xs {
+    @apply px-2 py-1 text-xs h-7 min-w-[60px];
+  }
+
+  .btn-sm {
+    @apply px-3 py-1.5 text-sm h-8 min-w-[70px];
+  }
+
+  .btn-md {
+    @apply px-4 py-2 text-sm h-10 min-w-[80px];
+  }
+
+  .btn-lg {
+    @apply px-6 py-3 text-base h-12 min-w-[100px];
+  }
+
+  .btn-xl {
+    @apply px-8 py-4 text-lg h-14 min-w-[120px];
+  }
+
+  /* Button Color Variants */
+  .btn-primary {
+    @apply bg-primary text-primary-foreground hover:bg-primary/90 focus:ring-primary/20 shadow-sm hover:shadow-md;
+  }
+
+  .btn-secondary {
+    @apply bg-secondary text-secondary-foreground hover:bg-secondary/80 focus:ring-secondary/20 shadow-sm hover:shadow-md;
+  }
+
+  .btn-success {
+    @apply bg-success text-success-foreground hover:bg-success/90 focus:ring-success/20 shadow-sm hover:shadow-md;
+  }
+
+  .btn-warning {
+    @apply bg-warning text-warning-foreground hover:bg-warning/90 focus:ring-warning/20 shadow-sm hover:shadow-md;
+  }
+
+  .btn-destructive {
+    @apply bg-destructive text-destructive-foreground hover:bg-destructive/90 focus:ring-destructive/20 shadow-sm hover:shadow-md;
+  }
+
+  .btn-outline {
+    @apply border border-border bg-background text-foreground hover:bg-accent hover:text-accent-foreground focus:ring-primary/20 shadow-sm hover:shadow-md;
+  }
+
+  .btn-ghost {
+    @apply text-foreground hover:bg-accent hover:text-accent-foreground focus:ring-primary/20;
+  }
+
+  .btn-link {
+    @apply text-primary underline-offset-4 hover:underline focus:ring-primary/20 h-auto p-0 min-w-0;
+  }
+
+  /* Loading State */
+  .btn-loading {
+    @apply relative text-transparent pointer-events-none;
+  }
+
+  .btn-loading::after {
+    @apply absolute inset-0 flex items-center justify-center;
+    content: '';
+    background-image: url("data:image/svg+xml,%3csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M10 3.5a6.5 6.5 0 1 0 6.5 6.5h-2a4.5 4.5 0 1 1-4.5-4.5V3.5z' fill='currentColor'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: center;
+    animation: spin 1s linear infinite;
+  }
+
+  /* Form Input Base Styles */
+  .form-input-base {
+    @apply w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground transition-colors focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  /* Form Input Size Variants */
+  .form-input-sm {
+    @apply px-2.5 py-1.5 text-xs h-8;
+  }
+
+  .form-input-md {
+    @apply px-3 py-2 text-sm h-10;
+  }
+
+  .form-input-lg {
+    @apply px-4 py-3 text-base h-12;
+  }
+
+  /* Form Input State Variants */
+  .form-input-error {
+    @apply border-destructive focus:border-destructive focus:ring-destructive/20;
+  }
+
+  .form-input-success {
+    @apply border-success focus:border-success focus:ring-success/20;
+  }
+
+  /* Form Label Styles */
+  .form-label-base {
+    @apply text-sm font-medium text-foreground leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70;
+  }
+
+  .form-label-required::after {
+    content: ' *';
+    @apply text-destructive;
+  }
+
+  /* Form Error Message */
+  .form-error {
+    @apply text-xs text-destructive mt-1 font-medium;
+  }
+
+  /* Form Help Text */
+  .form-help {
+    @apply text-xs text-muted-foreground mt-1;
+  }
+
+  /* Form Group Spacing */
+  .form-group {
+    @apply space-y-2;
+  }
+
+  .form-group-horizontal {
+    @apply flex items-center gap-4;
+  }
+
+  /* Select Dropdown Styles */
+  .form-select-base {
+    @apply form-input-base appearance-none bg-background cursor-pointer;
+    background-image: url("data:image/svg+xml,%3csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M7 7l3 3 3-3' stroke='currentColor' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round' fill='none'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 40px;
+  }
+
+  /* Checkbox and Radio Styles */
+  .form-checkbox-base {
+    @apply h-4 w-4 rounded border-border text-primary focus:ring-2 focus:ring-primary/20 focus:ring-offset-0 transition-colors;
+  }
+
+  .form-radio-base {
+    @apply h-4 w-4 border-border text-primary focus:ring-2 focus:ring-primary/20 focus:ring-offset-0 transition-colors;
+  }
+
+  /* Textarea Styles */
+  .form-textarea-base {
+    @apply form-input-base min-h-[80px] resize-y;
+  }
+
+  /* Form Card/Section Styles */
+  .form-card {
+    @apply bg-card border border-border rounded-lg p-6 shadow-sm;
+  }
+
+  .form-section {
+    @apply space-y-6;
+  }
+
+  .form-section-header {
+    @apply border-b border-border pb-4 mb-6;
+  }
+
+  .form-section-title {
+    @apply text-lg font-semibold text-foreground;
+  }
+
+  .form-section-description {
+    @apply text-sm text-muted-foreground mt-1;
+  }
+
+  /* Button Groups */
+  .btn-group {
+    @apply inline-flex rounded-lg shadow-sm;
+  }
+
+  .btn-group > * {
+    @apply relative focus:z-10;
+  }
+
+  .btn-group > *:not(:first-child) {
+    @apply -ml-px rounded-l-none;
+  }
+
+  .btn-group > *:not(:last-child) {
+    @apply rounded-r-none;
+  }
+
+  /* Form Actions Bar */
+  .form-actions {
+    @apply flex items-center justify-end gap-3 pt-6 border-t border-border;
+  }
+
+  .form-actions-left {
+    @apply flex items-center justify-start gap-3 pt-6 border-t border-border;
+  }
+
+  .form-actions-between {
+    @apply flex items-center justify-between pt-6 border-t border-border;
+  }
+
+  /* Loading States for Forms */
+  .form-loading {
+    @apply relative overflow-hidden;
+  }
+
+  .form-loading::before {
+    @apply absolute inset-0 bg-background/80 backdrop-blur-sm z-10;
+    content: '';
+  }
+
+  .form-loading::after {
+    @apply absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20;
+    content: '';
+    width: 20px;
+    height: 20px;
+    background-image: url("data:image/svg+xml,%3csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M10 3.5a6.5 6.5 0 1 0 6.5 6.5h-2a4.5 4.5 0 1 1-4.5-4.5V3.5z' fill='hsl(var(--primary))'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: center;
+    animation: spin 1s linear infinite;
+  }
+
+  /* Modal Form Specific Styles */
+  .modal-form {
+    @apply max-h-[80vh] overflow-y-auto;
+  }
+
+  .modal-form-header {
+    @apply sticky top-0 bg-background border-b border-border pb-4 mb-6 z-10;
+  }
+
+  .modal-form-footer {
+    @apply sticky bottom-0 bg-background border-t border-border pt-4 mt-6 z-10;
+  }
+
+  /* Responsive Form Layouts */
+  .form-grid-1 {
+    @apply grid grid-cols-1 gap-4;
+  }
+
+  .form-grid-2 {
+    @apply grid grid-cols-1 md:grid-cols-2 gap-4;
+  }
+
+  .form-grid-3 {
+    @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4;
+  }
+
+  .form-grid-4 {
+    @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4;
+  }
+
+  /* Animation Classes */
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-fade-in {
+    animation: fadeIn 0.2s ease-out;
+  }
+
+  /* Focus States */
+  .focus-ring {
+    @apply focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-200;
+  }
+
+  /* Disabled States */
+  .disabled-state {
+    @apply opacity-50 cursor-not-allowed pointer-events-none;
+  }
+}
