@@ -1,0 +1,145 @@
+project_id = "tbmzwmgsvshfdxdoyrcr"
+
+[api]
+enabled = true
+port = 54321
+schemas = ["public", "graphql_public"]
+extra_search_path = ["public", "extensions"]
+max_rows = 1000
+
+[auth]
+enabled = true
+port = 54322
+external_url = "https://tbmzwmgsvshfdxdoyrcr.supabase.co"
+
+[auth.email]
+enabled = true
+sender_name = "Zira Technologies"
+
+[auth.email.smtp]
+host = "smtp.resend.com"
+port = 465
+user = "resend"
+pass = "env(RESEND_API_KEY)"
+admin_email = "support@ziratech.com"
+sender_name = "Zira Technologies"
+
+[functions.create-admin-user]
+verify_jwt = true
+
+[functions.create-tenant-account]
+verify_jwt = false
+
+[functions.create-user-with-role]
+verify_jwt = true
+
+[functions.create-sub-user]
+verify_jwt = true
+
+[functions.list-landlord-sub-users]
+verify_jwt = true
+
+[functions.get-sms-provider]
+verify_jwt = true
+
+[functions.send-maintenance-notification]
+verify_jwt = true
+
+[functions.send-test-email]
+verify_jwt = true
+
+[functions.send-welcome-email]
+verify_jwt = true
+
+[functions.update-user-email]
+verify_jwt = true
+
+[functions.send-sms]
+verify_jwt = true
+
+[functions.mpesa-stk-push]
+verify_jwt = true
+
+[functions.mpesa-callback]
+verify_jwt = false
+
+[functions.trial-manager]
+verify_jwt = true
+
+[functions.create-billing-checkout]
+verify_jwt = true
+
+[functions.confirm-billing-upgrade]
+verify_jwt = true
+
+[functions.generate-service-invoice]
+verify_jwt = true
+
+[functions.automated-monthly-billing]
+verify_jwt = true
+
+[functions.activate-billing-plan]
+verify_jwt = true
+
+[functions.log-security-event]
+verify_jwt = true
+
+[functions.telemetry-heartbeat]
+verify_jwt = false
+
+[functions.telemetry-events]
+verify_jwt = false
+
+[functions.telemetry-errors]
+verify_jwt = false
+
+[functions.send-password-reset]
+verify_jwt = false
+
+[functions.save-mpesa-credentials]
+verify_jwt = true
+
+[functions.test-kopokopo-credentials]
+verify_jwt = true
+
+[functions.kopokopo-callback]
+verify_jwt = false
+
+[functions.send-sms-with-logging]
+verify_jwt = false
+
+[functions.test-sms]
+verify_jwt = false
+
+[functions.admin-assign-plan]
+verify_jwt = true
+
+[functions.send-tenant-welcome-notifications]
+verify_jwt = true
+
+[functions.sms-health-check]
+verify_jwt = true
+
+[functions.kopokopo-verify]
+verify_jwt = true
+
+[functions.send-overdue-reminders]
+verify_jwt = false
+
+[functions.jenga-ipn-callback]
+verify_jwt = false
+
+[functions.jenga-stk-push]
+verify_jwt = true
+
+[functions.kcb-stk-push]
+verify_jwt = true
+
+[functions.kcb-ipn-callback]
+verify_jwt = false
+
+[functions.configure-smtp]
+verify_jwt = true
+
+[functions.send-notification-email]
+verify_jwt = true

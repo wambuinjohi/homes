@@ -1,0 +1,21 @@
+<IfModule mod_rewrite.c>
+RewriteEngine On
+
+# --- Allow CORS preflight without redirect ---
+RewriteCond %{REQUEST_METHOD} OPTIONS
+RewriteRule ^ - [L]
+
+# --- Do not rewrite API routes ---
+RewriteRule ^api(/.*)?$ - [L]
+RewriteRule ^supabase(/.*)?$ - [L]
+
+# --- Do not rewrite existing files or folders ---
+RewriteCond %{REQUEST_FILENAME} -f
+RewriteRule ^ - [L]
+
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# --- SPA fallback ---
+RewriteRule . /index.html [L]
+</IfModule>
