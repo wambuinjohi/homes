@@ -144,12 +144,14 @@ const Auth = () => {
     setAdminInitLoading(true);
     setError("");
     try {
-      const { data, error: funcError } = await supabase.functions.invoke('init-super-admin', {
+      // Use create-admin-user function to initialize the first super admin
+      const { data, error: funcError } = await supabase.functions.invoke('create-admin-user', {
         body: {
           email: 'gichukisimon@gmail.com',
           password: 'Sirgeorge.12',
           firstName: 'Simon',
-          lastName: 'Gichuki'
+          lastName: 'Gichuki',
+          role: 'Admin'
         }
       });
 
