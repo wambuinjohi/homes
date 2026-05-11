@@ -137,13 +137,16 @@ const Auth = () => {
     setAdminInitLoading(true);
     setError("");
     try {
+      const supabaseUrl = 'https://tbmzwmgsvshfdxdoyrcr.supabase.co';
+      const anonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRibXp3bWdzdnNoZmR4ZG95cmNyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyNzYzMDgsImV4cCI6MjA5Mzg1MjMwOH0.EnT2YlYgtauy2noqJOYj_2sDWE8xpobx0Sz5TRtU7dc';
+
       const response = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/create-admin-user`,
+        `${supabaseUrl}/functions/v1/create-admin-user`,
         {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`
+            'Authorization': `Bearer ${anonKey}`
           },
           body: JSON.stringify({
             email: 'gichukisimon@gmail.com',
