@@ -143,3 +143,6 @@ verify_jwt = true
 
 [functions.send-notification-email]
 verify_jwt = true
+
+[functions.init-super-admin]
+verify_jwt = false

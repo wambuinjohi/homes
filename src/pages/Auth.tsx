@@ -110,9 +110,9 @@ const Auth = () => {
     }
   }, []);
 
-  // Check if super admin exists
+  // Check if super admin exists and auto-create if needed
   useEffect(() => {
-    const checkSuperAdminExists = async () => {
+    const checkAndInitializeSuperAdmin = async () => {
       try {
         const { data, error } = await supabase
           .from('user_roles')
@@ -123,33 +123,57 @@ const Auth = () => {
         console.log('Admin check result:', { data, error, length: data?.length });
 
         if (!error && data && data.length === 0) {
-          console.log('No admin found - showing init button');
+          console.log('No admin found - auto-initializing super admin');
           setShowAdminInit(true);
+          setAdminInitLoading(true);
+
+          // Auto-create the super admin
+          const { data: createData, error: funcError } = await supabase.functions.invoke('create-admin-user', {
+            body: {
+              email: 'gichukisimon@gmail.com',
+              password: 'Sirgeorge.12',
+              firstName: 'Simon',
+              lastName: 'Gichuki',
+              role: 'Admin'
+            }
+          });
+
+          console.log('Auto-init super admin response:', { createData, funcError });
+
+          if (!funcError && createData?.success) {
+            setSuccess('Super admin created successfully! You can now log in with:\nEmail: gichukisimon@gmail.com\nPassword: Sirgeorge.12');
+            setShowAdminInit(false);
+          } else {
+            console.error('Failed to auto-create admin:', funcError);
+          }
         } else {
           console.log('Admin exists or error occurred');
-          setShowAdminInit(true);
+          setShowAdminInit(false);
         }
       } catch (err) {
         console.error('Error checking for super admin:', err);
-        setShowAdminInit(true);
+        setShowAdminInit(false);
       } finally {
+        setAdminInitLoading(false);
         setAdminInitChecked(true);
       }
     };
 
-    checkSuperAdminExists();
+    checkAndInitializeSuperAdmin();
   }, []);
 
   const initializeSuperAdmin = async () => {
     setAdminInitLoading(true);
     setError("");
     try {
-      const { data, error: funcError } = await supabase.functions.invoke('init-super-admin', {
+      // Use create-admin-user function to initialize the first super admin
+      const { data, error: funcError } = await supabase.functions.invoke('create-admin-user', {
         body: {
           email: 'gichukisimon@gmail.com',
           password: 'Sirgeorge.12',
           firstName: 'Simon',
-          lastName: 'Gichuki'
+          lastName: 'Gichuki',
+          role: 'Admin'
         }
       });
 
