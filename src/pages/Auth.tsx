@@ -144,26 +144,25 @@ const Auth = () => {
     setAdminInitLoading(true);
     setError("");
     try {
-      const { data, error: funcError } = await supabase.functions.invoke('create-admin-user', {
+      const { data, error: funcError } = await supabase.functions.invoke('init-super-admin', {
         body: {
           email: 'gichukisimon@gmail.com',
           password: 'Sirgeorge.12',
           firstName: 'Simon',
-          lastName: 'Gichuki',
-          role: 'Admin'
+          lastName: 'Gichuki'
         }
       });
 
-      console.log('Create admin response:', { data, funcError });
+      console.log('Init super admin response:', { data, funcError });
 
       if (funcError) {
-        setError(funcError.message || 'Failed to create super admin');
+        setError(funcError.message || 'Failed to initialize super admin');
       } else if (data?.success) {
-        setSuccess('Super admin created successfully! You can now log in with gichukisimon@gmail.com');
+        setSuccess('Super admin created successfully! You can now log in with:\nEmail: gichukisimon@gmail.com\nPassword: Sirgeorge.12');
         setShowAdminInit(false);
-        toast({ title: 'Success', description: 'Super admin initialized. You can now log in.' });
+        toast({ title: 'Success', description: 'Super admin initialized' });
       } else {
-        setError(data?.error || 'Failed to create super admin');
+        setError(data?.error || 'Failed to initialize super admin');
       }
     } catch (err: any) {
       console.error('Error initializing super admin:', err);
