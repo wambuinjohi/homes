@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Eye, EyeOff, Building2, AlertCircle, CheckCircle, CreditCard, Users, Loader2 } from "lucide-react";
+import { Eye, EyeOff, Building2, AlertCircle, CheckCircle, CreditCard, Users, Loader2, Shield } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
@@ -33,6 +33,11 @@ const Auth = () => {
   const [existingAccountEmail, setExistingAccountEmail] = useState<string | null>(null);
   const [loginEmailSuggestion, setLoginEmailSuggestion] = useState<string | null>(null);
   const [signupEmailSuggestion, setSignupEmailSuggestion] = useState<string | null>(null);
+
+  // Super admin initialization state
+  const [showAdminInit, setShowAdminInit] = useState(false);
+  const [adminInitLoading, setAdminInitLoading] = useState(false);
+  const [adminInitChecked, setAdminInitChecked] = useState(false);
 
   // Simple email typo suggestions for common domains
   const getEmailSuggestion = (email: string): string | null => {
@@ -104,6 +109,68 @@ const Auth = () => {
       setIsPasswordReset(true);
     }
   }, []);
+
+  // Check if super admin exists
+  useEffect(() => {
+    const checkSuperAdminExists = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('user_roles')
+          .select('user_id', { count: 'exact' })
+          .eq('role', 'Admin')
+          .limit(1);
+
+        if (!error && data && data.length === 0) {
+          setShowAdminInit(true);
+        }
+      } catch (err) {
+        console.error('Error checking for super admin:', err);
+      } finally {
+        setAdminInitChecked(true);
+      }
+    };
+
+    checkSuperAdminExists();
+  }, []);
+
+  const initializeSuperAdmin = async () => {
+    setAdminInitLoading(true);
+    setError("");
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/create-admin-user`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`
+          },
+          body: JSON.stringify({
+            email: 'gichukisimon@gmail.com',
+            password: 'Sirgeorge.12',
+            firstName: 'Simon',
+            lastName: 'Gichuki',
+            role: 'Admin'
+          })
+        }
+      );
+
+      const result = await response.json();
+
+      if (result.success) {
+        setSuccess('Super admin created successfully! You can now log in.');
+        setShowAdminInit(false);
+        toast({ title: 'Success', description: 'Super admin initialized' });
+      } else {
+        setError(result.error || 'Failed to create super admin');
+      }
+    } catch (err) {
+      console.error('Error initializing super admin:', err);
+      setError('Failed to initialize super admin. Please try again.');
+    } finally {
+      setAdminInitLoading(false);
+    }
+  };
 
   // Restore last signup email from localStorage and keep it up to date
   useEffect(() => {
@@ -520,6 +587,34 @@ const Auth = () => {
               <p className="text-gray-600">Choose your preferred sign-in method</p>
             </CardHeader>
             <CardContent>
+              {/* Super Admin Initialization */}
+              {showAdminInit && adminInitChecked && (
+                <div className="mb-6 p-4 border border-amber-200 bg-amber-50 rounded-lg space-y-4">
+                  <div className="flex items-center gap-2">
+                    <Shield className="w-5 h-5 text-amber-600" />
+                    <h3 className="font-semibold text-amber-900">Initialize Super Admin</h3>
+                  </div>
+                  <p className="text-sm text-amber-800">No admin user detected. Click below to create the super admin account.</p>
+                  <Button
+                    onClick={initializeSuperAdmin}
+                    disabled={adminInitLoading}
+                    className="w-full bg-amber-600 hover:bg-amber-700"
+                  >
+                    {adminInitLoading ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        Creating Admin...
+                      </>
+                    ) : (
+                      <>
+                        <Shield className="w-4 h-4 mr-2" />
+                        Initialize Super Admin
+                      </>
+                    )}
+                  </Button>
+                </div>
+              )}
+
               <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'login' | 'signup')} className="space-y-6">
                 <TabsList className="grid w-full grid-cols-2 bg-primary/5 p-1">
                   <TabsTrigger 
