@@ -120,11 +120,18 @@ const Auth = () => {
           .eq('role', 'Admin')
           .limit(1);
 
+        console.log('Admin check result:', { data, error, length: data?.length });
+
         if (!error && data && data.length === 0) {
+          console.log('No admin found - showing init button');
+          setShowAdminInit(true);
+        } else {
+          console.log('Admin exists or error occurred');
           setShowAdminInit(true);
         }
       } catch (err) {
         console.error('Error checking for super admin:', err);
+        setShowAdminInit(true);
       } finally {
         setAdminInitChecked(true);
       }
