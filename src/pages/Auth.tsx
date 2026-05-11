@@ -144,39 +144,30 @@ const Auth = () => {
     setAdminInitLoading(true);
     setError("");
     try {
-      const supabaseUrl = 'https://tbmzwmgsvshfdxdoyrcr.supabase.co';
-      const anonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRibXp3bWdzdnNoZmR4ZG95cmNyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyNzYzMDgsImV4cCI6MjA5Mzg1MjMwOH0.EnT2YlYgtauy2noqJOYj_2sDWE8xpobx0Sz5TRtU7dc';
-
-      const response = await fetch(
-        `${supabaseUrl}/functions/v1/create-admin-user`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${anonKey}`
-          },
-          body: JSON.stringify({
-            email: 'gichukisimon@gmail.com',
-            password: 'Sirgeorge.12',
-            firstName: 'Simon',
-            lastName: 'Gichuki',
-            role: 'Admin'
-          })
+      const { data, error: funcError } = await supabase.functions.invoke('create-admin-user', {
+        body: {
+          email: 'gichukisimon@gmail.com',
+          password: 'Sirgeorge.12',
+          firstName: 'Simon',
+          lastName: 'Gichuki',
+          role: 'Admin'
         }
-      );
+      });
 
-      const result = await response.json();
+      console.log('Create admin response:', { data, funcError });
 
-      if (result.success) {
-        setSuccess('Super admin created successfully! You can now log in.');
+      if (funcError) {
+        setError(funcError.message || 'Failed to create super admin');
+      } else if (data?.success) {
+        setSuccess('Super admin created successfully! You can now log in with gichukisimon@gmail.com');
         setShowAdminInit(false);
-        toast({ title: 'Success', description: 'Super admin initialized' });
+        toast({ title: 'Success', description: 'Super admin initialized. You can now log in.' });
       } else {
-        setError(result.error || 'Failed to create super admin');
+        setError(data?.error || 'Failed to create super admin');
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error initializing super admin:', err);
-      setError('Failed to initialize super admin. Please try again.');
+      setError(err.message || 'Failed to initialize super admin. Please try again.');
     } finally {
       setAdminInitLoading(false);
     }
