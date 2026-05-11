@@ -1,7 +1,7 @@
 # Create Super Admin User Script
 # Configuration
 $PROJECT_ID = "tbmzwmgsvshfdxdoyrcr"
-$ANON_KEY = "sb_publishable_d9PzsYP9E6qVHj1T2njHXw_HY0QJS45"
+$ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRibXp3bWdzdnNoZmR4ZG95cmNyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyNzYzMDgsImV4cCI6MjA5Mzg1MjMwOH0.EnT2YlYgtauy2noqJOYj_2sDWE8xpobx0Sz5TRtU7dc"
 $BASE_URL = "https://$PROJECT_ID.supabase.co"
 
 # Admin user details
