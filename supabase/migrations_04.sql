@@ -72,67 +72,10 @@ GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA public TO authenticated;
 -- Encrypt existing data and completely secure sensitive tables
 
 -- 1. Encrypt all existing tenant data
-UPDATE public.tenants 
-SET 
-  phone_encrypted = CASE 
-    WHEN phone IS NOT NULL THEN public.encrypt_sensitive_data(phone) 
-    ELSE NULL 
-  END,
-  phone_token = CASE 
-    WHEN phone IS NOT NULL THEN public.create_search_token(phone) 
-    ELSE NULL 
-  END,
-  email_encrypted = CASE 
-    WHEN email IS NOT NULL THEN public.encrypt_sensitive_data(email) 
-    ELSE NULL 
-  END,
-  email_token = CASE 
-    WHEN email IS NOT NULL THEN public.create_search_token(email) 
-    ELSE NULL 
-  END,
-  national_id_encrypted = CASE 
-    WHEN national_id IS NOT NULL THEN public.encrypt_sensitive_data(national_id) 
-    ELSE NULL 
-  END,
-  emergency_contact_phone_encrypted = CASE 
-    WHEN emergency_contact_phone IS NOT NULL THEN public.encrypt_sensitive_data(emergency_contact_phone) 
-    ELSE NULL 
-  END
-WHERE phone_encrypted IS NULL OR email_encrypted IS NULL;
 
 -- 2. Encrypt all existing SMS data
-UPDATE public.sms_usage 
-SET 
-  recipient_phone_encrypted = CASE 
-    WHEN recipient_phone IS NOT NULL THEN public.encrypt_sensitive_data(recipient_phone) 
-    ELSE NULL 
-  END,
-  recipient_phone_token = CASE 
-    WHEN recipient_phone IS NOT NULL THEN public.create_search_token(recipient_phone) 
-    ELSE NULL 
-  END,
-  message_content_encrypted = CASE 
-    WHEN message_content IS NOT NULL THEN public.encrypt_sensitive_data(message_content) 
-    ELSE NULL 
-  END
-WHERE recipient_phone_encrypted IS NULL OR message_content_encrypted IS NULL;
 
 -- 3. Encrypt existing M-Pesa credentials
-UPDATE public.mpesa_credentials 
-SET 
-  consumer_key_encrypted = CASE 
-    WHEN consumer_key IS NOT NULL THEN public.encrypt_sensitive_data(consumer_key, 'mpesa_key') 
-    ELSE NULL 
-  END,
-  consumer_secret_encrypted = CASE 
-    WHEN consumer_secret IS NOT NULL THEN public.encrypt_sensitive_data(consumer_secret, 'mpesa_key') 
-    ELSE NULL 
-  END,
-  passkey_encrypted = CASE 
-    WHEN passkey IS NOT NULL THEN public.encrypt_sensitive_data(passkey, 'mpesa_key') 
-    ELSE NULL 
-  END
-WHERE consumer_key_encrypted IS NULL OR consumer_secret_encrypted IS NULL OR passkey_encrypted IS NULL;
 
 -- 4. Create ultra-secure access functions that only return encrypted/masked data
 CREATE OR REPLACE FUNCTION public.get_tenant_secure(tenant_id uuid)
@@ -487,19 +430,6 @@ END;
 $$;
 
 -- 3. Add additional security event logging for password-related activities
-INSERT INTO public.security_events (event_type, severity, details, created_at)
-VALUES 
-    ('security_audit', 'low', 
-     jsonb_build_object(
-         'audit_type', 'password_security_review',
-         'recommendations', jsonb_build_array(
-             'Enable leaked password protection',
-             'Reduce OTP expiry time to 5 minutes',
-             'Upgrade PostgreSQL to latest version'
-         )
-     ), 
-     now()
-    );
 
 -- 4. Create a security configuration tracking table
 CREATE TABLE IF NOT EXISTS public.security_config_status (
@@ -512,16 +442,6 @@ CREATE TABLE IF NOT EXISTS public.security_config_status (
 );
 
 -- Track current security configuration status
-INSERT INTO public.security_config_status (config_item, status, details)
-VALUES 
-    ('password_leak_protection', 'disabled', jsonb_build_object('action_required', 'Enable in Supabase Dashboard')),
-    ('otp_expiry', 'too_long', jsonb_build_object('action_required', 'Reduce to 300 seconds in Auth settings')),
-    ('postgres_version', 'outdated', jsonb_build_object('action_required', 'Upgrade via Supabase Dashboard')),
-    ('extensions_in_public', 'partial', jsonb_build_object('action_required', 'Review remaining extensions'))
-ON CONFLICT (config_item) DO UPDATE SET
-    status = EXCLUDED.status,
-    last_checked = EXCLUDED.last_checked,
-    details = EXCLUDED.details;
 
 
 -- Migration: 20250908142754_c0ebe289-7791-435a-bcb9-e197fbb18433.sql
@@ -2406,18 +2326,9 @@ $$;
 -- Phase 1: Add missing communication features to billing plans
 -- This ensures trial users (linked to Enterprise) can access email/SMS templates
 
-UPDATE public.billing_plans 
-SET features = features || '["communication.email_templates", "communication.sms_templates", "reports.basic", "reports.advanced", "reports.financial"]'::jsonb
-WHERE name = 'Enterprise' AND is_active = true;
 
-UPDATE public.billing_plans 
-SET features = features || '["communication.email_templates", "communication.sms_templates", "reports.basic", "reports.advanced", "reports.financial"]'::jsonb
-WHERE name = 'Professional' AND is_active = true;
 
 -- Add basic reporting to Starter plan too
-UPDATE public.billing_plans 
-SET features = features || '["reports.basic"]'::jsonb
-WHERE name = 'Starter' AND is_active = true;
 
 
 -- Migration: 20251002222314_222cdba4-8118-4c71-aea6-4b74621f8396.sql
@@ -2787,18 +2698,6 @@ WITH CHECK (
 -- Normalize sub_users permissions to include all 8 required keys
 -- This ensures consistent permission checking and prevents undefined values
 
-UPDATE sub_users
-SET permissions = jsonb_build_object(
-  'manage_properties', COALESCE((permissions->>'manage_properties')::boolean, false),
-  'manage_tenants', COALESCE((permissions->>'manage_tenants')::boolean, false),
-  'manage_leases', COALESCE((permissions->>'manage_leases')::boolean, false),
-  'manage_maintenance', COALESCE((permissions->>'manage_maintenance')::boolean, false),
-  'manage_payments', COALESCE((permissions->>'manage_payments')::boolean, false),
-  'view_reports', COALESCE((permissions->>'view_reports')::boolean, false),
-  'manage_expenses', COALESCE((permissions->>'manage_expenses')::boolean, false),
-  'send_messages', COALESCE((permissions->>'send_messages')::boolean, false)
-)
-WHERE permissions IS NOT NULL;
 
 -- Add comment for documentation
 COMMENT ON COLUMN sub_users.permissions IS 
@@ -6416,146 +6315,6 @@ $$;
 -- Seed default SMS templates for landlords
 -- These templates will be available to all landlords as default templates
 
-INSERT INTO public.sms_templates (
-  landlord_id,
-  name,
-  content,
-  category,
-  enabled,
-  variables,
-  is_default,
-  created_at,
-  updated_at
-) VALUES
-  -- Payment Category
-  (
-    NULL,
-    'Rent Payment Reminder',
-    'Hi {tenant_name}, this is a friendly reminder that your rent of {amount} for {property_name} - {unit_number} is due on {due_date}. Please make payment to avoid late fees. Thank you!',
-    'payment',
-    true,
-    ARRAY['tenant_name', 'amount', 'property_name', 'unit_number', 'due_date'],
-    true,
-    now(),
-    now()
-  ),
-  (
-    NULL,
-    'Payment Received Confirmation',
-    'Dear {tenant_name}, we have received your payment of {amount} for {property_name} - {unit_number}. Receipt: {receipt_number}. Thank you for your prompt payment!',
-    'payment',
-    true,
-    ARRAY['tenant_name', 'amount', 'property_name', 'unit_number', 'receipt_number'],
-    true,
-    now(),
-    now()
-  ),
-  (
-    NULL,
-    'Overdue Payment Notice',
-    'URGENT: {tenant_name}, your rent payment of {amount} for {property_name} - {unit_number} is now {days_overdue} days overdue. Please contact us immediately to arrange payment.',
-    'payment',
-    true,
-    ARRAY['tenant_name', 'amount', 'property_name', 'unit_number', 'days_overdue'],
-    true,
-    now(),
-    now()
-  ),
-  
-  -- Maintenance Category
-  (
-    NULL,
-    'Maintenance Request Received',
-    'Hello {tenant_name}, we have received your maintenance request for {property_name} - {unit_number}. Reference: {request_id}. We will attend to it shortly. Thank you for reporting!',
-    'maintenance',
-    true,
-    ARRAY['tenant_name', 'property_name', 'unit_number', 'request_id'],
-    true,
-    now(),
-    now()
-  ),
-  (
-    NULL,
-    'Maintenance Status Update',
-    'Hi {tenant_name}, update on your maintenance request ({request_id}): Status changed to {status}. {additional_info}',
-    'maintenance',
-    true,
-    ARRAY['tenant_name', 'request_id', 'status', 'additional_info'],
-    true,
-    now(),
-    now()
-  ),
-  (
-    NULL,
-    'Maintenance Completed',
-    'Dear {tenant_name}, your maintenance request ({request_id}) for {property_name} - {unit_number} has been completed. Please let us know if you need anything else. Thank you!',
-    'maintenance',
-    true,
-    ARRAY['tenant_name', 'request_id', 'property_name', 'unit_number'],
-    true,
-    now(),
-    now()
-  ),
-  
-  -- Lease Category
-  (
-    NULL,
-    'Lease Expiry Notice',
-    'Hello {tenant_name}, your lease for {property_name} - {unit_number} will expire on {expiry_date}. Please contact us to discuss renewal options. Thank you!',
-    'lease',
-    true,
-    ARRAY['tenant_name', 'property_name', 'unit_number', 'expiry_date'],
-    true,
-    now(),
-    now()
-  ),
-  (
-    NULL,
-    'Lease Renewal Reminder',
-    'Hi {tenant_name}, your lease expires in {days_remaining} days. We would love to have you continue as our tenant. Please contact us to renew your lease for {property_name} - {unit_number}.',
-    'lease',
-    true,
-    ARRAY['tenant_name', 'days_remaining', 'property_name', 'unit_number'],
-    true,
-    now(),
-    now()
-  ),
-  (
-    NULL,
-    'Welcome New Tenant',
-    'Welcome {tenant_name}! We are delighted to have you at {property_name} - {unit_number}. Your lease starts on {lease_start_date}. If you need anything, please don''t hesitate to contact us!',
-    'lease',
-    true,
-    ARRAY['tenant_name', 'property_name', 'unit_number', 'lease_start_date'],
-    true,
-    now(),
-    now()
-  ),
-  
-  -- General Category
-  (
-    NULL,
-    'General Announcement',
-    'Dear {tenant_name}, {announcement_message} - Management, {property_name}',
-    'general',
-    true,
-    ARRAY['tenant_name', 'announcement_message', 'property_name'],
-    true,
-    now(),
-    now()
-  ),
-  (
-    NULL,
-    'Emergency Alert',
-    'IMPORTANT: {tenant_name}, emergency notice for {property_name}: {emergency_details}. Please follow instructions and contact us if needed.',
-    'general',
-    true,
-    ARRAY['tenant_name', 'property_name', 'emergency_details'],
-    true,
-    now(),
-    now()
-  )
-ON CONFLICT DO NOTHING;
 
 
 -- Migration: 20251006143755_cc6a070a-20ed-41fc-981a-c12ad99cd9c4.sql
@@ -6728,20 +6487,6 @@ CREATE POLICY "Authenticated users can view settings"
   USING (auth.uid() IS NOT NULL);
 
 -- Insert default trial settings
-INSERT INTO billing_settings (setting_key, setting_value, description) VALUES
-('trial_settings', '{
-  "trial_period_days": 30,
-  "grace_period_days": 7,
-  "auto_invoice_generation": true,
-  "payment_reminder_days": [3, 1],
-  "default_sms_credits": 200,
-  "sms_cost_per_unit": 0.05,
-  "cutoff_date_utc": "2025-01-01T00:00:00Z",
-  "pre_cutoff_days": 30,
-  "post_cutoff_days": 14,
-  "policy_history": []
-}'::jsonb, 'Trial subscription configuration settings')
-ON CONFLICT (setting_key) DO NOTHING;
 
 -- Add missing columns to billing_plans
 ALTER TABLE billing_plans 
@@ -6752,11 +6497,6 @@ ALTER TABLE billing_plans
   ADD COLUMN IF NOT EXISTS currency TEXT DEFAULT 'KES';
 
 -- Update existing plans with default values
-UPDATE billing_plans SET 
-  billing_model = 'percentage',
-  percentage_rate = 2.0,
-  currency = 'KES'
-WHERE billing_model IS NULL;
 
 -- Add missing columns to landlord_subscriptions
 ALTER TABLE landlord_subscriptions
@@ -6784,46 +6524,15 @@ CREATE POLICY "Admins manage trial templates"
   USING (has_role(auth.uid(), 'Admin'::app_role));
 
 -- Insert default notification templates
-INSERT INTO trial_notification_templates (template_name, subject, email_content, html_content, days_before_expiry) VALUES
-('trial_30_days', 'Welcome to Your 30-Day Free Trial!', 
- 'Hi {{first_name}},\n\nWelcome! Your 30-day free trial has started. You have {{days_remaining}} days to explore all features.\n\nUpgrade anytime: {{upgrade_url}}',
- '<h2>Welcome {{first_name}}!</h2><p>Your 30-day free trial has started. You have <strong>{{days_remaining}} days</strong> remaining.</p><p><a href="{{upgrade_url}}">Upgrade Now</a></p>',
- 30),
-('trial_7_days', 'Your Trial Expires in 7 Days', 
- 'Hi {{first_name}},\n\nYou have 7 days left in your trial. Upgrade now to keep access to all features.\n\nUpgrade: {{upgrade_url}}',
- '<h2>Hi {{first_name}}</h2><p>Your trial expires in <strong>7 days</strong>.</p><p><a href="{{upgrade_url}}">Upgrade Now</a></p>',
- 7),
-('trial_3_days', 'Your Trial Expires in 3 Days', 
- 'Hi {{first_name}},\n\nOnly 3 days left! Upgrade now to continue using all features.\n\nUpgrade: {{upgrade_url}}',
- '<h2>Hi {{first_name}}</h2><p>Your trial expires in <strong>3 days</strong>.</p><p><a href="{{upgrade_url}}">Upgrade Now</a></p>',
- 3),
-('trial_1_day', 'Your Trial Expires Tomorrow!', 
- 'Hi {{first_name}},\n\nYour trial ends tomorrow. Upgrade today to avoid interruption.\n\nUpgrade: {{upgrade_url}}',
- '<h2>Hi {{first_name}}</h2><p>Your trial expires <strong>tomorrow</strong>!</p><p><a href="{{upgrade_url}}">Upgrade Now</a></p>',
- 1),
-('trial_expired', 'Your Trial Has Ended', 
- 'Hi {{first_name}},\n\nYour trial has ended. You have a 7-day grace period. Upgrade now to restore full access.\n\nUpgrade: {{upgrade_url}}',
- '<h2>Hi {{first_name}}</h2><p>Your trial has ended. You have a <strong>7-day grace period</strong>.</p><p><a href="{{upgrade_url}}">Upgrade Now</a></p>',
- 0)
-ON CONFLICT (template_name) DO NOTHING;
 
 
 -- Migration: 20251103085826_bd67ec03-b00d-4b74-bbac-7716338058da.sql
 
 -- P0: Clean up Simon's roles - Remove Landlord and Tenant roles, keep only Admin
-DELETE FROM user_roles 
-WHERE user_id = '23054b29-a494-42f2-bb35-d1bdf9cfdfcb' 
-AND role IN ('Landlord', 'Tenant');
 
 -- Remove Simon's subscription entry
-DELETE FROM landlord_subscriptions 
-WHERE landlord_id = '23054b29-a494-42f2-bb35-d1bdf9cfdfcb';
 
 -- P0: Sync billing plan prices with fixed_amount_per_unit
-UPDATE billing_plans 
-SET price = fixed_amount_per_unit 
-WHERE billing_model = 'fixed_per_unit' 
-AND fixed_amount_per_unit IS NOT NULL;
 
 -- P1: Create RPC function to check role conflicts
 CREATE OR REPLACE FUNCTION public.check_role_conflict(
@@ -7347,17 +7056,6 @@ CREATE INDEX IF NOT EXISTS idx_user_tour_progress_status ON public.user_tour_pro
 -- Update SMS bundles from USD to KES currency
 -- Conversion rate: 1 USD = 130 KES
 
-UPDATE sms_bundles 
-SET 
-  currency = 'KES',
-  price = CASE 
-    WHEN price = 5.00 THEN 650
-    WHEN price = 20.00 THEN 2600
-    WHEN price = 35.00 THEN 4550
-    WHEN price = 150.00 THEN 19500
-    ELSE price * 130
-  END
-WHERE currency = 'USD' OR currency IS NULL;
 
 -- Add comment for audit trail
 COMMENT ON TABLE sms_bundles IS 'SMS credit bundles for purchase. Prices are in local currency (KES for Kenya).';
@@ -7399,12 +7097,6 @@ FOR EACH ROW
 EXECUTE FUNCTION initialize_landlord_sms_credits();
 
 -- Backfill existing landlords who don't have credits
-UPDATE landlord_subscriptions ls
-SET sms_credits_balance = COALESCE(
-  (SELECT sms_credits_included FROM billing_plans WHERE id = ls.billing_plan_id),
-  100
-)
-WHERE sms_credits_balance = 0 OR sms_credits_balance IS NULL;
 
 -- Add comment for documentation
 COMMENT ON FUNCTION initialize_landlord_sms_credits() IS 'Automatically initializes SMS credits from billing plan when landlord subscribes or changes plan';
@@ -7488,65 +7180,19 @@ WITH ranked_templates AS (
   FROM sms_templates
   WHERE landlord_id IS NULL
 )
-DELETE FROM sms_templates
-WHERE id IN (
-  SELECT id FROM ranked_templates WHERE rn > 1
-);
 
 -- Update default templates to include landlord personalization
 -- Payment reminder template
-UPDATE sms_templates
-SET 
-  content = 'Dear {tenant_name}, this is a friendly reminder that your rent payment of {amount} for {property_name}, Unit {unit_number} is due on {due_date}. Please make payment at your earliest convenience. Thank you! - {landlord_name}',
-  variables = ARRAY['tenant_name', 'amount', 'property_name', 'unit_number', 'due_date', 'landlord_name']
-WHERE landlord_id IS NULL 
-  AND name = 'Payment Reminder'
-  AND category = 'payment_reminders';
 
 -- Overdue payment template
-UPDATE sms_templates
-SET 
-  content = 'Dear {tenant_name}, your rent payment of {amount} for {property_name}, Unit {unit_number} was due on {due_date} and is now overdue. Please settle this as soon as possible to avoid late fees. Contact me if you need assistance. - {landlord_name}',
-  variables = ARRAY['tenant_name', 'amount', 'property_name', 'unit_number', 'due_date', 'landlord_name']
-WHERE landlord_id IS NULL 
-  AND name = 'Overdue Payment'
-  AND category = 'payment_reminders';
 
 -- Maintenance update template
-UPDATE sms_templates
-SET 
-  content = 'Dear {tenant_name}, your maintenance request for {property_name}, Unit {unit_number} has been updated. Status: {status}. {message}. Thank you for your patience. - {landlord_name}',
-  variables = ARRAY['tenant_name', 'property_name', 'unit_number', 'status', 'message', 'landlord_name']
-WHERE landlord_id IS NULL 
-  AND name = 'Maintenance Update'
-  AND category = 'maintenance';
 
 -- Emergency alert template
-UPDATE sms_templates
-SET 
-  content = 'URGENT: {tenant_name}, there is an emergency at {property_name}. {emergency_message}. Please take immediate action. Contact me at {contact_number} for more information. - {landlord_name}',
-  variables = ARRAY['tenant_name', 'property_name', 'emergency_message', 'contact_number', 'landlord_name']
-WHERE landlord_id IS NULL 
-  AND name = 'Emergency Alert'
-  AND category = 'general';
 
 -- Lease expiry reminder template
-UPDATE sms_templates
-SET 
-  content = 'Dear {tenant_name}, your lease for {property_name}, Unit {unit_number} will expire on {expiry_date}. Please contact me to discuss renewal options. - {landlord_name}',
-  variables = ARRAY['tenant_name', 'property_name', 'unit_number', 'expiry_date', 'landlord_name']
-WHERE landlord_id IS NULL 
-  AND name = 'Lease Expiry Reminder'
-  AND category = 'lease_management';
 
 -- General announcement template
-UPDATE sms_templates
-SET 
-  content = 'Dear {tenant_name}, {announcement_message}. If you have any questions, please feel free to reach out. Best regards, {landlord_name} ({property_name})',
-  variables = ARRAY['tenant_name', 'announcement_message', 'property_name', 'landlord_name']
-WHERE landlord_id IS NULL 
-  AND name = 'General Announcement'
-  AND category = 'general';
 
 
 -- Migration: 20251105205823_892d3913-ad6d-4fe9-b387-f6ecb51055ec.sql
@@ -7635,20 +7281,8 @@ $$ LANGUAGE plpgsql;
 -- Migration: 20251105210503_72ca9eb0-7665-4d7f-a36a-203645831cff.sql
 
 -- Fix Kamoni Wanjau's role from Agent to Tenant
-UPDATE user_roles 
-SET role = 'Tenant'
-WHERE user_id = 'defe8caa-a1aa-4674-b6b0-3982d261b4f3'
-AND role = 'Agent';
 
 -- Update auth metadata to match
-UPDATE auth.users
-SET raw_user_meta_data = 
-  jsonb_set(
-    COALESCE(raw_user_meta_data, '{}'::jsonb),
-    '{role}',
-    '"Tenant"'
-  )
-WHERE id = 'defe8caa-a1aa-4674-b6b0-3982d261b4f3';
 
 -- Function to ensure tenant role consistency
 CREATE OR REPLACE FUNCTION public.ensure_tenant_role_consistency()
@@ -7713,14 +7347,6 @@ EXECUTE FUNCTION public.validate_tenant_role_on_role_change();
 -- Migration: 20251105213309_475a98ce-9fd0-4b32-ba75-2e4c56a969c6.sql
 
 -- Create storage bucket for maintenance request images
-INSERT INTO storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
-VALUES (
-  'maintenance-images',
-  'maintenance-images',
-  false,
-  5242880, -- 5MB limit
-  ARRAY['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/heic']
-);
 
 -- RLS Policy: Allow tenants to upload images to their own maintenance requests
 CREATE POLICY "Tenants can upload maintenance images"
@@ -7924,10 +7550,6 @@ END $$;
 
 -- Step 2: Delete records without encrypted credentials
 -- These landlords will need to re-configure their M-Pesa settings via the secure form
-DELETE FROM landlord_mpesa_configs
-WHERE consumer_key_encrypted IS NULL 
-  OR consumer_secret_encrypted IS NULL 
-  OR passkey_encrypted IS NULL;
 
 -- Step 3: Now make encrypted columns NOT NULL (safe now that we've deleted records without them)
 ALTER TABLE landlord_mpesa_configs
@@ -8038,9 +7660,6 @@ ADD CONSTRAINT landlord_mpesa_configs_shortcode_type_check
 CHECK (shortcode_type IN ('paybill', 'till', 'till_safaricom', 'till_kopokopo'));
 
 -- Migrate existing 'till' records to 'till_safaricom' for backward compatibility
-UPDATE landlord_mpesa_configs 
-SET shortcode_type = 'till_safaricom', till_provider = 'safaricom' 
-WHERE shortcode_type = 'till';
 
 -- Add indexes for better query performance
 CREATE INDEX IF NOT EXISTS idx_landlord_mpesa_configs_till_provider 
@@ -8136,9 +7755,6 @@ ADD COLUMN IF NOT EXISTS mpesa_config_preference TEXT DEFAULT 'platform_default'
 COMMENT ON COLUMN landlord_payment_preferences.mpesa_config_preference IS 'Whether to use custom M-Pesa credentials or platform defaults for payments';
 
 -- Update existing rows to use platform_default by default
-UPDATE landlord_payment_preferences 
-SET mpesa_config_preference = 'platform_default' 
-WHERE mpesa_config_preference IS NULL;
 
 
 -- Migration: 20251106124508_093b1ac0-0c16-4779-a549-1ccf2cc40c21.sql
@@ -8146,29 +7762,6 @@ WHERE mpesa_config_preference IS NULL;
 -- Backfill payment preferences for landlords without explicit preferences
 -- This ensures all existing landlords using platform defaults have a proper database record
 
-INSERT INTO landlord_payment_preferences (
-  landlord_id,
-  mpesa_config_preference,
-  preferred_payment_method,
-  auto_payment_enabled,
-  payment_reminders_enabled,
-  created_at,
-  updated_at
-)
-SELECT DISTINCT
-  pr.owner_id as landlord_id,
-  'platform_default'::text as mpesa_config_preference,
-  'mpesa'::text as preferred_payment_method,
-  false as auto_payment_enabled,
-  true as payment_reminders_enabled,
-  now() as created_at,
-  now() as updated_at
-FROM properties pr
-WHERE pr.owner_id NOT IN (
-  SELECT landlord_id 
-  FROM landlord_payment_preferences
-)
-ON CONFLICT (landlord_id) DO NOTHING;
 
 
 -- Migration: 20251106125332_4b75937c-3ea5-4c24-a8ae-ba1a0d01f81c.sql
@@ -8177,101 +7770,12 @@ ON CONFLICT (landlord_id) DO NOTHING;
 -- This makes hardcoded values like M-Pesa shortcode, phone validation, and payment defaults configurable
 
 -- Platform M-Pesa Configuration
-INSERT INTO billing_settings (setting_key, setting_value, description)
-VALUES (
-  'platform_mpesa_config',
-  jsonb_build_object(
-    'shortcode', '4155923',
-    'environment', 'sandbox',
-    'display_name', 'Platform M-Pesa',
-    'shortcode_type', 'paybill',
-    'account_reference', 'Required'
-  ),
-  'Platform-wide M-Pesa configuration used as default for landlords'
-)
-ON CONFLICT (setting_key) DO UPDATE 
-SET setting_value = EXCLUDED.setting_value,
-    updated_at = now();
 
 -- Phone Validation Rules by Country
-INSERT INTO billing_settings (setting_key, setting_value, description)
-VALUES (
-  'phone_validation_rules',
-  jsonb_build_object(
-    'KE', jsonb_build_object(
-      'regex', '^\+254[0-9]{9}$',
-      'format', '+254XXXXXXXXX',
-      'placeholder', '+254712345678',
-      'country_code', '+254',
-      'display_name', 'Kenya'
-    ),
-    'UG', jsonb_build_object(
-      'regex', '^\+256[0-9]{9}$',
-      'format', '+256XXXXXXXXX',
-      'placeholder', '+256712345678',
-      'country_code', '+256',
-      'display_name', 'Uganda'
-    ),
-    'TZ', jsonb_build_object(
-      'regex', '^\+255[0-9]{9}$',
-      'format', '+255XXXXXXXXX',
-      'placeholder', '+255712345678',
-      'country_code', '+255',
-      'display_name', 'Tanzania'
-    )
-  ),
-  'Phone number validation rules and formatting by country'
-)
-ON CONFLICT (setting_key) DO UPDATE 
-SET setting_value = EXCLUDED.setting_value,
-    updated_at = now();
 
 -- Default Payment Methods by Country
-INSERT INTO billing_settings (setting_key, setting_value, description)
-VALUES (
-  'default_payment_methods',
-  jsonb_build_object(
-    'KE', 'mpesa',
-    'UG', 'bank_transfer',
-    'TZ', 'mpesa',
-    'default', 'bank_transfer'
-  ),
-  'Default payment method to suggest based on user country'
-)
-ON CONFLICT (setting_key) DO UPDATE 
-SET setting_value = EXCLUDED.setting_value,
-    updated_at = now();
 
 -- Update approved_payment_methods with display metadata
-UPDATE approved_payment_methods
-SET configuration = jsonb_set(
-  COALESCE(configuration, '{}'::jsonb),
-  '{display}',
-  jsonb_build_object(
-    'icon', CASE 
-      WHEN payment_method_type = 'mpesa' THEN 'Smartphone'
-      WHEN payment_method_type = 'bank_transfer' THEN 'Building2'
-      WHEN payment_method_type = 'cash' THEN 'Banknote'
-      WHEN payment_method_type = 'cheque' THEN 'FileText'
-      ELSE 'CreditCard'
-    END,
-    'label', CASE 
-      WHEN payment_method_type = 'mpesa' THEN 'M-Pesa'
-      WHEN payment_method_type = 'bank_transfer' THEN 'Bank Transfer'
-      WHEN payment_method_type = 'cash' THEN 'Cash'
-      WHEN payment_method_type = 'cheque' THEN 'Cheque'
-      ELSE payment_method_type
-    END,
-    'color', CASE 
-      WHEN payment_method_type = 'mpesa' THEN 'green'
-      WHEN payment_method_type = 'bank_transfer' THEN 'blue'
-      WHEN payment_method_type = 'cash' THEN 'yellow'
-      WHEN payment_method_type = 'cheque' THEN 'purple'
-      ELSE 'gray'
-    END
-  )
-)
-WHERE configuration IS NULL OR configuration->'display' IS NULL;
 
 
 -- Migration: 20251110065050_c4a2aaef-bd2a-4be5-be92-0040da720004.sql
@@ -8638,15 +8142,6 @@ ADD COLUMN provider text DEFAULT 'mpesa' CHECK (provider IN ('mpesa', 'kopokopo'
 CREATE INDEX idx_mpesa_transactions_provider ON mpesa_transactions(provider);
 
 -- Backfill existing records based on metadata
-UPDATE mpesa_transactions 
-SET provider = COALESCE(
-  metadata->>'provider',
-  CASE 
-    WHEN checkout_request_id LIKE 'kk_%' THEN 'kopokopo'
-    ELSE 'mpesa'
-  END
-)
-WHERE provider IS NULL OR provider = 'mpesa';
 
 -- Add comment for documentation
 COMMENT ON COLUMN mpesa_transactions.provider IS 'Payment provider: mpesa (Safaricom direct) or kopokopo (Kopo Kopo gateway)';
@@ -8680,9 +8175,6 @@ END;
 $function$;
 
 -- Update existing invoices with YYYY in their numbers to use current year (2025)
-UPDATE public.invoices
-SET invoice_number = REPLACE(invoice_number, 'INV-YYYY-', 'INV-2025-')
-WHERE invoice_number LIKE 'INV-YYYY-%';
 
 
 -- Migration: 20251112195113_217b135a-e483-480a-9a91-4aa1e4b46e1d.sql
@@ -8877,68 +8369,13 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 -- Migration: 20251112202635_564b92a1-1d69-44a9-8dae-831f83eb6924.sql
 
 -- Seed plan_features with initial feature definitions
-INSERT INTO plan_features (feature_key, display_name, description, category, icon_name, menu_item_title, sort_order) VALUES
--- Core Features
-('dashboard.access', 'Dashboard Access', 'Access to main dashboard with key metrics', 'core', 'LayoutDashboard', 'Dashboard', 10),
-('properties.basic', 'Property Management', 'Add and manage properties', 'core', 'Building2', 'Properties', 20),
-('units.basic', 'Unit Management', 'Add and manage rental units', 'core', 'Home', 'Units', 30),
-('tenants.basic', 'Tenant Management', 'Add and manage tenants', 'core', 'Users', 'Tenants', 40),
-('leases.basic', 'Lease Tracking', 'Create and track lease agreements', 'core', 'FileText', 'Leases', 50),
-('payments.basic', 'Payment Recording', 'Record and track rent payments', 'core', 'DollarSign', 'Payments', 60),
-('maintenance.basic', 'Maintenance Requests', 'Track maintenance requests', 'core', 'Wrench', 'Maintenance', 70),
-('invoices.basic', 'Basic Invoicing', 'Generate rent invoices', 'core', 'Receipt', 'Invoices', 80),
-
--- Advanced Features
-('reports.basic', 'Basic Reports', 'Rent collection, occupancy, and maintenance reports', 'advanced', 'BarChart3', 'Reports', 100),
-('expenses.tracking', 'Expense Tracking', 'Track property-related expenses', 'advanced', 'TrendingDown', 'Expenses', 110),
-('notifications.email', 'Email Notifications', 'Automated email notifications', 'advanced', 'Mail', null, 120),
-('tenant.portal', 'Tenant Portal', 'Self-service portal for tenants', 'advanced', 'UserCircle', null, 130),
-('bulk.upload', 'Bulk Upload', 'Bulk import properties, units, and tenants', 'advanced', 'Upload', null, 140),
-
--- Premium Features
-('reports.advanced', 'Advanced Reports', 'Financial summary, P&L, cash flow analysis', 'premium', 'TrendingUp', 'Reports', 200),
-('reports.financial', 'Financial Reports', 'Comprehensive financial statements', 'premium', 'DollarSign', 'Reports', 210),
-('team.sub_users', 'Sub Users', 'Add team members with role-based access', 'premium', 'Users', 'Sub Users', 220),
-('team.permissions', 'Role Management', 'Granular permission control', 'premium', 'Shield', null, 230),
-('communication.sms', 'Bulk SMS', 'Send bulk SMS to tenants', 'premium', 'MessageSquare', 'Bulk Messaging', 240),
-('communication.email_templates', 'Email Templates', 'Customize email templates', 'premium', 'Mail', 'Email Templates', 250),
-('communication.sms_templates', 'SMS Templates', 'Customize SMS templates', 'premium', 'MessageSquare', 'Message Templates', 260),
-('invoicing.advanced', 'Advanced Invoicing', 'Bulk invoice generation and automation', 'premium', 'Receipt', 'Invoices', 270),
-('documents.templates', 'Document Templates', 'Custom PDF document templates', 'premium', 'FileText', null, 280),
-
--- Enterprise Features
-('branding.white_label', 'White Label', 'Remove platform branding, use your own', 'enterprise', 'Palette', null, 300),
-('branding.custom', 'Custom Branding', 'Full brand customization', 'enterprise', 'Paintbrush', null, 310),
-('support.priority', 'Priority Support', '24/7 priority customer support', 'enterprise', 'Headphones', null, 320),
-('support.dedicated', 'Dedicated Account Manager', 'Personal account manager', 'enterprise', 'UserCheck', null, 330),
-('integrations.api', 'API Access', 'Full REST API access for integrations', 'enterprise', 'Code', null, 340),
-('integrations.accounting', 'Accounting Integration', 'Connect with accounting software', 'enterprise', 'Calculator', null, 350)
-ON CONFLICT (feature_key) DO NOTHING;
 
 -- Link features to billing plans
 -- Trial plan (core only)
-INSERT INTO billing_plan_features (billing_plan_id, feature_key, is_enabled)
-SELECT bp.id, pf.feature_key, true
-FROM billing_plans bp
-CROSS JOIN plan_features pf
-WHERE bp.name = 'Trial' AND pf.category = 'core'
-ON CONFLICT (billing_plan_id, feature_key) DO NOTHING;
 
 -- Starter plan (core + advanced)
-INSERT INTO billing_plan_features (billing_plan_id, feature_key, is_enabled)
-SELECT bp.id, pf.feature_key, true
-FROM billing_plans bp
-CROSS JOIN plan_features pf
-WHERE bp.name = 'Starter' AND pf.category IN ('core', 'advanced')
-ON CONFLICT (billing_plan_id, feature_key) DO NOTHING;
 
 -- Professional plan (core + advanced + premium)
-INSERT INTO billing_plan_features (billing_plan_id, feature_key, is_enabled)
-SELECT bp.id, pf.feature_key, true
-FROM billing_plans bp
-CROSS JOIN plan_features pf
-WHERE bp.name = 'Professional' AND pf.category IN ('core', 'advanced', 'premium')
-ON CONFLICT (billing_plan_id, feature_key) DO NOTHING;
 
 
 -- Migration: 20251112210203_fc466a58-7b3f-48a1-887f-894ddecc67ef.sql
@@ -8951,30 +8388,12 @@ ALTER TABLE billing_plan_features
 DROP CONSTRAINT IF EXISTS billing_plan_features_feature_key_fkey;
 
 -- Update the feature keys in plan_features
-UPDATE plan_features 
-SET feature_key = 'payments.management' 
-WHERE feature_key = 'payments.basic';
 
-UPDATE plan_features 
-SET feature_key = 'maintenance.tracking' 
-WHERE feature_key = 'maintenance.basic';
 
-UPDATE plan_features 
-SET feature_key = 'invoicing.basic' 
-WHERE feature_key = 'invoices.basic';
 
 -- Update the feature keys in billing_plan_features
-UPDATE billing_plan_features 
-SET feature_key = 'payments.management' 
-WHERE feature_key = 'payments.basic';
 
-UPDATE billing_plan_features 
-SET feature_key = 'maintenance.tracking' 
-WHERE feature_key = 'maintenance.basic';
 
-UPDATE billing_plan_features 
-SET feature_key = 'invoicing.basic' 
-WHERE feature_key = 'invoices.basic';
 
 -- Recreate the foreign key with CASCADE
 ALTER TABLE billing_plan_features 
@@ -8985,51 +8404,11 @@ ON UPDATE CASCADE
 ON DELETE CASCADE;
 
 -- Now add the new granular features
-INSERT INTO plan_features (feature_key, display_name, description, category, icon_name, sort_order) VALUES
-('dashboard.stats_cards', 'Dashboard Stats Cards', 'KPI summary cards on dashboard', 'advanced', 'LayoutGrid', 101),
-('dashboard.charts', 'Dashboard Charts', 'Visual charts and graphs', 'premium', 'BarChart', 102),
-('dashboard.recent_activity', 'Recent Activity Feed', 'Activity alerts', 'core', 'Activity', 103),
-('dashboard.recent_payments', 'Recent Payments Table', 'Payments list', 'core', 'Receipt', 104),
-('reports.rent_collection', 'Rent Collection Report', 'Track rent collection performance', 'advanced', 'DollarSign', 201),
-('reports.occupancy', 'Occupancy Report', 'Track property occupancy rates', 'advanced', 'Home', 202),
-('reports.maintenance_summary', 'Maintenance Summary', 'Maintenance request analytics', 'advanced', 'Wrench', 203),
-('reports.financial_summary', 'Financial Summary', 'Comprehensive financial overview', 'premium', 'TrendingUp', 204),
-('reports.lease_expiry', 'Lease Expiry Report', 'Track upcoming lease expirations', 'premium', 'Calendar', 205),
-('reports.outstanding_balances', 'Outstanding Balances', 'Track unpaid balances', 'premium', 'AlertCircle', 206),
-('reports.tenant_turnover', 'Tenant Turnover', 'Track tenant turnover rates', 'premium', 'Users', 207),
-('reports.property_performance', 'Property Performance', 'Property-level analytics', 'premium', 'Building2', 208),
-('reports.profit_loss', 'P&L Statement', 'Profit and loss statement', 'premium', 'FileText', 209),
-('reports.revenue_vs_expenses', 'Revenue vs Expenses', 'Revenue comparison', 'premium', 'BarChart', 210),
-('reports.expense_summary', 'Expense Summary', 'Expense breakdown', 'premium', 'Receipt', 211),
-('reports.cash_flow', 'Cash Flow Analysis', 'Cash flow tracking', 'premium', 'TrendingUp', 212)
-ON CONFLICT (feature_key) DO NOTHING;
 
 -- Link features to plans
-INSERT INTO billing_plan_features (billing_plan_id, feature_key, is_enabled)
-SELECT bp.id, 'dashboard.stats_cards', true
-FROM billing_plans bp 
-WHERE bp.name IN ('Starter', 'Professional', 'Enterprise')
-ON CONFLICT (billing_plan_id, feature_key) DO NOTHING;
 
-INSERT INTO billing_plan_features (billing_plan_id, feature_key, is_enabled)
-SELECT bp.id, 'dashboard.charts', true
-FROM billing_plans bp 
-WHERE bp.name IN ('Professional', 'Enterprise')
-ON CONFLICT (billing_plan_id, feature_key) DO NOTHING;
 
-INSERT INTO billing_plan_features (billing_plan_id, feature_key, is_enabled)
-SELECT bp.id, unnest(ARRAY['reports.rent_collection', 'reports.occupancy', 'reports.maintenance_summary']), true
-FROM billing_plans bp 
-WHERE bp.name IN ('Starter', 'Professional', 'Enterprise')
-ON CONFLICT (billing_plan_id, feature_key) DO NOTHING;
 
-INSERT INTO billing_plan_features (billing_plan_id, feature_key, is_enabled)
-SELECT bp.id, pf.feature_key, true
-FROM billing_plans bp 
-CROSS JOIN plan_features pf
-WHERE bp.name IN ('Professional', 'Enterprise') 
-AND pf.feature_key LIKE 'reports.%'
-ON CONFLICT (billing_plan_id, feature_key) DO NOTHING;
 
 
 -- Migration: 20251112211608_f1350966-9f50-40b0-853a-a24457b1044f.sql
@@ -10543,33 +9922,10 @@ $$ LANGUAGE plpgsql;
 BEGIN;
 
 -- Step 1: Remove Landlord, Manager, Agent roles from tenant users (excluding Admins)
-DELETE FROM public.user_roles ur
-USING public.tenants t
-WHERE ur.user_id = t.user_id
-  AND ur.role IN ('Landlord', 'Manager', 'Agent')
-  AND NOT EXISTS (
-    SELECT 1 FROM public.user_roles ur2
-    WHERE ur2.user_id = t.user_id AND ur2.role = 'Admin'
-  );
 
 -- Step 2: Add Tenant role to tenant users who don't have it and don't have Admin role
-INSERT INTO public.user_roles (user_id, role)
-SELECT DISTINCT t.user_id, 'Tenant'::app_role
-FROM public.tenants t
-WHERE t.user_id IS NOT NULL
-  AND NOT EXISTS (
-    SELECT 1 FROM public.user_roles ur
-    WHERE ur.user_id = t.user_id AND ur.role IN ('Tenant', 'Admin')
-  );
 
 -- Step 3: Remove landlord subscriptions from tenant users (excluding Admins)
-DELETE FROM public.landlord_subscriptions ls
-USING public.tenants t
-WHERE ls.landlord_id = t.user_id
-  AND NOT EXISTS (
-    SELECT 1 FROM public.user_roles ur
-    WHERE ur.user_id = t.user_id AND ur.role = 'Admin'
-  );
 
 COMMIT;
 
@@ -10774,39 +10130,10 @@ COMMENT ON TABLE public.user_roles IS
 BEGIN;
 
 -- Add Landlord role to hawijeremiah (Tenant already exists)
-INSERT INTO public.user_roles (user_id, role)
-VALUES ('48a2a4ae-ded3-4c3e-966b-c26711a6d3a9', 'Landlord')
-ON CONFLICT (user_id, role) DO NOTHING;
 
 -- Create landlord subscription
-INSERT INTO public.landlord_subscriptions (
-  landlord_id,
-  status,
-  trial_start_date,
-  trial_end_date,
-  onboarding_completed
-)
-SELECT 
-  '48a2a4ae-ded3-4c3e-966b-c26711a6d3a9',
-  'trial',
-  now(),
-  now() + interval '14 days',
-  false
-WHERE NOT EXISTS (
-  SELECT 1 FROM public.landlord_subscriptions 
-  WHERE landlord_id = '48a2a4ae-ded3-4c3e-966b-c26711a6d3a9'
-);
 
 -- Clean up any users with Tenant role but no linked tenant record
-DELETE FROM public.user_roles ur
-WHERE ur.role = 'Tenant'
-  AND NOT EXISTS (
-    SELECT 1 FROM public.tenants t WHERE t.user_id = ur.user_id
-  )
-  AND NOT EXISTS (
-    SELECT 1 FROM public.user_roles ur2 
-    WHERE ur2.user_id = ur.user_id AND ur2.role = 'Admin'
-  );
 
 COMMIT;
 
@@ -10817,20 +10144,8 @@ COMMIT;
 -- Activate the verified Till (855087) and deactivate the unverified Paybill (4117923)
 
 -- Activate the verified Till config (855087)
-UPDATE landlord_mpesa_configs 
-SET 
-  is_active = true,
-  updated_at = now()
-WHERE id = '521d7537-6790-40cc-97e4-7783a144c2c1'
-  AND landlord_id = '48a2a4ae-ded3-4c3e-966b-c26711a6d3a9';
 
 -- Deactivate the unverified Paybill config (4117923)
-UPDATE landlord_mpesa_configs 
-SET 
-  is_active = false,
-  updated_at = now()
-WHERE id = '93a5fc74-f160-4359-97ae-7ae8e25ebccf'
-  AND landlord_id = '48a2a4ae-ded3-4c3e-966b-c26711a6d3a9';
 
 
 -- Migration: 20251117155134_9eaa7f3b-3799-4748-9a5f-b1af04cea07c.sql
@@ -11040,30 +10355,6 @@ CREATE TRIGGER update_landlord_jenga_configs_updated_at
 -- Migration: 20251129094645_b5ce56df-0085-4c98-8574-4aec294fd8b3.sql
 
 -- Add Jenga PAY as a distinct payment method
-INSERT INTO approved_payment_methods (
-  payment_method_type,
-  provider_name,
-  country_code,
-  is_active,
-  configuration
-) VALUES (
-  'jenga_pay',
-  'Jenga PAY (Equity Bank)',
-  'KE',
-  true,
-  jsonb_build_object(
-    'display', jsonb_build_object(
-      'icon', 'Building2',
-      'label', 'Jenga PAY (Equity Bank)',
-      'color', 'blue'
-    ),
-    'paybill_number', '247247',
-    'currency', 'KES',
-    'description', 'Equity Bank payments via Jenga PAY Gateway',
-    'supported_features', json_build_array('ipn_callbacks', 'instant_notifications', 'bank_transfer')
-  )
-)
-ON CONFLICT DO NOTHING;
 
 
 -- Migration: 20251210103045_65f85358-7149-4302-837d-8dcab005acbb.sql
@@ -11395,105 +10686,14 @@ CREATE TRIGGER update_bank_callbacks_updated_at
 -- =====================================================
 -- SEED DATA - All 6 Kenyan Banks
 -- =====================================================
-INSERT INTO public.bank_providers (bank_code, bank_name, api_gateway_name, paybill_number, display_order, required_credentials, supported_features, documentation_url, is_active) VALUES
-('equity', 'Equity Bank', 'Jenga PAY', '247247', 1,
- '["merchant_code", "api_key", "consumer_secret", "ipn_username", "ipn_password"]'::jsonb,
- '["ipn_callbacks", "instant_notifications", "bank_transfer", "c2b"]'::jsonb,
- 'https://developer.jengahq.io/guides/jenga-pgw/instant-payment-notifications',
- true),
-
-('kcb', 'KCB Bank', 'Buni', '522522', 2,
- '["api_key", "consumer_secret", "merchant_id", "till_number"]'::jsonb,
- '["stk_push", "c2b", "b2c", "account_balance"]'::jsonb,
- 'https://developer.kcbbuni.co.ke/',
- false),
-
-('cooperative', 'Co-operative Bank', 'Co-op Connect', '400200', 3,
- '["api_key", "consumer_secret", "account_number", "merchant_id"]'::jsonb,
- '["mpesa_integration", "rtgs", "eft", "pesalink"]'::jsonb,
- 'https://developer.co-opbank.co.ke/',
- false),
-
-('im', 'I&M Bank', 'I&M API Gateway', '542542', 4,
- '["api_key", "consumer_secret", "merchant_code", "account_number"]'::jsonb,
- '["mobile_banking", "rtgs", "swift", "pesalink"]'::jsonb,
- 'https://www.imbank.com/corporate/api-banking/',
- false),
-
-('ncba', 'NCBA Bank', 'NCBA Loop', '880100', 5,
- '["api_key", "consumer_secret", "organization_code", "account_number"]'::jsonb,
- '["mpesa_integration", "mobile_banking", "pesalink", "rtgs"]'::jsonb,
- 'https://loop.ncbagroup.com/',
- false),
-
-('dtb', 'Diamond Trust Bank', 'DTB Connect', '516600', 6,
- '["api_key", "consumer_secret", "customer_id", "account_number"]'::jsonb,
- '["corporate_banking", "rtgs", "eft", "pesalink"]'::jsonb,
- 'https://dtbconnect.dtbafrica.com/',
- false);
 
 -- =====================================================
 -- MIGRATE EXISTING JENGA CONFIGS
 -- =====================================================
-INSERT INTO public.landlord_bank_configs (
-  landlord_id, bank_code, merchant_code, paybill_number, environment,
-  api_key_encrypted, consumer_secret_encrypted, ipn_url, ipn_username,
-  ipn_password_encrypted, credentials_verified, last_verified_at, is_active,
-  extended_config
-)
-SELECT 
-  landlord_id, 
-  'equity', 
-  merchant_code, 
-  paybill_number, 
-  environment,
-  api_key_encrypted, 
-  consumer_secret_encrypted, 
-  ipn_url, 
-  ipn_username,
-  ipn_password_encrypted, 
-  credentials_verified, 
-  last_verified_at, 
-  is_active,
-  jsonb_build_object('migrated_from', 'landlord_jenga_configs', 'migrated_at', now())
-FROM public.landlord_jenga_configs
-ON CONFLICT (landlord_id, bank_code) DO NOTHING;
 
 -- =====================================================
 -- MIGRATE EXISTING JENGA CALLBACKS (optional, for history)
 -- =====================================================
-INSERT INTO public.bank_callbacks (
-  bank_code, callback_type, transaction_reference, amount, currency, status,
-  transaction_date, customer_name, customer_mobile, customer_reference,
-  landlord_id, invoice_id, bank_reference, payment_mode, service_charge,
-  order_amount, order_currency, raw_payload, ip_address, processed, processed_at,
-  created_at
-)
-SELECT 
-  'equity',
-  callback_type,
-  transaction_reference,
-  amount,
-  COALESCE(currency, 'KES'),
-  status,
-  transaction_date,
-  customer_name,
-  customer_mobile,
-  bill_number,
-  landlord_id,
-  invoice_id,
-  bank_reference,
-  payment_mode,
-  service_charge,
-  order_amount,
-  COALESCE(order_currency, 'KES'),
-  raw_data,
-  ip_address,
-  processed,
-  processed_at,
-  created_at
-FROM public.jenga_ipn_callbacks
-ON CONFLICT DO NOTHING;
 
 
 -- Migration: 20251211094905_95c4864a-fb15-479e-a695-7e1b516b5639.sql
@@ -11902,9 +11102,6 @@ CREATE INDEX idx_credit_applications_invoice_id ON public.credit_applications(in
 -- Payment of KES 10 was made for a KES 15 invoice
 
 -- Create the missing payment allocation
-INSERT INTO public.payment_allocations (payment_id, invoice_id, amount)
-VALUES ('0b830e64-42d7-41f3-a899-fa3591815b7b', '1bc4ceec-e45b-4eaf-ac67-a10a0571b60f', 10.00)
-ON CONFLICT DO NOTHING;
 
 -- Note: The trigger update_invoice_status_on_allocation will automatically 
 -- set the invoice status to 'partially_paid' based on the allocation amount
@@ -11914,9 +11111,6 @@ ON CONFLICT DO NOTHING;
 
 -- Fix the incorrectly marked invoice status
 -- The allocation trigger doesn't update if already 'paid', so we need to manually fix this
-UPDATE public.invoices 
-SET status = 'partially_paid', updated_at = now() 
-WHERE id = '1bc4ceec-e45b-4eaf-ac67-a10a0571b60f';
 
 -- Also improve the trigger to properly handle recalculation when allocations change
 CREATE OR REPLACE FUNCTION public.update_invoice_status_on_allocation()
@@ -12229,51 +11423,11 @@ $$;
 -- Transaction: KES 20 paid, Invoice: KES 12, Overpayment: KES 8
 
 -- Step 1: Create the payment record
-INSERT INTO payments (
-  tenant_id,
-  lease_id,
-  invoice_id,
-  amount,
-  payment_method,
-  payment_date,
-  transaction_id,
-  payment_reference,
-  payment_type,
-  status,
-  notes
-) VALUES (
-  'f4fafcf8-63f0-4f85-8e98-8988695ef74c', -- tenant_id
-  '9e1d8fc4-d7ea-4e13-99da-c38e155cc4f2', -- lease_id
-  'c6305be4-4bf8-4cc4-86a2-0bd578516967', -- invoice_id
-  20.00, -- actual paid amount
-  'M-Pesa',
-  CURRENT_DATE,
-  'TLBLU0MEG0', -- mpesa_receipt_number
-  'ws_CO_11122025141155063723301507', -- checkout_request_id
-  'rent',
-  'completed',
-  'M-Pesa payment via STK Push. Receipt: TLBLU0MEG0. KES 8 credited to account (manual fix for callback processing issue).'
-) RETURNING id;
 
 -- Step 2: Create payment allocation (KES 12 to invoice)
 -- Will use the payment ID from above in a separate statement
 
 -- Step 3: Create tenant credit for overpayment (KES 8)
-INSERT INTO tenant_credits (
-  tenant_id,
-  landlord_id,
-  amount,
-  balance,
-  description,
-  source_type
-) VALUES (
-  'f4fafcf8-63f0-4f85-8e98-8988695ef74c', -- tenant_id
-  '48a2a4ae-ded3-4c3e-966b-c26711a6d3a9', -- landlord_id (owner_id)
-  8.00, -- overpayment amount
-  8.00, -- balance (same as amount initially)
-  'Overpayment from M-Pesa. Receipt: TLBLU0MEG0 (manual fix)',
-  'overpayment'
-);
 
 -- Step 4: Create payment allocation using a DO block to get the payment ID
 DO $$
@@ -12334,9 +11488,6 @@ USING (
 );
 
 -- Add system setting for showing partner logos section
-INSERT INTO public.billing_settings (setting_key, setting_value, description)
-VALUES ('show_partner_logos', 'false', 'Toggle to show/hide partner logos section on landing page')
-ON CONFLICT (setting_key) DO NOTHING;
 
 -- Create trigger for updated_at
 CREATE TRIGGER update_partner_logos_updated_at
@@ -12389,113 +11540,12 @@ CREATE INDEX IF NOT EXISTS idx_billing_plans_category ON billing_plans(plan_cate
 ALTER TABLE billing_plans DISABLE TRIGGER billing_plan_audit_trigger;
 
 -- Phase 1: Deactivate old plans
-UPDATE billing_plans SET is_active = false 
-WHERE name IN ('Starter', 'Professional', 'Enterprise') AND is_active = true;
 
 -- Phase 2: Insert Landlord Plans (4 plans)
-INSERT INTO billing_plans (
-  name, price, billing_cycle, billing_model, fixed_amount_per_unit, 
-  plan_category, min_units, max_units, max_units_display, display_order, 
-  is_popular, is_active, is_custom, currency, sms_credits_included,
-  description, competitive_note, features, contact_link
-) VALUES 
--- Micro Plan (Landlord)
-(
-  'Micro', 500, 'monthly', 'fixed_per_unit', 25,
-  'landlord', 1, 20, '1-20 units', 1,
-  false, true, false, 'KES', 200,
-  'Perfect for small landlords with a few properties',
-  'Up to 600% cheaper than competitors',
-  '["property_management", "tenant_portal", "invoicing", "basic_reports", "email_notifications", "payment_tracking"]'::jsonb,
-  NULL
-),
--- Standard Plan (Landlord)
-(
-  'Standard', 3500, 'monthly', 'fixed_per_unit', 35,
-  'landlord', 21, 100, '21-100 units', 2,
-  true, true, false, 'KES', 1000,
-  'For growing landlords with expanding portfolios',
-  NULL,
-  '["property_management", "tenant_portal", "invoicing", "advanced_reports", "email_notifications", "sms_notifications", "payment_tracking", "bulk_operations", "automated_reminders", "expense_tracking"]'::jsonb,
-  NULL
-),
--- Premium Plan (Landlord)
-(
-  'Premium', 6500, 'monthly', 'fixed_per_unit', 32.5,
-  'landlord', 101, 200, '101-200 units', 3,
-  false, true, false, 'KES', 2500,
-  'Full-featured management for professional landlords',
-  NULL,
-  '["property_management", "tenant_portal", "invoicing", "advanced_reports", "email_notifications", "sms_notifications", "payment_tracking", "bulk_operations", "automated_reminders", "expense_tracking", "sub_users", "custom_branding", "priority_support", "maintenance_management"]'::jsonb,
-  NULL
-),
--- Enterprise Plan (Landlord - Custom)
-(
-  'Enterprise Landlord', 0, 'monthly', 'fixed_per_unit', NULL,
-  'landlord', 201, NULL, '200+ units', 4,
-  false, true, true, 'KES', 10000,
-  'Custom enterprise solution for large property owners',
-  NULL,
-  '["property_management", "tenant_portal", "invoicing", "advanced_reports", "email_notifications", "sms_notifications", "payment_tracking", "bulk_operations", "automated_reminders", "expense_tracking", "sub_users", "custom_branding", "priority_support", "maintenance_management", "api_access", "white_label", "dedicated_support", "unlimited_sms"]'::jsonb,
-  '/contact'
-);
 
 -- Phase 3: Insert Agency Plans (4 plans)
-INSERT INTO billing_plans (
-  name, price, billing_cycle, billing_model, fixed_amount_per_unit, 
-  plan_category, min_units, max_units, max_units_display, display_order, 
-  is_popular, is_active, is_custom, currency, sms_credits_included,
-  description, competitive_note, features, contact_link
-) VALUES 
--- Startup Plan (Agency)
-(
-  'Startup', 2000, 'monthly', 'fixed_per_unit', 10,
-  'agency', 1, 200, '1-200 units', 1,
-  false, true, false, 'KES', 500,
-  'Perfect for new property management agencies',
-  'Best value for agencies',
-  '["property_management", "tenant_portal", "invoicing", "basic_reports", "email_notifications", "payment_tracking", "team_management", "multi_property"]'::jsonb,
-  NULL
-),
--- Growth Plan (Agency)
-(
-  'Growth', 4500, 'monthly', 'fixed_per_unit', 11.25,
-  'agency', 201, 400, '201-400 units', 2,
-  true, true, false, 'KES', 1500,
-  'For growing agencies expanding their portfolio',
-  NULL,
-  '["property_management", "tenant_portal", "invoicing", "advanced_reports", "email_notifications", "sms_notifications", "payment_tracking", "team_management", "multi_property", "bulk_operations", "automated_reminders", "advanced_analytics"]'::jsonb,
-  NULL
-),
--- Scale Plan (Agency)
-(
-  'Scale', 6000, 'monthly', 'fixed_per_unit', 10,
-  'agency', 401, 600, '401-600 units', 3,
-  false, true, false, 'KES', 3000,
-  'Full-featured management for established agencies',
-  NULL,
-  '["property_management", "tenant_portal", "invoicing", "advanced_reports", "email_notifications", "sms_notifications", "payment_tracking", "team_management", "multi_property", "bulk_operations", "automated_reminders", "advanced_analytics", "custom_branding", "priority_support"]'::jsonb,
-  NULL
-),
--- Corporate Plan (Agency - Custom)
-(
-  'Corporate', 0, 'monthly', 'fixed_per_unit', NULL,
-  'agency', 601, NULL, '600+ units', 4,
-  false, true, true, 'KES', 10000,
-  'Enterprise solution for large property management companies',
-  NULL,
-  '["property_management", "tenant_portal", "invoicing", "advanced_reports", "email_notifications", "sms_notifications", "payment_tracking", "team_management", "multi_property", "bulk_operations", "automated_reminders", "advanced_analytics", "custom_branding", "priority_support", "api_access", "white_label", "dedicated_support", "unlimited_sms"]'::jsonb,
-  '/contact'
-);
 
 -- Phase 4: Migrate existing landlords to Micro plan
-UPDATE landlord_subscriptions 
-SET 
-  billing_plan_id = (SELECT id FROM billing_plans WHERE name = 'Micro' AND plan_category = 'landlord' LIMIT 1),
-  status = 'active',
-  account_type = COALESCE(account_type, 'landlord')
-WHERE billing_plan_id IS NULL 
-   OR billing_plan_id IN (SELECT id FROM billing_plans WHERE is_active = false);
 
 -- Re-enable the audit trigger
 ALTER TABLE billing_plans ENABLE TRIGGER billing_plan_audit_trigger;
@@ -12508,10 +11558,6 @@ ALTER TABLE billing_plans ENABLE TRIGGER billing_plan_audit_trigger;
 ALTER TABLE public.billing_plans DISABLE TRIGGER billing_plan_audit_trigger;
 
 -- Update SMS credits for landlord plans
-UPDATE billing_plans SET sms_credits_included = 50 WHERE name = 'Micro' AND plan_category = 'landlord';
-UPDATE billing_plans SET sms_credits_included = 200 WHERE name = 'Standard' AND plan_category = 'landlord';
-UPDATE billing_plans SET sms_credits_included = 400 WHERE name = 'Premium' AND plan_category = 'landlord';
-UPDATE billing_plans SET sms_credits_included = NULL WHERE name = 'Enterprise' AND plan_category = 'landlord';
 
 -- Re-enable the audit trigger
 ALTER TABLE public.billing_plans ENABLE TRIGGER billing_plan_audit_trigger;
@@ -12672,12 +11718,6 @@ FOR DELETE
 USING (landlord_id = auth.uid());
 
 -- Seed default global SMS automation settings
-INSERT INTO sms_automation_settings (landlord_id, automation_key, enabled, template) VALUES
-  (NULL, 'payment_receipt', true, 'Payment of KES {amount} received. Thank you! Receipt: {receipt}'),
-  (NULL, 'invoice_reminder', true, 'Reminder: Your rent of KES {amount} is due on {due_date}. Please pay promptly.'),
-  (NULL, 'lease_expiry', true, 'Your lease expires on {expiry_date}. Please contact us for renewal.'),
-  (NULL, 'overdue_notice', true, 'Your rent payment of KES {amount} is overdue. Please pay immediately to avoid penalties.')
-ON CONFLICT DO NOTHING;
 
 -- Trigger to update updated_at
 CREATE OR REPLACE FUNCTION update_sms_automation_settings_updated_at()
@@ -12698,26 +11738,6 @@ EXECUTE FUNCTION update_sms_automation_settings_updated_at();
 -- Migration: 20260119104951_378de50a-25ef-4adf-a76f-4e8f4803ae67.sql
 
 -- Delete the 7 duplicate payments from today (keep original from November 2025)
-DELETE FROM payments 
-WHERE id IN (
-  'eeab68eb-919c-40c3-b287-ebb68559cd5d',
-  '0facbf8d-e088-4ff1-a8bc-04e79e9a2ccc',
-  '682f5704-8b0e-4221-bd19-7c82ed3ef0e0',
-  '996b6c0a-2967-4f97-8ce3-edb33d9282d4',
-  '0516dd30-1945-4d04-b820-0562d8e605bc',
-  'c3075808-a3d0-4c4c-b44a-dd650e1fb052',
-  '1fe1c27d-e372-44da-9dd6-670a73eab2d4'
-);
 
 -- Also add the original payment references to the idempotency table to prevent future re-processing
-INSERT INTO kopokopo_processed_callbacks (kopo_reference, amount, phone_number, processed_at) VALUES
-  ('TKCLU9YFBU', 10.00, '+254723301507', '2025-11-12T19:49:18Z'),
-  ('TKCLU9XOQ4', 10.00, '+254723301507', now()),
-  ('TKCLU9XWTN', 10.00, '+254723301507', now()),
-  ('TKCLU9YAK3', 10.00, '+254723301507', now()),
-  ('TKCLU9YJTB', 10.00, '+254723301507', now()),
-  ('TKCLU9YCCD', 10.00, '+254723301507', now()),
-  ('TKCLU9YDOO', 10.00, '+254723301507', now()),
-  ('TKCLU9YBCD', 10.00, '+254723301507', now())
-ON CONFLICT (kopo_reference) DO NOTHING;
 

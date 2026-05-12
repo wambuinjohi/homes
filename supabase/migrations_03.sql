@@ -3646,10 +3646,6 @@ DROP POLICY IF EXISTS "System can manage rate limits" ON public.security_event_r
 
 -- Remove hardcoded SMS credentials and clean up policies
 -- First, update sms_providers to remove any hardcoded credentials
-UPDATE public.sms_providers 
-SET authorization_token = '[REDACTED]'
-WHERE authorization_token IS NOT NULL 
-  AND authorization_token != '[REDACTED]';
 
 -- Add RLS policy for sms_usage_logs if it doesn't exist
 ALTER TABLE public.sms_usage_logs ENABLE ROW LEVEL SECURITY;
@@ -3691,10 +3687,6 @@ FROM public.mpesa_credentials;
 
 -- Remove hardcoded SMS credentials and clean up policies
 -- First, update sms_providers to remove any hardcoded credentials  
-UPDATE public.sms_providers 
-SET authorization_token = '[REDACTED]'
-WHERE authorization_token IS NOT NULL 
-  AND authorization_token != '[REDACTED]';
 
 -- Create safe view for mpesa credentials (prevent exposing secrets to client)
 CREATE OR REPLACE VIEW public.mpesa_credentials_safe AS
@@ -5104,118 +5096,12 @@ $$;
 -- This creates starter, professional, and enterprise plans with appropriate features
 
 -- Insert or update Starter Plan (KES 100 per unit)
-INSERT INTO public.billing_plans (
-  name,
-  description,
-  price,
-  billing_cycle,
-  billing_model,
-  fixed_amount_per_unit,
-  max_properties,
-  max_units,
-  sms_credits_included,
-  features,
-  is_active,
-  currency
-) VALUES (
-  'Starter',
-  'Perfect for small landlords managing up to 10 units with essential features',
-  100,
-  'monthly',
-  'fixed_per_unit',
-  100,
-  3,
-  10,
-  50,
-  '["reports.basic", "maintenance.tracking", "tenant.portal", "notifications.email"]'::jsonb,
-  true,
-  'KES'
-);
 
 -- Insert or update Professional Plan (KES 200 per unit)  
-INSERT INTO public.billing_plans (
-  name,
-  description,
-  price,
-  billing_cycle,
-  billing_model,
-  fixed_amount_per_unit,
-  max_properties,
-  max_units,
-  sms_credits_included,
-  features,
-  is_active,
-  currency
-) VALUES (
-  'Professional',
-  'Advanced features for growing property managers with comprehensive reporting',
-  200,
-  'monthly',
-  'fixed_per_unit',
-  200,
-  10,
-  50,
-  200,
-  '["reports.basic", "reports.advanced", "reports.financial", "maintenance.tracking", "tenant.portal", "notifications.email", "notifications.sms", "operations.bulk", "billing.automated", "documents.templates"]'::jsonb,
-  true,
-  'KES'
-);
 
 -- Insert or update Enterprise Plan (Commission-based for 50+ units)
-INSERT INTO public.billing_plans (
-  name,
-  description,
-  price,
-  billing_cycle,
-  billing_model,
-  percentage_rate,
-  max_properties,
-  max_units,
-  sms_credits_included,
-  features,
-  is_active,
-  currency
-) VALUES (
-  'Enterprise',
-  'Full-featured solution for large property portfolios with API access and white-label options',
-  0,
-  'monthly',
-  'percentage',
-  3.5,
-  999,
-  999,
-  1000,
-  '["reports.basic", "reports.advanced", "reports.financial", "maintenance.tracking", "tenant.portal", "notifications.email", "notifications.sms", "operations.bulk", "billing.automated", "documents.templates", "integrations.api", "integrations.accounting", "team.roles", "team.sub_users", "branding.white_label", "branding.custom", "support.priority", "support.dedicated"]'::jsonb,
-  true,
-  'KES'
-);
 
 -- Update Free Trial Plan if it exists, otherwise insert it
-INSERT INTO public.billing_plans (
-  name,
-  description,
-  price,
-  billing_cycle,
-  billing_model,
-  max_properties,
-  max_units,
-  sms_credits_included,
-  features,
-  is_active,
-  currency
-) VALUES (
-  'Free Trial',
-  '14-day free trial with basic features to explore the platform',
-  0,
-  'monthly',
-  'percentage',
-  2,
-  5,
-  10,
-  '["reports.basic", "maintenance.tracking", "tenant.portal", "notifications.email"]'::jsonb,
-  true,
-  'KES'
-);
 
 
 -- Migration: 20250907064322_8cfc49e1-9af0-4b6f-a6fa-c27b8727fabb.sql
@@ -5227,48 +5113,14 @@ ALTER TABLE public.billing_plans
   ADD COLUMN IF NOT EXISTS contact_link text;
 
 -- 2) Backfill: mark Enterprise plans as custom and set a sensible default contact link
-UPDATE public.billing_plans
-SET is_custom = true,
-    contact_link = COALESCE(contact_link, '/support?topic=enterprise')
-WHERE lower(name) LIKE 'enterprise%';
 
 
 
 -- Migration: 20250907094116_c58a11b5-996c-4e9b-9393-96eb46f245e2.sql
 
 -- Update Starter plan to be more generous and useful
-UPDATE public.billing_plans 
-SET 
-  max_units = 25,
-  max_properties = 5,
-  sms_credits_included = 150,
-  features = jsonb_build_array(
-    'reports.basic',
-    'maintenance.tracking', 
-    'tenant.portal',
-    'notifications.email',
-    'notifications.sms',
-    'documents.templates'
-  ),
-  updated_at = now()
-WHERE name = 'Starter' AND is_active = true;
 
 -- Also update any Free Trial plans to match starter limits for consistency
-UPDATE public.billing_plans 
-SET 
-  max_units = 25,
-  max_properties = 5,
-  sms_credits_included = 150,
-  features = jsonb_build_array(
-    'reports.basic',
-    'maintenance.tracking', 
-    'tenant.portal',
-    'notifications.email',
-    'notifications.sms',
-    'documents.templates'
-  ),
-  updated_at = now()
-WHERE name = 'Free Trial' AND is_active = true;
 
 
 -- Migration: 20250907190913_efeb0243-a229-442f-9950-5bb22c2e7163.sql

@@ -2451,36 +2451,8 @@ CREATE TRIGGER trigger_sync_invoice_status
   EXECUTE FUNCTION public.sync_invoice_status();
 
 -- Step 4: Backfill existing data - link payments to invoices
-UPDATE public.payments 
-SET invoice_id = (
-  SELECT inv.id 
-  FROM public.invoices inv 
-  WHERE inv.invoice_number = payments.invoice_number 
-    AND inv.tenant_id = payments.tenant_id
-  LIMIT 1
-)
-WHERE invoice_id IS NULL 
-  AND invoice_number IS NOT NULL;
 
 -- Step 5: Sync all invoice statuses based on current payments
-UPDATE public.invoices
-SET status = (
-  CASE 
-    WHEN COALESCE((
-      SELECT SUM(amount) 
-      FROM public.payments 
-      WHERE invoice_id = invoices.id AND status = 'completed'
-    ), 0) >= invoices.amount THEN 'paid'
-    WHEN COALESCE((
-      SELECT SUM(amount) 
-      FROM public.payments 
-      WHERE invoice_id = invoices.id AND status = 'completed'
-    ), 0) > 0 THEN 'partial'
-    WHEN invoices.due_date < CURRENT_DATE THEN 'overdue'
-    ELSE 'pending'
-  END
-),
-updated_at = now();
 
 -- Step 6: Create data integrity report function
 CREATE OR REPLACE FUNCTION public.get_data_integrity_report()
@@ -2777,36 +2749,8 @@ CREATE TRIGGER trigger_sync_invoice_status
 -- Migration: 20250821125140_92d2d075-c9b2-4fad-88db-efd906a339d6.sql
 
 -- Step 4: Backfill existing data - link payments to invoices
-UPDATE public.payments 
-SET invoice_id = (
-  SELECT inv.id 
-  FROM public.invoices inv 
-  WHERE inv.invoice_number = payments.invoice_number 
-    AND inv.tenant_id = payments.tenant_id
-  LIMIT 1
-)
-WHERE invoice_id IS NULL 
-  AND invoice_number IS NOT NULL;
 
 -- Step 5: Sync all invoice statuses based on current payments
-UPDATE public.invoices
-SET status = (
-  CASE 
-    WHEN COALESCE((
-      SELECT SUM(amount) 
-      FROM public.payments 
-      WHERE invoice_id = invoices.id AND status = 'completed'
-    ), 0) >= invoices.amount THEN 'paid'
-    WHEN COALESCE((
-      SELECT SUM(amount) 
-      FROM public.payments 
-      WHERE invoice_id = invoices.id AND status = 'completed'
-    ), 0) > 0 THEN 'partial'
-    WHEN invoices.due_date < CURRENT_DATE THEN 'overdue'
-    ELSE 'pending'
-  END
-),
-updated_at = now();
 
 -- Step 6: Create data integrity report function
 CREATE OR REPLACE FUNCTION public.get_data_integrity_report()
@@ -6947,11 +6891,6 @@ using (
 
 
 -- 1) Backfill tenants.user_id for existing tenants by matching email to profiles.email
-UPDATE public.tenants t
-SET user_id = p.id
-FROM public.profiles p
-WHERE t.user_id IS NULL
-  AND lower(t.email) = lower(p.email);
 
 -- 2) Safety RLS policies to avoid “invisible data” for tenants whose user_id is not set (email-linked view)
 -- Note: This complements existing tenant policies and is safe because profile emails are unique.
@@ -7039,18 +6978,6 @@ USING (
 -- One-time SQL to backfill tenants.user_id by matching email addresses
 -- This will help align tenant visibility for historical invoices without affecting landlord reports
 
-UPDATE public.tenants 
-SET user_id = auth_users.id
-FROM (
-  SELECT DISTINCT 
-    au.id, 
-    au.email
-  FROM auth.users au
-  WHERE au.email IS NOT NULL
-) AS auth_users
-WHERE tenants.user_id IS NULL 
-  AND tenants.email IS NOT NULL
-  AND LOWER(tenants.email) = LOWER(auth_users.email);
 
 
 -- Migration: 20250822111456_60373d30-2bb2-486f-92eb-00db02a31b7b.sql
@@ -7206,32 +7133,6 @@ ALTER TABLE public.billing_plans
   CHECK (billing_cycle IN ('monthly','quarterly','annual','perpetual'));
 
 -- 2) Insert a non-public "Perpetual License" plan (admins can assign; landlords won't see it among active plans)
-INSERT INTO public.billing_plans (
-  name,
-  description,
-  price,
-  billing_cycle,
-  max_properties,
-  max_units,
-  sms_credits_included,
-  features,
-  is_active,
-  currency
-)
-SELECT
-  'Perpetual License',
-  'Lifetime access - price negotiated with Zira Management',
-  0,
-  'perpetual',
-  -1,
-  -1,
-  0,
-  '["Lifetime access","No recurring billing","Priority support"]'::jsonb,
-  false,      -- keep hidden from landlords; admins still see/manage
-  'USD'
-WHERE NOT EXISTS (
-  SELECT 1 FROM public.billing_plans WHERE lower(name) = 'perpetual license'
-);
 
 
 
@@ -8340,150 +8241,24 @@ USING (
 -- 2) Seed initial Knowledge Base articles (idempotent by title)
 
 -- LANDLORD
-INSERT INTO public.knowledge_base_articles (title, content, category, tags, target_user_types, is_published, published_at)
-SELECT
-  'Getting started as a Landlord',
-  'Welcome! Start by creating your first property, adding units, and inviting tenants. Then set your payment preferences (e.g., M-Pesa) under Payment Settings. You can generate rent invoices automatically and track collections on the dashboard.',
-  'Getting Started',
-  ARRAY['getting-started','properties','units','tenants','rent']::text[],
-  ARRAY['Landlord']::text[],
-  true, now()
-WHERE NOT EXISTS (SELECT 1 FROM public.knowledge_base_articles WHERE title = 'Getting started as a Landlord');
 
-INSERT INTO public.knowledge_base_articles (title, content, category, tags, target_user_types, is_published, published_at)
-SELECT
-  'Billing & Subscription for Landlords',
-  'Manage your subscription, invoices, and SMS credits on the Billing & Subscription page. You can request a plan change from Support if needed. Keep your payment method up to date to avoid service interruption.',
-  'Billing & Subscription',
-  ARRAY['billing','subscription','plans','sms-credits']::text[],
-  ARRAY['Landlord']::text[],
-  true, now()
-WHERE NOT EXISTS (SELECT 1 FROM public.knowledge_base_articles WHERE title = 'Billing & Subscription for Landlords');
 
-INSERT INTO public.knowledge_base_articles (title, content, category, tags, target_user_types, is_published, published_at)
-SELECT
-  'Rent collection and invoices',
-  'Create recurring or one-off rent invoices, share them with tenants, and track payments. The invoices page shows status, due dates, and outstanding balances. Use the reports for collection rate and aging analysis.',
-  'Payments & Invoices',
-  ARRAY['invoices','payments','rent','reports']::text[],
-  ARRAY['Landlord']::text[],
-  true, now()
-WHERE NOT EXISTS (SELECT 1 FROM public.knowledge_base_articles WHERE title = 'Rent collection and invoices');
 
 -- MANAGER
-INSERT INTO public.knowledge_base_articles (title, content, category, tags, target_user_types, is_published, published_at)
-SELECT
-  'Manager role overview',
-  'Managers can manage assigned properties: update units, review tenant details, handle maintenance, and track collections. Access is limited to properties you are assigned to.',
-  'Account & Roles',
-  ARRAY['roles','manager','permissions']::text[],
-  ARRAY['Manager']::text[],
-  true, now()
-WHERE NOT EXISTS (SELECT 1 FROM public.knowledge_base_articles WHERE title = 'Manager role overview');
 
-INSERT INTO public.knowledge_base_articles (title, content, category, tags, target_user_types, is_published, published_at)
-SELECT
-  'Handling maintenance requests (Manager)',
-  'Review, assign, and update maintenance requests. Communicate timelines and mark completed requests to keep records and costs accurate.',
-  'Maintenance',
-  ARRAY['maintenance','work-orders','costs']::text[],
-  ARRAY['Manager']::text[],
-  true, now()
-WHERE NOT EXISTS (SELECT 1 FROM public.knowledge_base_articles WHERE title = 'Handling maintenance requests (Manager)');
 
 -- AGENT
-INSERT INTO public.knowledge_base_articles (title, content, category, tags, target_user_types, is_published, published_at)
-SELECT
-  'Agent role overview',
-  'Agents support field operations: assist with tenant onboarding, document collection, and payment recording when permitted by the landlord.',
-  'Account & Roles',
-  ARRAY['roles','agent','permissions']::text[],
-  ARRAY['Agent']::text[],
-  true, now()
-WHERE NOT EXISTS (SELECT 1 FROM public.knowledge_base_articles WHERE title = 'Agent role overview');
 
-INSERT INTO public.knowledge_base_articles (title, content, category, tags, target_user_types, is_published, published_at)
-SELECT
-  'Recording payments (Agent)',
-  'If you have access, record tenant payments accurately with reference numbers and methods. This keeps landlord reports and tenant statements up to date.',
-  'Payments & Invoices',
-  ARRAY['payments','recording','references']::text[],
-  ARRAY['Agent']::text[],
-  true, now()
-WHERE NOT EXISTS (SELECT 1 FROM public.knowledge_base_articles WHERE title = 'Recording payments (Agent)');
 
 -- TENANT
-INSERT INTO public.knowledge_base_articles (title, content, category, tags, target_user_types, is_published, published_at)
-SELECT
-  'Paying your rent',
-  'View your invoices and pay using the methods provided by your landlord (e.g., M-Pesa). You can track payment status and download receipts from your dashboard.',
-  'Payments & Invoices',
-  ARRAY['tenant','payments','mpesa','receipts']::text[],
-  ARRAY['Tenant']::text[],
-  true, now()
-WHERE NOT EXISTS (SELECT 1 FROM public.knowledge_base_articles WHERE title = 'Paying your rent');
 
-INSERT INTO public.knowledge_base_articles (title, content, category, tags, target_user_types, is_published, published_at)
-SELECT
-  'Viewing invoices and receipts',
-  'Open your Invoices page to see amounts due, due dates, and status. After paying, you can view and download receipts for your records.',
-  'Payments & Invoices',
-  ARRAY['tenant','invoices','receipts']::text[],
-  ARRAY['Tenant']::text[],
-  true, now()
-WHERE NOT EXISTS (SELECT 1 FROM public.knowledge_base_articles WHERE title = 'Viewing invoices and receipts');
 
-INSERT INTO public.knowledge_base_articles (title, content, category, tags, target_user_types, is_published, published_at)
-SELECT
-  'Submitting maintenance requests',
-  'Use the Maintenance page to submit a request with details and photos. Track updates and completion status from the same page.',
-  'Maintenance',
-  ARRAY['tenant','maintenance','requests']::text[],
-  ARRAY['Tenant']::text[],
-  true, now()
-WHERE NOT EXISTS (SELECT 1 FROM public.knowledge_base_articles WHERE title = 'Submitting maintenance requests');
 
 -- ADMIN
-INSERT INTO public.knowledge_base_articles (title, content, category, tags, target_user_types, is_published, published_at)
-SELECT
-  'Admin overview: users, roles, and permissions',
-  'Admins can create users, assign roles (Landlord, Manager, Agent, Tenant), and manage permissions. Use the Admin dashboard for oversight and audits.',
-  'Account & Roles',
-  ARRAY['admin','users','roles','permissions']::text[],
-  ARRAY['Admin']::text[],
-  true, now()
-WHERE NOT EXISTS (SELECT 1 FROM public.knowledge_base_articles WHERE title = 'Admin overview: users, roles, and permissions');
 
-INSERT INTO public.knowledge_base_articles (title, content, category, tags, target_user_types, is_published, published_at)
-SELECT
-  'Configuring billing and communications (Admin)',
-  'Configure platform billing plans, review invoices, and set up SMS/Email providers and templates. Monitor health and logs to ensure reliable delivery.',
-  'Billing & Subscription',
-  ARRAY['admin','billing','sms','email','templates']::text[],
-  ARRAY['Admin']::text[],
-  true, now()
-WHERE NOT EXISTS (SELECT 1 FROM public.knowledge_base_articles WHERE title = 'Configuring billing and communications (Admin)');
 
 -- GENERAL (all roles)
-INSERT INTO public.knowledge_base_articles (title, content, category, tags, target_user_types, is_published, published_at)
-SELECT
-  'How to use the Help Center',
-  'Use search to quickly find guides. Filter by category. Popular articles appear first. If you still need help, contact support from the Help Center.',
-  'Getting Started',
-  ARRAY['help-center','search','categories']::text[],
-  ARRAY['Admin','Landlord','Manager','Agent','Tenant']::text[],
-  true, now()
-WHERE NOT EXISTS (SELECT 1 FROM public.knowledge_base_articles WHERE title = 'How to use the Help Center');
 
-INSERT INTO public.knowledge_base_articles (title, content, category, tags, target_user_types, is_published, published_at)
-SELECT
-  'Notifications and alerts',
-  'The app notifies you about invoices, payments, and maintenance updates. Adjust your notification preferences in settings if available.',
-  'General',
-  ARRAY['notifications','alerts','preferences']::text[],
-  ARRAY['Admin','Landlord','Manager','Agent','Tenant']::text[],
-  true, now()
-WHERE NOT EXISTS (SELECT 1 FROM public.knowledge_base_articles WHERE title = 'Notifications and alerts');
 
 
 
@@ -8492,23 +8267,10 @@ WHERE NOT EXISTS (SELECT 1 FROM public.knowledge_base_articles WHERE title = 'No
 -- 1) Make David (user_id a53f69a5-104e-489b-9b0a-48a56d6b011d) a Tenant only
 
 -- Assign Tenant role if not already present
-INSERT INTO public.user_roles (user_id, role)
-SELECT 'a53f69a5-104e-489b-9b0a-48a56d6b011d'::uuid, 'Tenant'::public.app_role
-WHERE NOT EXISTS (
-  SELECT 1 FROM public.user_roles 
-  WHERE user_id = 'a53f69a5-104e-489b-9b0a-48a56d6b011d'::uuid 
-    AND role = 'Tenant'::public.app_role
-);
 
 -- Remove Landlord role if present
-DELETE FROM public.user_roles
-WHERE user_id = 'a53f69a5-104e-489b-9b0a-48a56d6b011d'::uuid
-  AND role = 'Landlord'::public.app_role;
 
 -- 2) Align the tenant email with the user's profile email (email as unique identifier)
-UPDATE public.tenants
-SET email = 'dmwangui@gmail.com'
-WHERE id = 'ca46b00f-5532-45b7-b77e-3ae028701d0e'::uuid;
 
 -- 3) Prevent future conflicting roles (Landlord + Tenant) on the same user
 CREATE OR REPLACE FUNCTION public.prevent_conflicting_landlord_tenant_roles()
@@ -8546,19 +8308,10 @@ FOR EACH ROW EXECUTE FUNCTION public.prevent_conflicting_landlord_tenant_roles()
 DROP TRIGGER IF EXISTS audit_role_changes_trigger ON public.user_roles;
 
 -- 1) Remove Landlord role from David
-DELETE FROM public.user_roles
-WHERE user_id = 'a53f69a5-104e-489b-9b0a-48a56d6b011d'::uuid
-  AND role = 'Landlord'::public.app_role;
 
 -- 2) Add Tenant role for David
-INSERT INTO public.user_roles (user_id, role)
-VALUES ('a53f69a5-104e-489b-9b0a-48a56d6b011d'::uuid, 'Tenant'::public.app_role)
-ON CONFLICT (user_id, role) DO NOTHING;
 
 -- 3) Update tenant email to match profile
-UPDATE public.tenants
-SET email = 'dmwangui@gmail.com'
-WHERE id = 'ca46b00f-5532-45b7-b77e-3ae028701d0e'::uuid;
 
 -- 4) Recreate the audit trigger (if it existed)
 CREATE OR REPLACE FUNCTION public.audit_role_changes()
@@ -8625,17 +8378,8 @@ ALTER TABLE public.user_roles DISABLE TRIGGER ALL;
 ALTER TABLE public.role_change_logs DISABLE TRIGGER ALL;
 
 -- Make the direct changes
-DELETE FROM public.user_roles
-WHERE user_id = 'a53f69a5-104e-489b-9b0a-48a56d6b011d'::uuid
-  AND role = 'Landlord'::public.app_role;
 
-INSERT INTO public.user_roles (user_id, role)
-VALUES ('a53f69a5-104e-489b-9b0a-48a56d6b011d'::uuid, 'Tenant'::public.app_role)
-ON CONFLICT (user_id, role) DO NOTHING;
 
-UPDATE public.tenants
-SET email = 'dmwangui@gmail.com'
-WHERE id = 'ca46b00f-5532-45b7-b77e-3ae028701d0e'::uuid;
 
 -- Re-enable triggers
 ALTER TABLE public.user_roles ENABLE TRIGGER ALL;
@@ -8676,17 +8420,8 @@ FOR EACH ROW EXECUTE FUNCTION public.prevent_conflicting_landlord_tenant_roles()
 ALTER TABLE public.role_change_logs ALTER COLUMN new_role DROP NOT NULL;
 
 -- Now make the changes to David's data
-DELETE FROM public.user_roles
-WHERE user_id = 'a53f69a5-104e-489b-9b0a-48a56d6b011d'::uuid
-  AND role = 'Landlord'::public.app_role;
 
-INSERT INTO public.user_roles (user_id, role)
-VALUES ('a53f69a5-104e-489b-9b0a-48a56d6b011d'::uuid, 'Tenant'::public.app_role)
-ON CONFLICT (user_id, role) DO NOTHING;
 
-UPDATE public.tenants
-SET email = 'dmwangui@gmail.com'
-WHERE id = 'ca46b00f-5532-45b7-b77e-3ae028701d0e'::uuid;
 
 -- Add the conflict prevention function
 CREATE OR REPLACE FUNCTION public.prevent_conflicting_landlord_tenant_roles()
@@ -8749,17 +8484,8 @@ $$;
 ALTER TABLE public.role_change_logs ALTER COLUMN new_role DROP NOT NULL;
 
 -- Now make the David Mwangi changes
-DELETE FROM public.user_roles
-WHERE user_id = 'a53f69a5-104e-489b-9b0a-48a56d6b011d'::uuid
-  AND role = 'Landlord'::public.app_role;
 
-INSERT INTO public.user_roles (user_id, role)
-VALUES ('a53f69a5-104e-489b-9b0a-48a56d6b011d'::uuid, 'Tenant'::public.app_role)
-ON CONFLICT (user_id, role) DO NOTHING;
 
-UPDATE public.tenants
-SET email = 'dmwangui@gmail.com'
-WHERE id = 'ca46b00f-5532-45b7-b77e-3ae028701d0e'::uuid;
 
 
 -- Migration: 20250822232758_d6125d11-6583-4c68-9ecd-b41441d21eef.sql
@@ -8965,11 +8691,6 @@ CREATE POLICY "Admins can manage payment methods" ON public.approved_payment_met
   FOR ALL USING (has_role(auth.uid(), 'Admin'::public.app_role));
 
 -- Insert default payment methods
-INSERT INTO public.approved_payment_methods (payment_method_type, provider_name, country_code) VALUES
-  ('mpesa', 'M-Pesa', 'KE'),
-  ('airtel_money', 'Airtel Money', 'KE'),
-  ('equitel', 'Equitel', 'KE')
-ON CONFLICT DO NOTHING;
 
 -- Add updated_at triggers
 CREATE TRIGGER update_sub_users_updated_at 
@@ -9106,11 +8827,6 @@ CREATE POLICY "Admins can manage payment methods" ON public.approved_payment_met
   FOR ALL USING (has_role(auth.uid(), 'Admin'::public.app_role));
 
 -- Insert default payment methods
-INSERT INTO public.approved_payment_methods (payment_method_type, provider_name, country_code) VALUES
-  ('mpesa', 'M-Pesa', 'KE'),
-  ('airtel_money', 'Airtel Money', 'KE'),
-  ('equitel', 'Equitel', 'KE')
-ON CONFLICT DO NOTHING;
 
 
 -- Migration: 20250906085611_1d9efaf0-5671-4ac1-b754-7d62c86235cc.sql
@@ -9786,9 +9502,6 @@ ALTER TABLE public.leases
 ADD COLUMN IF NOT EXISTS status text NOT NULL DEFAULT 'active';
 
 -- Update existing leases with NULL or empty status to 'active'
-UPDATE public.leases 
-SET status = 'active' 
-WHERE status IS NULL OR status = '';
 
 -- Create landlord-specific M-Pesa configuration table
 CREATE TABLE IF NOT EXISTS public.landlord_mpesa_configs (
@@ -10146,22 +9859,8 @@ WITH duplicate_leases AS (
   FROM public.leases l
   WHERE l.status = 'active'
 )
-UPDATE public.leases 
-SET status = 'terminated'
-WHERE id IN (
-  SELECT id FROM duplicate_leases WHERE rn > 1
-);
 
 -- Update unit statuses based on current active leases
-UPDATE public.units 
-SET status = CASE 
-  WHEN EXISTS (
-    SELECT 1 FROM public.leases 
-    WHERE unit_id = units.id 
-    AND status = 'active'
-  ) THEN 'occupied'
-  ELSE 'vacant'
-END;
 
 
 -- Migration: 20250906103014_76610e70-c18f-4206-a885-6445ca014ae8.sql
@@ -10220,22 +9919,8 @@ WITH duplicate_leases AS (
   FROM public.leases l
   WHERE l.status = 'active'
 )
-UPDATE public.leases 
-SET status = 'terminated'
-WHERE id IN (
-  SELECT id FROM duplicate_leases WHERE rn > 1
-);
 
 -- Update unit statuses based on current active leases
-UPDATE public.units 
-SET status = CASE 
-  WHEN EXISTS (
-    SELECT 1 FROM public.leases 
-    WHERE unit_id = units.id 
-    AND status = 'active'
-  ) THEN 'occupied'
-  ELSE 'vacant'
-END;
 
 
 -- Migration: 20250906103047_7a8060cb-0a8e-4304-8fc9-fbc80aaaceba.sql
@@ -10294,22 +9979,8 @@ WITH duplicate_leases AS (
   FROM public.leases l
   WHERE l.status = 'active'
 )
-UPDATE public.leases 
-SET status = 'terminated'
-WHERE id IN (
-  SELECT id FROM duplicate_leases WHERE rn > 1
-);
 
 -- Update unit statuses based on current active leases
-UPDATE public.units 
-SET status = CASE 
-  WHEN EXISTS (
-    SELECT 1 FROM public.leases 
-    WHERE unit_id = units.id 
-    AND status = 'active'
-  ) THEN 'occupied'
-  ELSE 'vacant'
-END;
 
 
 -- Migration: 20250906103104_03a7a592-e4dd-4459-9b83-3ba9f760d1a6.sql
@@ -10368,22 +10039,8 @@ WITH duplicate_leases AS (
   FROM public.leases l
   WHERE l.status = 'active'
 )
-UPDATE public.leases 
-SET status = 'terminated'
-WHERE id IN (
-  SELECT id FROM duplicate_leases WHERE rn > 1
-);
 
 -- Update unit statuses based on current active leases
-UPDATE public.units 
-SET status = CASE 
-  WHEN EXISTS (
-    SELECT 1 FROM public.leases 
-    WHERE unit_id = units.id 
-    AND status = 'active'
-  ) THEN 'occupied'
-  ELSE 'vacant'
-END;
 
 
 -- Migration: 20250906103209_adb8ec9e-fb03-45d4-ab2c-4697e8ef6617.sql
@@ -10401,11 +10058,6 @@ WITH duplicate_leases AS (
   FROM public.leases l
   WHERE l.status = 'active'
 )
-UPDATE public.leases 
-SET status = 'terminated'
-WHERE id IN (
-  SELECT id FROM duplicate_leases WHERE rn > 1
-);
 
 -- Now add the unique constraint to prevent future duplicates
 CREATE UNIQUE INDEX idx_unique_active_lease_per_unit 
@@ -10449,15 +10101,6 @@ CREATE TRIGGER trigger_update_unit_status_on_lease_change
   EXECUTE FUNCTION public.update_unit_status_on_lease_change();
 
 -- Update unit statuses based on current active leases
-UPDATE public.units 
-SET status = CASE 
-  WHEN EXISTS (
-    SELECT 1 FROM public.leases 
-    WHERE unit_id = units.id 
-    AND status = 'active'
-  ) THEN 'occupied'
-  ELSE 'vacant'
-END;
 
 
 -- Migration: 20250906103239_8482ee88-ae62-4657-9df3-7f85542b5897.sql
@@ -10475,11 +10118,6 @@ WITH duplicate_leases AS (
   FROM public.leases l
   WHERE l.status = 'active'
 )
-UPDATE public.leases 
-SET status = 'terminated'
-WHERE id IN (
-  SELECT id FROM duplicate_leases WHERE rn > 1
-);
 
 -- Add partial unique index to prevent duplicate active leases per unit
 CREATE UNIQUE INDEX idx_unique_active_lease_per_unit 
@@ -10523,15 +10161,6 @@ CREATE TRIGGER trigger_update_unit_status_on_lease_change
   EXECUTE FUNCTION public.update_unit_status_on_lease_change();
 
 -- Update unit statuses based on current active leases
-UPDATE public.units 
-SET status = CASE 
-  WHEN EXISTS (
-    SELECT 1 FROM public.leases 
-    WHERE unit_id = units.id 
-    AND status = 'active'
-  ) THEN 'occupied'
-  ELSE 'vacant'
-END;
 
 
 -- Migration: 20250906103258_45d77e33-e0d5-427f-97e1-237b3a10a17e.sql
@@ -10549,11 +10178,6 @@ WITH duplicate_leases AS (
   FROM public.leases l
   WHERE l.status = 'active'
 )
-UPDATE public.leases 
-SET status = 'terminated'
-WHERE id IN (
-  SELECT id FROM duplicate_leases WHERE rn > 1
-);
 
 -- Add function to update unit status when lease is created/updated
 CREATE OR REPLACE FUNCTION public.update_unit_status_on_lease_change()
@@ -10595,15 +10219,6 @@ CREATE TRIGGER trigger_update_unit_status_on_lease_change
   EXECUTE FUNCTION public.update_unit_status_on_lease_change();
 
 -- Update unit statuses based on current active leases
-UPDATE public.units 
-SET status = CASE 
-  WHEN EXISTS (
-    SELECT 1 FROM public.leases 
-    WHERE unit_id = units.id 
-    AND status = 'active'
-  ) THEN 'occupied'
-  ELSE 'vacant'
-END;
 
 
 -- Migration: 20250906110125_4d37e11d-db52-4ab4-acfd-d4aee07e7e83.sql
