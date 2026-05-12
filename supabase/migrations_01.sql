@@ -245,12 +245,6 @@ END $$;
 -- Migration: 20250801173047_f45ab3eb-0f51-4c38-a942-b6b55834d9b6.sql
 
 -- Insert dummy properties with Kenyan data
-INSERT INTO public.properties (name, address, city, state, zip_code, country, property_type, total_units, description, amenities) VALUES
-('Kileleshwa Heights', 'Kileleshwa Road', 'Nairobi', 'Nairobi', '00100', 'Kenya', 'Apartment', 10, 'Modern apartments in upscale Kileleshwa with parking and security', ARRAY['Parking', 'Security', 'Water Backup', 'Generator']),
-('Westlands Square', 'Woodvale Grove', 'Nairobi', 'Nairobi', '00100', 'Kenya', 'Apartment', 10, 'Prime location apartments near Westlands with mall access', ARRAY['Mall Access', 'Parking', 'Security', 'Elevator']),
-('Karen Gardens', 'Karen Road', 'Nairobi', 'Nairobi', '00502', 'Kenya', 'Townhouse', 10, 'Serene townhouses in Karen with garden spaces', ARRAY['Garden', 'Parking', 'Security', 'Swimming Pool']),
-('Langata View', 'Langata Road', 'Nairobi', 'Nairobi', '00509', 'Kenya', 'Apartment', 10, 'Affordable housing with great views of Ngong Hills', ARRAY['Great Views', 'Parking', 'Security', 'Playground']),
-('Kasarani Estate', 'Thika Road', 'Nairobi', 'Nairobi', '00618', 'Kenya', 'Apartment', 10, 'Family-friendly apartments near Kasarani Stadium', ARRAY['Stadium Access', 'Parking', 'Security', 'Shopping Center']);
 
 -- Insert units for each property (10 units each, 80% occupancy)
 DO $$
@@ -358,182 +352,20 @@ BEGIN
 END $$;
 
 -- Insert dummy tenants with Kenyan names
-INSERT INTO public.tenants (first_name, last_name, email, phone, employment_status, employer_name, monthly_income, emergency_contact_name, emergency_contact_phone) VALUES
-('Wanjiku', 'Kamau', 'wanjiku.kamau@gmail.com', '+254 722 123 456', 'Employed', 'Safaricom Ltd', 85000, 'Grace Kamau', '+254 722 123 457'),
-('David', 'Ochieng', 'david.ochieng@gmail.com', '+254 733 234 567', 'Self-Employed', 'Ochieng Consultancy', 120000, 'Mary Ochieng', '+254 733 234 568'),
-('Fatuma', 'Hassan', 'fatuma.hassan@gmail.com', '+254 744 345 678', 'Employed', 'Kenya Airways', 95000, 'Ahmed Hassan', '+254 744 345 679'),
-('John', 'Mwangi', 'john.mwangi@gmail.com', '+254 755 456 789', 'Employed', 'Equity Bank', 110000, 'Jane Mwangi', '+254 755 456 790'),
-('Aisha', 'Abdi', 'aisha.abdi@gmail.com', '+254 766 567 890', 'Self-Employed', 'Abdi Trading', 75000, 'Omar Abdi', '+254 766 567 891'),
-('Peter', 'Kiprotich', 'peter.kiprotich@gmail.com', '+254 777 678 901', 'Employed', 'KCB Bank', 88000, 'Susan Kiprotich', '+254 777 678 902'),
-('Grace', 'Wanjiru', 'grace.wanjiru@gmail.com', '+254 788 789 012', 'Employed', 'Coca Cola', 92000, 'Paul Wanjiru', '+254 788 789 013'),
-('Michael', 'Otieno', 'michael.otieno@gmail.com', '+254 799 890 123', 'Self-Employed', 'Otieno Enterprises', 105000, 'Catherine Otieno', '+254 799 890 124'),
-('Esther', 'Njeri', 'esther.njeri@gmail.com', '+254 710 901 234', 'Employed', 'Nation Media Group', 78000, 'James Njeri', '+254 710 901 235'),
-('Samuel', 'Kipchoge', 'samuel.kipchoge@gmail.com', '+254 721 012 345', 'Employed', 'Standard Chartered', 125000, 'Ruth Kipchoge', '+254 721 012 346'),
-('Mercy', 'Akinyi', 'mercy.akinyi@gmail.com', '+254 732 123 456', 'Self-Employed', 'Akinyi Fashions', 68000, 'Joseph Akinyi', '+254 732 123 457'),
-('Daniel', 'Mutua', 'daniel.mutua@gmail.com', '+254 743 234 567', 'Employed', 'KPMG Kenya', 115000, 'Agnes Mutua', '+254 743 234 568'),
-('Rahab', 'Chebet', 'rahab.chebet@gmail.com', '+254 754 345 678', 'Employed', 'Deloitte', 98000, 'Moses Chebet', '+254 754 345 679'),
-('Kevin', 'Mbugua', 'kevin.mbugua@gmail.com', '+254 765 456 789', 'Self-Employed', 'Mbugua Tech Solutions', 80000, 'Lucy Mbugua', '+254 765 456 790'),
-('Lydia', 'Waweru', 'lydia.waweru@gmail.com', '+254 776 567 890', 'Employed', 'Unilever Kenya', 87000, 'Simon Waweru', '+254 776 567 891'),
-('Francis', 'Macharia', 'francis.macharia@gmail.com', '+254 787 678 901', 'Employed', 'Barclays Bank', 102000, 'Joyce Macharia', '+254 787 678 902'),
-('Rebecca', 'Mukiri', 'rebecca.mukiri@gmail.com', '+254 798 789 012', 'Self-Employed', 'Mukiri Catering', 65000, 'Stephen Mukiri', '+254 798 789 013'),
-('Anthony', 'Koech', 'anthony.koech@gmail.com', '+254 709 890 123', 'Employed', 'PwC Kenya', 118000, 'Margaret Koech', '+254 709 890 124'),
-('Caroline', 'Wachira', 'caroline.wachira@gmail.com', '+254 720 901 234', 'Employed', 'East African Breweries', 89000, 'Robert Wachira', '+254 720 901 235'),
-('George', 'Owino', 'george.owino@gmail.com', '+254 731 012 345', 'Self-Employed', 'Owino Motors', 95000, 'Florence Owino', '+254 731 012 346'),
-('Pauline', 'Gathoni', 'pauline.gathoni@gmail.com', '+254 742 123 456', 'Employed', 'Kenya Commercial Bank', 84000, 'Patrick Gathoni', '+254 742 123 457'),
-('Vincent', 'Kinyua', 'vincent.kinyua@gmail.com', '+254 753 234 567', 'Employed', 'BAT Kenya', 91000, 'Rose Kinyua', '+254 753 234 568'),
-('Josephine', 'Muthoni', 'josephine.muthoni@gmail.com', '+254 764 345 678', 'Self-Employed', 'Muthoni Boutique', 72000, 'Thomas Muthoni', '+254 764 345 679'),
-('Dennis', 'Kiprop', 'dennis.kiprop@gmail.com', '+254 775 456 789', 'Employed', 'IBM Kenya', 135000, 'Nancy Kiprop', '+254 775 456 790'),
-('Jane', 'Waithera', 'jane.waithera@gmail.com', '+254 786 567 890', 'Employed', 'Google Kenya', 145000, 'Andrew Waithera', '+254 786 567 891'),
-('Alex', 'Maina', 'alex.maina@gmail.com', '+254 797 678 901', 'Self-Employed', 'Maina Construction', 108000, 'Helen Maina', '+254 797 678 902'),
-('Sarah', 'Chepkemoi', 'sarah.chepkemoi@gmail.com', '+254 708 789 012', 'Employed', 'Microsoft Kenya', 128000, 'Evans Chepkemoi', '+254 708 789 013'),
-('Brian', 'Gitau', 'brian.gitau@gmail.com', '+254 719 890 123', 'Employed', 'Oracle Kenya', 122000, 'Diana Gitau', '+254 719 890 124'),
-('Faith', 'Nyokabi', 'faith.nyokabi@gmail.com', '+254 730 901 234', 'Self-Employed', 'Nyokabi Events', 76000, 'Philip Nyokabi', '+254 730 901 235'),
-('Martin', 'Langat', 'martin.langat@gmail.com', '+254 741 012 345', 'Employed', 'Tusker Mattresses', 82000, 'Beatrice Langat', '+254 741 012 346'),
-('Priscilla', 'Wanjala', 'priscilla.wanjala@gmail.com', '+254 752 123 456', 'Employed', 'Kenya Power', 93000, 'Lawrence Wanjala', '+254 752 123 457'),
-('Timothy', 'Rotich', 'timothy.rotich@gmail.com', '+254 763 234 567', 'Self-Employed', 'Rotich Dairy Farm', 85000, 'Eunice Rotich', '+254 763 234 568'),
-('Eunice', 'Mukami', 'eunice.mukami@gmail.com', '+254 774 345 678', 'Employed', 'Nairobi Hospital', 96000, 'Francis Mukami', '+254 774 345 679'),
-('Charles', 'Omondi', 'charles.omondi@gmail.com', '+254 785 456 789', 'Employed', 'Chandaria Industries', 88000, 'Violet Omondi', '+254 785 456 790'),
-('Naomi', 'Wanjiku', 'naomi.wanjiku@gmail.com', '+254 796 567 890', 'Self-Employed', 'Wanjiku Hair Salon', 69000, 'Isaac Wanjiku', '+254 796 567 891'),
-('Joseph', 'Keter', 'joseph.keter@gmail.com', '+254 707 678 901', 'Employed', 'Kenya Pipeline Company', 99000, 'Gladys Keter', '+254 707 678 902'),
-('Millicent', 'Wangari', 'millicent.wangari@gmail.com', '+254 718 789 012', 'Employed', 'Kenya Tea Development Agency', 86000, 'David Wangari', '+254 718 789 013'),
-('Edwin', 'Mwangi', 'edwin.mwangi@gmail.com', '+254 729 890 123', 'Self-Employed', 'Mwangi Hardware', 74000, 'Ann Mwangi', '+254 729 890 124'),
-('Lilian', 'Chege', 'lilian.chege@gmail.com', '+254 740 901 234', 'Employed', 'Brookside Dairy', 90000, 'Mark Chege', '+254 740 901 235'),
-('Ian', 'Kimanzi', 'ian.kimanzi@gmail.com', '+254 751 012 345', 'Employed', 'Kengen', 103000, 'Cynthia Kimanzi', '+254 751 012 346');
 
 
 -- Migration: 20250801173107_df5884e2-c530-40c3-bce5-280a0a938380.sql
 
 -- Insert dummy properties (5 blocks/buildings)
-INSERT INTO properties (name, description, address, city, state, zip_code, country, property_type, total_units, owner_id) VALUES
-('Kileleshwa Gardens', 'Modern residential apartments in Kileleshwa', 'Kileleshwa Road', 'Nairobi', 'Nairobi County', '00100', 'Kenya', 'Residential', 10, auth.uid()),
-('Westlands Towers', 'High-rise commercial and residential complex', 'Waiyaki Way', 'Nairobi', 'Nairobi County', '00600', 'Kenya', 'Mixed-Use', 10, auth.uid()),
-('Karen Heights', 'Luxury apartments in Karen suburb', 'Karen Road', 'Nairobi', 'Nairobi County', '00502', 'Kenya', 'Residential', 10, auth.uid()),
-('Eastleigh Plaza', 'Commercial and residential units', 'General Waruinge Street', 'Nairobi', 'Nairobi County', '00610', 'Kenya', 'Commercial', 10, auth.uid()),
-('Lavington Courts', 'Premium residential complex', 'Hatheru Road', 'Nairobi', 'Nairobi County', '00506', 'Kenya', 'Residential', 10, auth.uid());
 
 -- Insert dummy units (10 units per property, 80% occupancy = 8 occupied, 2 vacant per property)
-INSERT INTO units (unit_number, unit_type, property_id, bedrooms, bathrooms, square_feet, rent_amount, security_deposit, status, description) 
-SELECT 
-    CONCAT(block_num, LPAD(unit_num::text, 2, '0')) as unit_number,
-    CASE 
-        WHEN unit_num <= 2 THEN '1 Bedroom'
-        WHEN unit_num <= 6 THEN '2 Bedroom' 
-        WHEN unit_num <= 9 THEN '3 Bedroom'
-        ELSE 'Penthouse'
-    END as unit_type,
-    p.id as property_id,
-    CASE 
-        WHEN unit_num <= 2 THEN 1
-        WHEN unit_num <= 6 THEN 2
-        WHEN unit_num <= 9 THEN 3 
-        ELSE 4
-    END as bedrooms,
-    CASE 
-        WHEN unit_num <= 2 THEN 1
-        WHEN unit_num <= 6 THEN 2
-        WHEN unit_num <= 9 THEN 2
-        ELSE 3
-    END as bathrooms,
-    CASE 
-        WHEN unit_num <= 2 THEN 650
-        WHEN unit_num <= 6 THEN 950
-        WHEN unit_num <= 9 THEN 1200
-        ELSE 1800
-    END as square_feet,
-    CASE 
-        WHEN unit_num <= 2 THEN 25000
-        WHEN unit_num <= 6 THEN 45000
-        WHEN unit_num <= 9 THEN 65000
-        ELSE 120000
-    END as rent_amount,
-    CASE 
-        WHEN unit_num <= 2 THEN 50000
-        WHEN unit_num <= 6 THEN 90000
-        WHEN unit_num <= 9 THEN 130000
-        ELSE 240000
-    END as security_deposit,
-    CASE 
-        WHEN unit_num <= 8 THEN 'occupied'
-        ELSE 'vacant'
-    END as status,
-    CASE 
-        WHEN unit_num <= 2 THEN 'Cozy one-bedroom unit with modern amenities'
-        WHEN unit_num <= 6 THEN 'Spacious two-bedroom apartment with balcony'
-        WHEN unit_num <= 9 THEN 'Three-bedroom family unit with garden view'
-        ELSE 'Luxury penthouse with panoramic city views'
-    END as description
-FROM properties p,
-     generate_series(1, 5) as block_num,
-     generate_series(1, 10) as unit_num
-WHERE p.name IN ('Kileleshwa Gardens', 'Westlands Towers', 'Karen Heights', 'Eastleigh Plaza', 'Lavington Courts')
-ORDER BY p.name, unit_num;
 
 -- Insert dummy tenants (40 tenants for the 40 occupied units)
-INSERT INTO tenants (first_name, last_name, email, phone, emergency_contact_name, emergency_contact_phone, employment_status, employer_name, monthly_income, user_id) VALUES
-('Wanjiku', 'Kamau', 'wanjiku.kamau@email.com', '+254712345001', 'Peter Kamau', '+254722345001', 'Employed', 'Safaricom Ltd', 85000, null),
-('David', 'Kiplagat', 'david.kiplagat@email.com', '+254712345002', 'Grace Kiplagat', '+254722345002', 'Employed', 'Kenya Airways', 95000, null),
-('Grace', 'Wanjiru', 'grace.wanjiru@email.com', '+254712345003', 'John Wanjiru', '+254722345003', 'Self-Employed', 'Freelance Consultant', 120000, null),
-('Peter', 'Mwangi', 'peter.mwangi@email.com', '+254712345004', 'Mary Mwangi', '+254722345004', 'Employed', 'Equity Bank', 110000, null),
-('Mary', 'Achieng', 'mary.achieng@email.com', '+254712345005', 'James Achieng', '+254722345005', 'Employed', 'KCB Bank', 75000, null),
-('James', 'Njoroge', 'james.njoroge@email.com', '+254712345006', 'Susan Njoroge', '+254722345006', 'Employed', 'Coca-Cola Africa', 88000, null),
-('Susan', 'Cheptoo', 'susan.cheptoo@email.com', '+254712345007', 'Michael Cheptoo', '+254722345007', 'Self-Employed', 'Digital Marketing', 65000, null),
-('Michael', 'Otieno', 'michael.otieno@email.com', '+254712345008', 'Elizabeth Otieno', '+254722345008', 'Employed', 'Nairobi Hospital', 105000, null),
-('Elizabeth', 'Kariuki', 'elizabeth.kariuki@email.com', '+254712345009', 'Francis Kariuki', '+254722345009', 'Employed', 'KPMG Kenya', 125000, null),
-('Francis', 'Mutua', 'francis.mutua@email.com', '+254712345010', 'Anne Mutua', '+254722345010', 'Employed', 'Standard Chartered', 98000, null),
-('Anne', 'Wafula', 'anne.wafula@email.com', '+254712345011', 'Robert Wafula', '+254722345011', 'Self-Employed', 'Import/Export', 150000, null),
-('Robert', 'Kiprotich', 'robert.kiprotich@email.com', '+254712345012', 'Joyce Kiprotich', '+254722345012', 'Employed', 'Nation Media Group', 82000, null),
-('Joyce', 'Muthoni', 'joyce.muthoni@email.com', '+254712345013', 'Samuel Muthoni', '+254722345013', 'Employed', 'Tusker Mattresses', 70000, null),
-('Samuel', 'Ochieng', 'samuel.ochieng@email.com', '+254712345014', 'Mercy Ochieng', '+254722345014', 'Employed', 'East African Breweries', 92000, null),
-('Mercy', 'Koech', 'mercy.koech@email.com', '+254712345015', 'Daniel Koech', '+254722345015', 'Self-Employed', 'Real Estate', 180000, null),
-('Daniel', 'Macharia', 'daniel.macharia@email.com', '+254712345016', 'Faith Macharia', '+254722345016', 'Employed', 'Co-operative Bank', 85000, null),
-('Faith', 'Juma', 'faith.juma@email.com', '+254712345017', 'Joseph Juma', '+254722345017', 'Employed', 'Bamburi Cement', 78000, null),
-('Joseph', 'Kimani', 'joseph.kimani@email.com', '+254712345018', 'Esther Kimani', '+254722345018', 'Employed', 'Kenya Power', 88000, null),
-('Esther', 'Nyong', 'esther.nyong@email.com', '+254712345019', 'Martin Nyong', '+254722345019', 'Self-Employed', 'Fashion Design', 95000, null),
-('Martin', 'Karanja', 'martin.karanja@email.com', '+254712345020', 'Helen Karanja', '+254722345020', 'Employed', 'Barclays Bank', 102000, null),
-('Helen', 'Cheruiyot', 'helen.cheruiyot@email.com', '+254712345021', 'Paul Cheruiyot', '+254722345021', 'Employed', 'Kenya Commercial Bank', 89000, null),
-('Paul', 'Wekesa', 'paul.wekesa@email.com', '+254712345022', 'Rose Wekesa', '+254722345022', 'Self-Employed', 'IT Solutions', 115000, null),
-('Rose', 'Kibet', 'rose.kibet@email.com', '+254712345023', 'George Kibet', '+254722345023', 'Employed', 'Safaricom', 94000, null),
-('George', 'Munyua', 'george.munyua@email.com', '+254712345024', 'Lydia Munyua', '+254722345024', 'Employed', 'Telkom Kenya', 87000, null),
-('Lydia', 'Okoth', 'lydia.okoth@email.com', '+254712345025', 'Vincent Okoth', '+254722345025', 'Self-Employed', 'Photography', 72000, null),
-('Vincent', 'Ruto', 'vincent.ruto@email.com', '+254712345026', 'Catherine Ruto', '+254722345026', 'Employed', 'Kenya Airways', 96000, null),
-('Catherine', 'Musyoka', 'catherine.musyoka@email.com', '+254712345027', 'Anthony Musyoka', '+254722345027', 'Employed', 'Nation Media', 83000, null),
-('Anthony', 'Langat', 'anthony.langat@email.com', '+254712345028', 'Priscilla Langat', '+254722345028', 'Self-Employed', 'Agriculture', 68000, null),
-('Priscilla', 'Githinji', 'priscilla.githinji@email.com', '+254712345029', 'Simon Githinji', '+254722345029', 'Employed', 'NHIF', 91000, null),
-('Simon', 'Owino', 'simon.owino@email.com', '+254712345030', 'Monica Owino', '+254722345030', 'Employed', 'KRA', 99000, null),
-('Monica', 'Bett', 'monica.bett@email.com', '+254712345031', 'Thomas Bett', '+254722345031', 'Self-Employed', 'Catering Services', 76000, null),
-('Thomas', 'Ndungu', 'thomas.ndungu@email.com', '+254712345032', 'Jane Ndungu', '+254722345032', 'Employed', 'Kenya Medical Supplies', 84000, null),
-('Jane', 'Rotich', 'jane.rotich@email.com', '+254712345033', 'Patrick Rotich', '+254722345033', 'Employed', 'Central Bank of Kenya', 118000, null),
-('Patrick', 'Mburu', 'patrick.mburu@email.com', '+254712345034', 'Agnes Mburu', '+254722345034', 'Self-Employed', 'Transport Business', 105000, null),
-('Agnes', 'Chebet', 'agnes.chebet@email.com', '+254712345035', 'Evans Chebet', '+254722345035', 'Employed', 'Kenya Bureau of Standards', 87000, null),
-('Evans', 'Wamalwa', 'evans.wamalwa@email.com', '+254712345036', 'Winnie Wamalwa', '+254722345036', 'Employed', 'Kenya Pipeline Company', 93000, null),
-('Winnie', 'Sang', 'winnie.sang@email.com', '+254712345037', 'Brian Sang', '+254722345037', 'Self-Employed', 'Graphic Design', 81000, null),
-('Brian', 'Kibe', 'brian.kibe@email.com', '+254712345038', 'Stella Kibe', '+254722345038', 'Employed', 'Kenya Forest Service', 79000, null),
-('Stella', 'Nzomo', 'stella.nzomo@email.com', '+254712345039', 'Felix Nzomo', '+254722345039', 'Employed', 'Kenya Wildlife Service', 86000, null),
-('Felix', 'Tarus', 'felix.tarus@email.com', '+254712345040', 'Beatrice Tarus', '+254722345040', 'Self-Employed', 'Construction', 112000, null);
 
 
 -- Migration: 20250801173124_a2d43254-229b-4376-b590-1c799c0da6bf.sql
 
 -- Clear existing data and insert fresh dummy data
-DELETE FROM public.units;
-DELETE FROM public.tenants;
-DELETE FROM public.properties WHERE name IN ('Kileleshwa Heights', 'Westlands Square', 'Karen Gardens', 'Langata View', 'Kasarani Estate');
-
--- Insert dummy properties with Kenyan data
-INSERT INTO public.properties (name, address, city, state, zip_code, country, property_type, total_units, description, amenities) VALUES
-('Kileleshwa Heights', 'Kileleshwa Road', 'Nairobi', 'Nairobi', '00100', 'Kenya', 'Apartment', 10, 'Modern apartments in upscale Kileleshwa with parking and security', ARRAY['Parking', 'Security', 'Water Backup', 'Generator']),
-('Westlands Square', 'Woodvale Grove', 'Nairobi', 'Nairobi', '00100', 'Kenya', 'Apartment', 10, 'Prime location apartments near Westlands with mall access', ARRAY['Mall Access', 'Parking', 'Security', 'Elevator']),
-('Karen Gardens', 'Karen Road', 'Nairobi', 'Nairobi', '00502', 'Kenya', 'Townhouse', 10, 'Serene townhouses in Karen with garden spaces', ARRAY['Garden', 'Parking', 'Security', 'Swimming Pool']),
-('Langata View', 'Langata Road', 'Nairobi', 'Nairobi', '00509', 'Kenya', 'Apartment', 10, 'Affordable housing with great views of Ngong Hills', ARRAY['Great Views', 'Parking', 'Security', 'Playground']),
-('Kasarani Estate', 'Thika Road', 'Nairobi', 'Nairobi', '00618', 'Kenya', 'Apartment', 10, 'Family-friendly apartments near Kasarani Stadium', ARRAY['Stadium Access', 'Parking', 'Security', 'Shopping Center']);
-
-
--- Migration: 20250801173323_e2e060a7-3e96-4a45-9eae-36129e1f1acc.sql
-
--- Insert units for each property (10 units each, 80% occupancy)
-DO $$
-DECLARE
-    property_record RECORD;
     unit_num INTEGER;
     unit_types TEXT[] := ARRAY['Studio', '1 Bedroom', '2 Bedroom', '3 Bedroom'];
     statuses TEXT[] := ARRAY['occupied', 'occupied', 'occupied', 'occupied', 'occupied', 'occupied', 'occupied', 'occupied', 'vacant', 'vacant'];
@@ -639,48 +471,6 @@ END $$;
 -- Migration: 20250801173826_895f5184-c95e-4717-8581-bec4ba2751ae.sql
 
 -- Insert dummy tenants with Kenyan names (smaller subset)
-INSERT INTO public.tenants (first_name, last_name, email, phone, employment_status, employer_name, monthly_income, emergency_contact_name, emergency_contact_phone) VALUES
-('Wanjiku', 'Kamau', 'wanjiku.kamau@gmail.com', '+254 722 123 456', 'Employed', 'Safaricom Ltd', 85000, 'Grace Kamau', '+254 722 123 457'),
-('David', 'Ochieng', 'david.ochieng@gmail.com', '+254 733 234 567', 'Self-Employed', 'Ochieng Consultancy', 120000, 'Mary Ochieng', '+254 733 234 568'),
-('Fatuma', 'Hassan', 'fatuma.hassan@gmail.com', '+254 744 345 678', 'Employed', 'Kenya Airways', 95000, 'Ahmed Hassan', '+254 744 345 679'),
-('John', 'Mwangi', 'john.mwangi@gmail.com', '+254 755 456 789', 'Employed', 'Equity Bank', 110000, 'Jane Mwangi', '+254 755 456 790'),
-('Aisha', 'Abdi', 'aisha.abdi@gmail.com', '+254 766 567 890', 'Self-Employed', 'Abdi Trading', 75000, 'Omar Abdi', '+254 766 567 891'),
-('Peter', 'Kiprotich', 'peter.kiprotich@gmail.com', '+254 777 678 901', 'Employed', 'KCB Bank', 88000, 'Susan Kiprotich', '+254 777 678 902'),
-('Grace', 'Wanjiru', 'grace.wanjiru@gmail.com', '+254 788 789 012', 'Employed', 'Coca Cola', 92000, 'Paul Wanjiru', '+254 788 789 013'),
-('Michael', 'Otieno', 'michael.otieno@gmail.com', '+254 799 890 123', 'Self-Employed', 'Otieno Enterprises', 105000, 'Catherine Otieno', '+254 799 890 124'),
-('Esther', 'Njeri', 'esther.njeri@gmail.com', '+254 710 901 234', 'Employed', 'Nation Media Group', 78000, 'James Njeri', '+254 710 901 235'),
-('Samuel', 'Kipchoge', 'samuel.kipchoge@gmail.com', '+254 721 012 345', 'Employed', 'Standard Chartered', 125000, 'Ruth Kipchoge', '+254 721 012 346'),
-('Mercy', 'Akinyi', 'mercy.akinyi@gmail.com', '+254 732 123 456', 'Self-Employed', 'Akinyi Fashions', 68000, 'Joseph Akinyi', '+254 732 123 457'),
-('Daniel', 'Mutua', 'daniel.mutua@gmail.com', '+254 743 234 567', 'Employed', 'KPMG Kenya', 115000, 'Agnes Mutua', '+254 743 234 568'),
-('Rahab', 'Chebet', 'rahab.chebet@gmail.com', '+254 754 345 678', 'Employed', 'Deloitte', 98000, 'Moses Chebet', '+254 754 345 679'),
-('Kevin', 'Mbugua', 'kevin.mbugua@gmail.com', '+254 765 456 789', 'Self-Employed', 'Mbugua Tech Solutions', 80000, 'Lucy Mbugua', '+254 765 456 790'),
-('Lydia', 'Waweru', 'lydia.waweru@gmail.com', '+254 776 567 890', 'Employed', 'Unilever Kenya', 87000, 'Simon Waweru', '+254 776 567 891'),
-('Francis', 'Macharia', 'francis.macharia@gmail.com', '+254 787 678 901', 'Employed', 'Barclays Bank', 102000, 'Joyce Macharia', '+254 787 678 902'),
-('Rebecca', 'Mukiri', 'rebecca.mukiri@gmail.com', '+254 798 789 012', 'Self-Employed', 'Mukiri Catering', 65000, 'Stephen Mukiri', '+254 798 789 013'),
-('Anthony', 'Koech', 'anthony.koech@gmail.com', '+254 709 890 123', 'Employed', 'PwC Kenya', 118000, 'Margaret Koech', '+254 709 890 124'),
-('Caroline', 'Wachira', 'caroline.wachira@gmail.com', '+254 720 901 234', 'Employed', 'East African Breweries', 89000, 'Robert Wachira', '+254 720 901 235'),
-('George', 'Owino', 'george.owino@gmail.com', '+254 731 012 345', 'Self-Employed', 'Owino Motors', 95000, 'Florence Owino', '+254 731 012 346'),
-('Pauline', 'Gathoni', 'pauline.gathoni@gmail.com', '+254 742 123 456', 'Employed', 'Kenya Commercial Bank', 84000, 'Patrick Gathoni', '+254 742 123 457'),
-('Vincent', 'Kinyua', 'vincent.kinyua@gmail.com', '+254 753 234 567', 'Employed', 'BAT Kenya', 91000, 'Rose Kinyua', '+254 753 234 568'),
-('Josephine', 'Muthoni', 'josephine.muthoni@gmail.com', '+254 764 345 678', 'Self-Employed', 'Muthoni Boutique', 72000, 'Thomas Muthoni', '+254 764 345 679'),
-('Dennis', 'Kiprop', 'dennis.kiprop@gmail.com', '+254 775 456 789', 'Employed', 'IBM Kenya', 135000, 'Nancy Kiprop', '+254 775 456 790'),
-('Jane', 'Waithera', 'jane.waithera@gmail.com', '+254 786 567 890', 'Employed', 'Google Kenya', 145000, 'Andrew Waithera', '+254 786 567 891'),
-('Alex', 'Maina', 'alex.maina@gmail.com', '+254 797 678 901', 'Self-Employed', 'Maina Construction', 108000, 'Helen Maina', '+254 797 678 902'),
-('Sarah', 'Chepkemoi', 'sarah.chepkemoi@gmail.com', '+254 708 789 012', 'Employed', 'Microsoft Kenya', 128000, 'Evans Chepkemoi', '+254 708 789 013'),
-('Brian', 'Gitau', 'brian.gitau@gmail.com', '+254 719 890 123', 'Employed', 'Oracle Kenya', 122000, 'Diana Gitau', '+254 719 890 124'),
-('Faith', 'Nyokabi', 'faith.nyokabi@gmail.com', '+254 730 901 234', 'Self-Employed', 'Nyokabi Events', 76000, 'Philip Nyokabi', '+254 730 901 235'),
-('Martin', 'Langat', 'martin.langat@gmail.com', '+254 741 012 345', 'Employed', 'Tusker Mattresses', 82000, 'Beatrice Langat', '+254 741 012 346'),
-('Priscilla', 'Wanjala', 'priscilla.wanjala@gmail.com', '+254 752 123 456', 'Employed', 'Kenya Power', 93000, 'Lawrence Wanjala', '+254 752 123 457'),
-('Timothy', 'Rotich', 'timothy.rotich@gmail.com', '+254 763 234 567', 'Self-Employed', 'Rotich Dairy Farm', 85000, 'Eunice Rotich', '+254 763 234 568'),
-('Eunice', 'Mukami', 'eunice.mukami@gmail.com', '+254 774 345 678', 'Employed', 'Nairobi Hospital', 96000, 'Francis Mukami', '+254 774 345 679'),
-('Charles', 'Omondi', 'charles.omondi@gmail.com', '+254 785 456 789', 'Employed', 'Chandaria Industries', 88000, 'Violet Omondi', '+254 785 456 790'),
-('Naomi', 'Wanjiku', 'naomi.wanjiku@gmail.com', '+254 796 567 890', 'Self-Employed', 'Wanjiku Hair Salon', 69000, 'Isaac Wanjiku', '+254 796 567 891'),
-('Joseph', 'Keter', 'joseph.keter@gmail.com', '+254 707 678 901', 'Employed', 'Kenya Pipeline Company', 99000, 'Gladys Keter', '+254 707 678 902'),
-('Millicent', 'Wangari', 'millicent.wangari@gmail.com', '+254 718 789 012', 'Employed', 'Kenya Tea Development Agency', 86000, 'David Wangari', '+254 718 789 013'),
-('Edwin', 'Mwangi', 'edwin.mwangi@gmail.com', '+254 729 890 123', 'Self-Employed', 'Mwangi Hardware', 74000, 'Ann Mwangi', '+254 729 890 124'),
-('Lilian', 'Chege', 'lilian.chege@gmail.com', '+254 740 901 234', 'Employed', 'Brookside Dairy', 90000, 'Mark Chege', '+254 740 901 235'),
-('Ian', 'Kimanzi', 'ian.kimanzi@gmail.com', '+254 751 012 345', 'Employed', 'Kengen', 103000, 'Cynthia Kimanzi', '+254 751 012 346'),
-('Lucy', 'Wambui', 'lucy.wambui@gmail.com', '+254 762 123 456', 'Self-Employed', 'Wambui Designs', 78000, 'Peter Wambui', '+254 762 123 457');
 
 
 -- Migration: 20250801191849_ad8f41b7-f30d-4830-a1cb-0f8cec97a9d6.sql
@@ -692,23 +482,6 @@ ALTER TABLE public.tenants ADD COLUMN profession text;
 ALTER TABLE public.tenants ADD COLUMN national_id text;
 
 -- Update existing tenant records with sample data
-UPDATE public.tenants SET 
-  profession = CASE 
-    WHEN id = '550e8400-e29b-41d4-a716-446655440001' THEN 'Software Engineer'
-    WHEN id = '550e8400-e29b-41d4-a716-446655440002' THEN 'Doctor'
-    WHEN id = '550e8400-e29b-41d4-a716-446655440003' THEN 'Teacher'
-    WHEN id = '550e8400-e29b-41d4-a716-446655440004' THEN 'Accountant'
-    WHEN id = '550e8400-e29b-41d4-a716-446655440005' THEN 'Nurse'
-    ELSE 'Business Owner'
-  END,
-  national_id = CASE 
-    WHEN id = '550e8400-e29b-41d4-a716-446655440001' THEN '12345678'
-    WHEN id = '550e8400-e29b-41d4-a716-446655440002' THEN '23456789'
-    WHEN id = '550e8400-e29b-41d4-a716-446655440003' THEN '34567890'
-    WHEN id = '550e8400-e29b-41d4-a716-446655440004' THEN '45678901'
-    WHEN id = '550e8400-e29b-41d4-a716-446655440005' THEN '56789012'
-    ELSE LPAD((RANDOM() * 99999999)::INT::TEXT, 8, '0')
-  END;
 
 
 -- Migration: 20250801195303_9c9d1ab8-28a6-470a-af0b-daeae99333df.sql
@@ -716,55 +489,18 @@ UPDATE public.tenants SET
 -- Add comprehensive dummy data for all entities
 
 -- Insert sample properties
-INSERT INTO public.properties (id, name, address, city, state, zip_code, country, property_type, description, amenities, total_units, owner_id, created_at) VALUES
-('11111111-1111-1111-1111-111111111111', 'Kilimani Heights', '123 Kilimani Road', 'Nairobi', 'Nairobi County', '00100', 'Kenya', 'Residential', 'Modern apartment complex in upscale Kilimani', ARRAY['Parking', 'Security', 'Gym', 'Swimming Pool'], 12, auth.uid(), now()),
-('22222222-2222-2222-2222-222222222222', 'Westlands Business Park', '456 Ring Road', 'Nairobi', 'Nairobi County', '00600', 'Kenya', 'Commercial', 'Prime commercial property in Westlands', ARRAY['Parking', '24/7 Security', 'Elevator', 'Conference Rooms'], 8, auth.uid(), now()),
-('33333333-3333-3333-3333-333333333333', 'Karen Gardens', '789 Karen Road', 'Nairobi', 'Nairobi County', '00502', 'Kenya', 'Mixed-use', 'Luxury mixed-use development in Karen', ARRAY['Landscaped Gardens', 'Security', 'Shopping Center', 'Restaurant'], 20, auth.uid(), now())
-ON CONFLICT (id) DO NOTHING;
 
 -- Insert sample units
-INSERT INTO public.units (id, unit_number, unit_type, property_id, bedrooms, bathrooms, square_feet, rent_amount, security_deposit, status, description, created_at) VALUES
-('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'A101', '2 Bedroom', '11111111-1111-1111-1111-111111111111', 2, 2, 900, 45000, 90000, 'occupied', 'Spacious 2BR with balcony', now()),
-('bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb', 'A102', '1 Bedroom', '11111111-1111-1111-1111-111111111111', 1, 1, 650, 35000, 70000, 'vacant', 'Cozy 1BR apartment', now()),
-('cccccccc-cccc-cccc-cccc-cccccccccccc', 'B201', 'Bedsitter', '11111111-1111-1111-1111-111111111111', 0, 1, 400, 25000, 50000, 'occupied', 'Modern bedsitter with kitchenette', now()),
-('dddddddd-dddd-dddd-dddd-dddddddddddd', 'Office-01', 'Office Space', '22222222-2222-2222-2222-222222222222', 0, 2, 1200, 120000, 240000, 'vacant', 'Premium office space', now()),
-('eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee', 'Villa-01', 'Standalone House', '33333333-3333-3333-3333-333333333333', 4, 3, 2500, 150000, 300000, 'occupied', 'Luxury villa with garden', now())
-ON CONFLICT (id) DO NOTHING;
 
 -- Insert sample tenants
-INSERT INTO public.tenants (id, first_name, last_name, email, phone, national_id, profession, emergency_contact_name, emergency_contact_phone, previous_address, created_at) VALUES
-('tttttttt-tttt-tttt-tttt-tttttttttttt', 'John', 'Kamau', 'john.kamau@email.com', '+254712345678', '12345678', 'Software Engineer', 'Mary Kamau', '+254723456789', 'Kiambu, Kenya', now()),
-('uuuuuuuu-uuuu-uuuu-uuuu-uuuuuuuuuuuu', 'Grace', 'Wanjiku', 'grace.wanjiku@email.com', '+254734567890', '23456789', 'Marketing Manager', 'Peter Wanjiku', '+254745678901', 'Nakuru, Kenya', now()),
-('vvvvvvvv-vvvv-vvvv-vvvv-vvvvvvvvvvvv', 'Ahmed', 'Hassan', 'ahmed.hassan@email.com', '+254756789012', '34567890', 'Business Consultant', 'Fatima Hassan', '+254767890123', 'Mombasa, Kenya', now())
-ON CONFLICT (id) DO NOTHING;
 
 -- Insert sample leases
-INSERT INTO public.leases (id, tenant_id, unit_id, lease_start_date, lease_end_date, monthly_rent, security_deposit, status, lease_terms, created_at) VALUES
-('llllllll-llll-llll-llll-llllllllllll', 'tttttttt-tttt-tttt-tttt-tttttttttttt', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', '2024-01-01', '2024-12-31', 45000, 90000, 'active', 'Standard 12-month lease with annual renewal option', now()),
-('mmmmmmmm-mmmm-mmmm-mmmm-mmmmmmmmmmmm', 'uuuuuuuu-uuuu-uuuu-uuuu-uuuuuuuuuuuu', 'cccccccc-cccc-cccc-cccc-cccccccccccc', '2024-02-01', '2025-01-31', 25000, 50000, 'active', 'Standard 12-month lease', now()),
-('nnnnnnnn-nnnn-nnnn-nnnn-nnnnnnnnnnnn', 'vvvvvvvv-vvvv-vvvv-vvvv-vvvvvvvvvvvv', 'eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee', '2024-03-01', '2025-02-28', 150000, 300000, 'active', 'Premium villa lease with garden maintenance included', now())
-ON CONFLICT (id) DO NOTHING;
 
 -- Insert sample payments
-INSERT INTO public.payments (id, lease_id, tenant_id, amount, payment_date, payment_type, payment_method, transaction_id, status, notes, created_at) VALUES
-('pppppppp-pppp-pppp-pppp-pppppppppppp', 'llllllll-llll-llll-llll-llllllllllll', 'tttttttt-tttt-tttt-tttt-tttttttttttt', 45000, '2024-01-01', 'Rent', 'Bank Transfer', 'TXN001234', 'completed', 'January rent payment', now()),
-('qqqqqqqq-qqqq-qqqq-qqqq-qqqqqqqqqqqq', 'mmmmmmmm-mmmm-mmmm-mmmm-mmmmmmmmmmmm', 'uuuuuuuu-uuuu-uuuu-uuuu-uuuuuuuuuuuu', 25000, '2024-02-01', 'Rent', 'M-Pesa', 'MPESA5678', 'completed', 'February rent payment', now()),
-('rrrrrrrr-rrrr-rrrr-rrrr-rrrrrrrrrrrr', 'nnnnnnnn-nnnn-nnnn-nnnn-nnnnnnnnnnnn', 'vvvvvvvv-vvvv-vvvv-vvvv-vvvvvvvvvvvv', 150000, '2024-03-01', 'Rent', 'Cheque', 'CHQ789012', 'completed', 'March rent payment', now())
-ON CONFLICT (id) DO NOTHING;
 
 -- Insert sample expenses
-INSERT INTO public.expenses (id, property_id, unit_id, description, category, amount, expense_date, vendor_name, receipt_url, created_by, created_at) VALUES
-('xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx', '11111111-1111-1111-1111-111111111111', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'Plumbing repair in unit A101', 'Maintenance', 8500, '2024-01-15', 'Nairobi Plumbers Ltd', null, auth.uid(), now()),
-('yyyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy', '11111111-1111-1111-1111-111111111111', null, 'Monthly security service', 'Security', 25000, '2024-01-01', 'SecureGuard Kenya', null, auth.uid(), now()),
-('zzzzzzzz-zzzz-zzzz-zzzz-zzzzzzzzzzzz', '22222222-2222-2222-2222-222222222222', null, 'Elevator maintenance', 'Maintenance', 15000, '2024-01-10', 'Otis Elevators', null, auth.uid(), now())
-ON CONFLICT (id) DO NOTHING;
 
 -- Insert sample invoices
-INSERT INTO public.invoices (id, lease_id, tenant_id, invoice_number, invoice_date, due_date, amount, description, status, created_at) VALUES
-('iiiiiiii-iiii-iiii-iiii-iiiiiiiiiiii', 'llllllll-llll-llll-llll-llllllllllll', 'tttttttt-tttt-tttt-tttt-tttttttttttt', 'INV-2024-001', '2024-01-01', '2024-01-05', 45000, 'January 2024 rent', 'paid', now()),
-('jjjjjjjj-jjjj-jjjj-jjjj-jjjjjjjjjjjj', 'mmmmmmmm-mmmm-mmmm-mmmm-mmmmmmmmmmmm', 'uuuuuuuu-uuuu-uuuu-uuuu-uuuuuuuuuuuu', 'INV-2024-002', '2024-02-01', '2024-02-05', 25000, 'February 2024 rent', 'paid', now()),
-('kkkkkkkk-kkkk-kkkk-kkkk-kkkkkkkkkkkk', 'nnnnnnnn-nnnn-nnnn-nnnn-nnnnnnnnnnnn', 'vvvvvvvv-vvvv-vvvv-vvvv-vvvvvvvvvvvv', 'INV-2024-003', '2024-03-01', '2024-03-05', 150000, 'March 2024 rent', 'pending', now())
-ON CONFLICT (id) DO NOTHING;
 
 
 -- Migration: 20250801200845_935ac44d-fcc8-43e6-8737-a40a18f4b178.sql
@@ -772,106 +508,29 @@ ON CONFLICT (id) DO NOTHING;
 -- Add comprehensive dummy data for all entities with proper UUIDs
 
 -- Insert sample properties
-INSERT INTO public.properties (id, name, address, city, state, zip_code, country, property_type, description, amenities, total_units, owner_id, created_at) VALUES
-('a1111111-1111-1111-1111-111111111111', 'Kilimani Heights', '123 Kilimani Road', 'Nairobi', 'Nairobi County', '00100', 'Kenya', 'Residential', 'Modern apartment complex in upscale Kilimani', ARRAY['Parking', 'Security', 'Gym', 'Swimming Pool'], 12, auth.uid(), now()),
-('b2222222-2222-2222-2222-222222222222', 'Westlands Business Park', '456 Ring Road', 'Nairobi', 'Nairobi County', '00600', 'Kenya', 'Commercial', 'Prime commercial property in Westlands', ARRAY['Parking', '24/7 Security', 'Elevator', 'Conference Rooms'], 8, auth.uid(), now()),
-('c3333333-3333-3333-3333-333333333333', 'Karen Gardens', '789 Karen Road', 'Nairobi', 'Nairobi County', '00502', 'Kenya', 'Mixed-use', 'Luxury mixed-use development in Karen', ARRAY['Landscaped Gardens', 'Security', 'Shopping Center', 'Restaurant'], 20, auth.uid(), now())
-ON CONFLICT (id) DO NOTHING;
 
 -- Insert sample units
-INSERT INTO public.units (id, unit_number, unit_type, property_id, bedrooms, bathrooms, square_feet, rent_amount, security_deposit, status, description, created_at) VALUES
-('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'A101', '2 Bedroom', 'a1111111-1111-1111-1111-111111111111', 2, 2, 900, 45000, 90000, 'occupied', 'Spacious 2BR with balcony', now()),
-('bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb', 'A102', '1 Bedroom', 'a1111111-1111-1111-1111-111111111111', 1, 1, 650, 35000, 70000, 'vacant', 'Cozy 1BR apartment', now()),
-('cccccccc-cccc-cccc-cccc-cccccccccccc', 'B201', 'Bedsitter', 'a1111111-1111-1111-1111-111111111111', 0, 1, 400, 25000, 50000, 'occupied', 'Modern bedsitter with kitchenette', now()),
-('dddddddd-dddd-dddd-dddd-dddddddddddd', 'Office-01', 'Office Space', 'b2222222-2222-2222-2222-222222222222', 0, 2, 1200, 120000, 240000, 'vacant', 'Premium office space', now()),
-('eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee', 'Villa-01', 'Standalone House', 'c3333333-3333-3333-3333-333333333333', 4, 3, 2500, 150000, 300000, 'occupied', 'Luxury villa with garden', now())
-ON CONFLICT (id) DO NOTHING;
 
 -- Insert sample tenants
-INSERT INTO public.tenants (id, first_name, last_name, email, phone, national_id, profession, emergency_contact_name, emergency_contact_phone, previous_address, created_at) VALUES
-('f4444444-4444-4444-4444-444444444444', 'John', 'Kamau', 'john.kamau@email.com', '+254712345678', '12345678', 'Software Engineer', 'Mary Kamau', '+254723456789', 'Kiambu, Kenya', now()),
-('g5555555-5555-5555-5555-555555555555', 'Grace', 'Wanjiku', 'grace.wanjiku@email.com', '+254734567890', '23456789', 'Marketing Manager', 'Peter Wanjiku', '+254745678901', 'Nakuru, Kenya', now()),
-('h6666666-6666-6666-6666-666666666666', 'Ahmed', 'Hassan', 'ahmed.hassan@email.com', '+254756789012', '34567890', 'Business Consultant', 'Fatima Hassan', '+254767890123', 'Mombasa, Kenya', now())
-ON CONFLICT (id) DO NOTHING;
 
 -- Insert sample leases
-INSERT INTO public.leases (id, tenant_id, unit_id, lease_start_date, lease_end_date, monthly_rent, security_deposit, status, lease_terms, created_at) VALUES
-('i7777777-7777-7777-7777-777777777777', 'f4444444-4444-4444-4444-444444444444', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', '2024-01-01', '2024-12-31', 45000, 90000, 'active', 'Standard 12-month lease with annual renewal option', now()),
-('j8888888-8888-8888-8888-888888888888', 'g5555555-5555-5555-5555-555555555555', 'cccccccc-cccc-cccc-cccc-cccccccccccc', '2024-02-01', '2025-01-31', 25000, 50000, 'active', 'Standard 12-month lease', now()),
-('k9999999-9999-9999-9999-999999999999', 'h6666666-6666-6666-6666-666666666666', 'eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee', '2024-03-01', '2025-02-28', 150000, 300000, 'active', 'Premium villa lease with garden maintenance included', now())
-ON CONFLICT (id) DO NOTHING;
 
 -- Insert sample payments
-INSERT INTO public.payments (id, lease_id, tenant_id, amount, payment_date, payment_type, payment_method, transaction_id, status, notes, created_at) VALUES
-('l1010101-1010-1010-1010-101010101010', 'i7777777-7777-7777-7777-777777777777', 'f4444444-4444-4444-4444-444444444444', 45000, '2024-01-01', 'Rent', 'Bank Transfer', 'TXN001234', 'completed', 'January rent payment', now()),
-('m2020202-2020-2020-2020-202020202020', 'j8888888-8888-8888-8888-888888888888', 'g5555555-5555-5555-5555-555555555555', 25000, '2024-02-01', 'Rent', 'M-Pesa', 'MPESA5678', 'completed', 'February rent payment', now()),
-('n3030303-3030-3030-3030-303030303030', 'k9999999-9999-9999-9999-999999999999', 'h6666666-6666-6666-6666-666666666666', 150000, '2024-03-01', 'Rent', 'Cheque', 'CHQ789012', 'completed', 'March rent payment', now())
-ON CONFLICT (id) DO NOTHING;
 
 -- Insert sample expenses
-INSERT INTO public.expenses (id, property_id, unit_id, description, category, amount, expense_date, vendor_name, receipt_url, created_by, created_at) VALUES
-('o4040404-4040-4040-4040-404040404040', 'a1111111-1111-1111-1111-111111111111', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'Plumbing repair in unit A101', 'Maintenance', 8500, '2024-01-15', 'Nairobi Plumbers Ltd', null, auth.uid(), now()),
-('p5050505-5050-5050-5050-505050505050', 'a1111111-1111-1111-1111-111111111111', null, 'Monthly security service', 'Security', 25000, '2024-01-01', 'SecureGuard Kenya', null, auth.uid(), now()),
-('q6060606-6060-6060-6060-606060606060', 'b2222222-2222-2222-2222-222222222222', null, 'Elevator maintenance', 'Maintenance', 15000, '2024-01-10', 'Otis Elevators', null, auth.uid(), now())
-ON CONFLICT (id) DO NOTHING;
 
 
 -- Migration: 20250801201738_e46b53b7-4a45-4f77-af10-4d6fa26eabcc.sql
 
 -- Remove all dummy data from the system
-DELETE FROM payments WHERE tenant_id IN (
-  SELECT id FROM tenants WHERE email LIKE '%@zirahomes.demo'
-);
-
-DELETE FROM invoices WHERE tenant_id IN (
-  SELECT id FROM tenants WHERE email LIKE '%@zirahomes.demo'
-);
-
-DELETE FROM expenses WHERE property_id IN (
-  SELECT id FROM properties WHERE name LIKE '%Demo%' OR name LIKE '%Sample%'
-);
-
-DELETE FROM leases WHERE tenant_id IN (
-  SELECT id FROM tenants WHERE email LIKE '%@zirahomes.demo'
-);
-
-DELETE FROM tenants WHERE email LIKE '%@zirahomes.demo';
-
-DELETE FROM units WHERE property_id IN (
-  SELECT id FROM properties WHERE name LIKE '%Demo%' OR name LIKE '%Sample%'
-);
-
-DELETE FROM blocks WHERE property_id IN (
-  SELECT id FROM properties WHERE name LIKE '%Demo%' OR name LIKE '%Sample%'
-);
-
-DELETE FROM properties WHERE name LIKE '%Demo%' OR name LIKE '%Sample%';
 
 
--- Migration: 20250801204748_430efdb6-091f-4e0b-b9f1-e8f0ace4b041.sql
 
--- Fix RLS policies to allow users without roles to self-assign 'Agent' role
-CREATE POLICY "Users without roles can assign themselves Agent role"
-ON public.user_roles
-FOR INSERT
-TO authenticated
-WITH CHECK (
-  auth.uid() = user_id 
-  AND role = 'Agent'::public.app_role 
-  AND NOT EXISTS (
-    SELECT 1 FROM public.user_roles 
-    WHERE user_id = auth.uid()
-  )
-);
+
+
+
 
 -- Ensure the current user has an Agent role (if they don't have any role)
-INSERT INTO public.user_roles (user_id, role)
-SELECT auth.uid(), 'Agent'::public.app_role
-WHERE auth.uid() IS NOT NULL
-AND NOT EXISTS (
-  SELECT 1 FROM public.user_roles 
-  WHERE user_id = auth.uid()
-);
 
 
 -- Migration: 20250801205104_49c295b4-d9b0-43ac-90e6-d09522cd2e80.sql
@@ -880,24 +539,11 @@ AND NOT EXISTS (
 -- Then assign them the Admin role
 
 -- Find the user by email and assign Admin role
-INSERT INTO public.user_roles (user_id, role)
-SELECT p.id, 'Admin'::public.app_role
-FROM public.profiles p
-WHERE p.email = 'dmwangui@gmail.com'
-AND NOT EXISTS (
-  SELECT 1 FROM public.user_roles ur 
-  WHERE ur.user_id = p.id AND ur.role = 'Admin'::public.app_role
-);
 
 -- If the above didn't insert anything, it means either:
 -- 1. The user doesn't exist in profiles table
 -- 2. They already have Admin role
 -- Let's also remove any other roles they might have to ensure they only have Admin
-DELETE FROM public.user_roles 
-WHERE user_id IN (
-  SELECT p.id FROM public.profiles p WHERE p.email = 'dmwangui@gmail.com'
-) 
-AND role != 'Admin'::public.app_role;
 
 
 -- Migration: 20250801224024_1f2264f0-a80b-4a79-bc85-68dad1fba042.sql
@@ -956,199 +602,27 @@ EXECUTE FUNCTION public.update_updated_at_column();
 -- Migration: 20250803083149_0ca002f7-56e1-4133-9a1e-84b661c423e0.sql
 
 -- Add sample tenants
-INSERT INTO tenants (first_name, last_name, email, phone, national_id, employment_status, monthly_income) VALUES
-('John', 'Doe', 'john.doe@email.com', '+254712345678', 'ID12345678', 'Employed', 80000),
-('Jane', 'Smith', 'jane.smith@email.com', '+254723456789', 'ID23456789', 'Employed', 120000),
-('Mike', 'Johnson', 'mike.johnson@email.com', '+254734567890', 'ID34567890', 'Self-Employed', 95000),
-('Sarah', 'Wilson', 'sarah.wilson@email.com', '+254745678901', 'ID45678901', 'Employed', 110000),
-('David', 'Brown', 'david.brown@email.com', '+254756789012', 'ID56789012', 'Employed', 85000);
 
 -- Add sample leases (using existing properties and units)
-INSERT INTO leases (tenant_id, unit_id, monthly_rent, security_deposit, lease_start_date, lease_end_date, status)
-SELECT 
-  t.id as tenant_id,
-  u.id as unit_id,
-  u.rent_amount as monthly_rent,
-  u.rent_amount * 2 as security_deposit,
-  '2024-01-01'::date as lease_start_date,
-  '2024-12-31'::date as lease_end_date,
-  'active'::text as status
-FROM tenants t
-CROSS JOIN units u
-WHERE t.first_name IN ('John', 'Jane', 'Mike', 'Sarah', 'David')
-AND u.unit_number IN ('101', '102', '103', '104', '105')
-LIMIT 5;
 
 -- Add sample invoices
-INSERT INTO invoices (tenant_id, lease_id, amount, invoice_date, due_date, status, invoice_number)
-SELECT 
-  l.tenant_id,
-  l.id as lease_id,
-  l.monthly_rent,
-  '2024-10-01'::date as invoice_date,
-  '2024-10-15'::date as due_date,
-  'paid'::text as status,
-  'INV-' || LPAD((ROW_NUMBER() OVER ())::text, 6, '0') as invoice_number
-FROM leases l
-LIMIT 5;
 
 -- Add sample payments
-INSERT INTO payments (tenant_id, lease_id, amount, payment_date, payment_type, status, payment_method)
-SELECT 
-  i.tenant_id,
-  i.lease_id,
-  i.amount,
-  '2024-10-10'::date as payment_date,
-  'Rent'::text as payment_type,
-  'completed'::text as status,
-  'Bank Transfer'::text as payment_method
-FROM invoices i
-LIMIT 5;
 
 -- Add sample expenses
-INSERT INTO expenses (property_id, amount, category, description, expense_date, vendor_name)
-SELECT 
-  p.id as property_id,
-  CASE 
-    WHEN ROW_NUMBER() OVER () % 4 = 1 THEN 15000
-    WHEN ROW_NUMBER() OVER () % 4 = 2 THEN 25000
-    WHEN ROW_NUMBER() OVER () % 4 = 3 THEN 8000
-    ELSE 12000
-  END as amount,
-  CASE 
-    WHEN ROW_NUMBER() OVER () % 4 = 1 THEN 'Maintenance'
-    WHEN ROW_NUMBER() OVER () % 4 = 2 THEN 'Utilities'
-    WHEN ROW_NUMBER() OVER () % 4 = 3 THEN 'Security'
-    ELSE 'Cleaning'
-  END as category,
-  CASE 
-    WHEN ROW_NUMBER() OVER () % 4 = 1 THEN 'Plumbing repairs'
-    WHEN ROW_NUMBER() OVER () % 4 = 2 THEN 'Electricity bill'
-    WHEN ROW_NUMBER() OVER () % 4 = 3 THEN 'Security services'
-    ELSE 'Cleaning services'
-  END as description,
-  '2024-10-15'::date as expense_date,
-  CASE 
-    WHEN ROW_NUMBER() OVER () % 4 = 1 THEN 'ABC Plumbing'
-    WHEN ROW_NUMBER() OVER () % 4 = 2 THEN 'Kenya Power'
-    WHEN ROW_NUMBER() OVER () % 4 = 3 THEN 'SecureTech Ltd'
-    ELSE 'CleanCorp'
-  END as vendor_name
-FROM properties p
-WHERE p.name IN ('Sunset Gardens', 'Green Valley', 'Palm Heights', 'Ocean View')
-LIMIT 8;
 
 
 -- Migration: 20250803083705_140e9b33-93f0-424d-8eb5-0316923752d1.sql
 
 -- First, let's get some units to work with
-INSERT INTO leases (tenant_id, unit_id, monthly_rent, security_deposit, lease_start_date, lease_end_date, status)
-SELECT 
-  t.id as tenant_id,
-  u.id as unit_id,
-  u.rent_amount as monthly_rent,
-  u.rent_amount * 2 as security_deposit,
-  '2024-01-01'::date as lease_start_date,
-  '2024-12-31'::date as lease_end_date,
-  'active'::text as status
-FROM tenants t
-CROSS JOIN (
-  SELECT id, rent_amount FROM units WHERE property_id IN (
-    SELECT id FROM properties WHERE name IN ('Karen Gardens', 'Kasarani Estate', 'Kileleshwa Heights', 'Langata View', 'Westlands Square')
-  ) LIMIT 10
-) u
-WHERE t.first_name IN ('John', 'Wanjiku', 'David', 'Fatuma', 'Aisha', 'Peter', 'Grace', 'Michael', 'Esther', 'Samuel')
-LIMIT 10;
 
 -- Add some invoices for October 2024 (some paid, some pending, some overdue)
-INSERT INTO invoices (tenant_id, lease_id, amount, invoice_date, due_date, status, invoice_number, description)
-SELECT 
-  l.tenant_id,
-  l.id as lease_id,
-  l.monthly_rent,
-  '2024-10-01'::date as invoice_date,
-  '2024-10-15'::date as due_date,
-  CASE 
-    WHEN ROW_NUMBER() OVER () % 3 = 0 THEN 'paid'
-    WHEN ROW_NUMBER() OVER () % 3 = 1 THEN 'pending'
-    ELSE 'overdue'
-  END as status,
-  'INV-2024-10-' || LPAD((ROW_NUMBER() OVER ())::text, 3, '0') as invoice_number,
-  'Monthly rent for October 2024' as description
-FROM leases l
-LIMIT 10;
 
 -- Add some payments for paid invoices
-INSERT INTO payments (tenant_id, lease_id, amount, payment_date, payment_type, status, payment_method, payment_reference)
-SELECT 
-  i.tenant_id,
-  i.lease_id,
-  i.amount,
-  '2024-10-12'::date as payment_date,
-  'Rent'::text as payment_type,
-  'completed'::text as status,
-  CASE 
-    WHEN ROW_NUMBER() OVER () % 2 = 0 THEN 'Bank Transfer'
-    ELSE 'Mobile Money'
-  END as payment_method,
-  'PAY-2024-' || LPAD((ROW_NUMBER() OVER ())::text, 6, '0') as payment_reference
-FROM invoices i
-WHERE i.status = 'paid'
-LIMIT 5;
 
 -- Add some September invoices that are overdue
-INSERT INTO invoices (tenant_id, lease_id, amount, invoice_date, due_date, status, invoice_number, description)
-SELECT 
-  l.tenant_id,
-  l.id as lease_id,
-  l.monthly_rent,
-  '2024-09-01'::date as invoice_date,
-  '2024-09-15'::date as due_date,
-  'overdue'::text as status,
-  'INV-2024-09-' || LPAD((ROW_NUMBER() OVER ())::text, 3, '0') as invoice_number,
-  'Monthly rent for September 2024' as description
-FROM leases l
-WHERE l.tenant_id IN (
-  SELECT tenant_id FROM invoices WHERE status = 'overdue' LIMIT 3
-)
-LIMIT 3;
 
 -- Add some expenses across properties
-INSERT INTO expenses (property_id, amount, category, description, expense_date, vendor_name)
-SELECT 
-  p.id as property_id,
-  CASE 
-    WHEN ROW_NUMBER() OVER () % 5 = 0 THEN 25000
-    WHEN ROW_NUMBER() OVER () % 5 = 1 THEN 15000
-    WHEN ROW_NUMBER() OVER () % 5 = 2 THEN 8000
-    WHEN ROW_NUMBER() OVER () % 5 = 3 THEN 12000
-    ELSE 18000
-  END as amount,
-  CASE 
-    WHEN ROW_NUMBER() OVER () % 5 = 0 THEN 'Maintenance'
-    WHEN ROW_NUMBER() OVER () % 5 = 1 THEN 'Utilities'
-    WHEN ROW_NUMBER() OVER () % 5 = 2 THEN 'Security'
-    WHEN ROW_NUMBER() OVER () % 5 = 3 THEN 'Cleaning'
-    ELSE 'Repairs'
-  END as category,
-  CASE 
-    WHEN ROW_NUMBER() OVER () % 5 = 0 THEN 'Monthly maintenance costs'
-    WHEN ROW_NUMBER() OVER () % 5 = 1 THEN 'Electricity and water bills'
-    WHEN ROW_NUMBER() OVER () % 5 = 2 THEN 'Security guard services'
-    WHEN ROW_NUMBER() OVER () % 5 = 3 THEN 'Cleaning and landscaping'
-    ELSE 'Emergency repairs and fixes'
-  END as description,
-  '2024-10-15'::date as expense_date,
-  CASE 
-    WHEN ROW_NUMBER() OVER () % 5 = 0 THEN 'MainCorp Ltd'
-    WHEN ROW_NUMBER() OVER () % 5 = 1 THEN 'Kenya Power & NCWSC'
-    WHEN ROW_NUMBER() OVER () % 5 = 2 THEN 'SecureGuard Services'
-    WHEN ROW_NUMBER() OVER () % 5 = 3 THEN 'CleanPro Solutions'
-    ELSE 'QuickFix Contractors'
-  END as vendor_name
-FROM properties p
-WHERE p.name IN ('Karen Gardens', 'Kasarani Estate', 'Kileleshwa Heights', 'Langata View', 'Westlands Square')
-LIMIT 15;
 
 
 -- Migration: 20250803104342_0ba2dd0e-3d82-4ac7-b30f-a15622130229.sql
@@ -1240,110 +714,16 @@ CREATE POLICY "System can insert activity logs" ON public.user_activity_logs
   FOR INSERT WITH CHECK (true);
 
 -- Insert default permissions
-INSERT INTO public.permissions (name, description, category) VALUES
-  -- User Management
-  ('users.view', 'View users list', 'users'),
-  ('users.create', 'Create new users', 'users'),
-  ('users.edit', 'Edit user details', 'users'),
-  ('users.delete', 'Delete users', 'users'),
-  ('users.roles.manage', 'Manage user roles', 'users'),
-  ('users.impersonate', 'Login as other users', 'users'),
-  
-  -- Property Management
-  ('properties.view', 'View properties', 'properties'),
-  ('properties.create', 'Create new properties', 'properties'),
-  ('properties.edit', 'Edit property details', 'properties'),
-  ('properties.delete', 'Delete properties', 'properties'),
-  
-  -- Unit Management
-  ('units.view', 'View units', 'units'),
-  ('units.create', 'Create new units', 'units'),
-  ('units.edit', 'Edit unit details', 'units'),
-  ('units.delete', 'Delete units', 'units'),
-  
-  -- Tenant Management
-  ('tenants.view', 'View tenants', 'tenants'),
-  ('tenants.create', 'Add new tenants', 'tenants'),
-  ('tenants.edit', 'Edit tenant details', 'tenants'),
-  ('tenants.delete', 'Remove tenants', 'tenants'),
-  
-  -- Lease Management
-  ('leases.view', 'View leases', 'leases'),
-  ('leases.create', 'Create new leases', 'leases'),
-  ('leases.edit', 'Edit lease details', 'leases'),
-  ('leases.delete', 'Delete leases', 'leases'),
-  
-  -- Financial Management
-  ('payments.view', 'View payments', 'financial'),
-  ('payments.create', 'Record payments', 'financial'),
-  ('payments.edit', 'Edit payment records', 'financial'),
-  ('invoices.view', 'View invoices', 'financial'),
-  ('invoices.create', 'Create invoices', 'financial'),
-  ('invoices.edit', 'Edit invoices', 'financial'),
-  ('expenses.view', 'View expenses', 'financial'),
-  ('expenses.create', 'Record expenses', 'financial'),
-  ('expenses.edit', 'Edit expenses', 'financial'),
-  
-  -- Maintenance Management
-  ('maintenance.view', 'View maintenance requests', 'maintenance'),
-  ('maintenance.create', 'Create maintenance requests', 'maintenance'),
-  ('maintenance.edit', 'Edit maintenance requests', 'maintenance'),
-  ('maintenance.assign', 'Assign maintenance tasks', 'maintenance'),
-  
-  -- Reports & Analytics
-  ('reports.view', 'View reports', 'reports'),
-  ('reports.export', 'Export reports', 'reports'),
-  ('analytics.view', 'View analytics dashboard', 'reports'),
-  
-  -- System Administration
-  ('system.settings', 'Manage system settings', 'system'),
-  ('system.backup', 'Perform system backups', 'system'),
-  ('system.logs', 'View system logs', 'system');
 
 -- Assign default permissions to roles
-INSERT INTO public.role_permissions (role, permission_id)
-SELECT 'Admin', p.id FROM public.permissions p;
 
 -- Landlord permissions (property management focused)
-INSERT INTO public.role_permissions (role, permission_id)
-SELECT 'Landlord', p.id FROM public.permissions p
-WHERE p.category IN ('properties', 'units', 'tenants', 'leases', 'financial', 'maintenance', 'reports');
 
 -- Manager permissions (day-to-day operations)
-INSERT INTO public.role_permissions (role, permission_id)
-SELECT 'Manager', p.id FROM public.permissions p
-WHERE p.name IN (
-  'properties.view', 'properties.edit',
-  'units.view', 'units.edit',
-  'tenants.view', 'tenants.create', 'tenants.edit',
-  'leases.view', 'leases.create', 'leases.edit',
-  'payments.view', 'payments.create',
-  'invoices.view', 'invoices.create',
-  'maintenance.view', 'maintenance.create', 'maintenance.edit', 'maintenance.assign',
-  'reports.view'
-);
 
 -- Agent permissions (limited operations)
-INSERT INTO public.role_permissions (role, permission_id)
-SELECT 'Agent', p.id FROM public.permissions p
-WHERE p.name IN (
-  'properties.view',
-  'units.view',
-  'tenants.view', 'tenants.create',
-  'leases.view', 'leases.create',
-  'maintenance.view', 'maintenance.create',
-  'reports.view'
-);
 
 -- Tenant permissions (self-service)
-INSERT INTO public.role_permissions (role, permission_id)
-SELECT 'Tenant', p.id FROM public.permissions p
-WHERE p.name IN (
-  'payments.view',
-  'invoices.view',
-  'maintenance.create',
-  'maintenance.view'
-);
 
 -- Create function to check if user has specific permission
 CREATE OR REPLACE FUNCTION public.has_permission(_user_id uuid, _permission text)
@@ -1444,43 +824,18 @@ $$;
 -- Migration: 20250803105325_313e8337-379a-4df9-8785-79b97ee6974a.sql
 
 -- Update dmwangui@gmail.com user role from Admin to Landlord
-UPDATE public.user_roles 
-SET role = 'Landlord'
-WHERE user_id = 'a53f69a5-104e-489b-9b0a-48a56d6b011d';
 
 
 -- Migration: 20250803111153_1782fe07-3ed4-485c-9d0c-8a929f54dccc.sql
 
 -- Assign Admin role to the super admin user
-INSERT INTO user_roles (user_id, role)
-SELECT id, 'Admin'::app_role
-FROM profiles 
-WHERE email = 'ziratechnologies@gmail.com'
-ON CONFLICT (user_id, role) DO NOTHING;
 
 
 -- Migration: 20250803111458_bd5905d7-7bba-44d3-8823-3861c66b6313.sql
 
 -- Create profile for admin user if it doesn't exist
-INSERT INTO profiles (id, first_name, last_name, email)
-SELECT 
-    au.id,
-    au.raw_user_meta_data ->> 'first_name' as first_name,
-    au.raw_user_meta_data ->> 'last_name' as last_name,
-    au.email
-FROM auth.users au
-WHERE au.email = 'ziratechnologies@gmail.com'
-  AND NOT EXISTS (SELECT 1 FROM profiles p WHERE p.id = au.id)
-ON CONFLICT (id) DO NOTHING;
 
 -- Assign Admin role to the super admin user
-INSERT INTO user_roles (user_id, role)
-SELECT 
-    au.id,
-    'Admin'::app_role
-FROM auth.users au
-WHERE au.email = 'ziratechnologies@gmail.com'
-ON CONFLICT (user_id, role) DO NOTHING;
 
 
 -- Migration: 20250803112320_e557a658-fd8f-4d0a-8a4c-c1a2927a33bc.sql
@@ -1584,175 +939,18 @@ SELECT create_tenant_accounts();
 DROP FUNCTION create_tenant_accounts();
 
 -- Create some sample invoices for tenants
-INSERT INTO invoices (tenant_id, lease_id, invoice_number, invoice_date, due_date, amount, status, description)
-SELECT 
-    l.tenant_id,
-    l.id,
-    'INV-' || EXTRACT(YEAR FROM CURRENT_DATE) || '-' || LPAD(ROW_NUMBER() OVER (ORDER BY l.created_at)::text, 4, '0'),
-    CURRENT_DATE - INTERVAL '1 month',
-    CURRENT_DATE - INTERVAL '1 month' + INTERVAL '10 days',
-    l.monthly_rent,
-    CASE 
-        WHEN RANDOM() < 0.7 THEN 'paid'
-        WHEN RANDOM() < 0.9 THEN 'pending'
-        ELSE 'overdue'
-    END,
-    'Monthly Rent - ' || TO_CHAR(CURRENT_DATE - INTERVAL '1 month', 'Mon YYYY')
-FROM leases l
-WHERE EXISTS (SELECT 1 FROM tenants t WHERE t.id = l.tenant_id AND t.user_id IS NOT NULL);
 
 -- Create current month invoices
-INSERT INTO invoices (tenant_id, lease_id, invoice_number, invoice_date, due_date, amount, status, description)
-SELECT 
-    l.tenant_id,
-    l.id,
-    'INV-' || EXTRACT(YEAR FROM CURRENT_DATE) || '-' || LPAD((ROW_NUMBER() OVER (ORDER BY l.created_at) + 1000)::text, 4, '0'),
-    CURRENT_DATE,
-    CURRENT_DATE + INTERVAL '10 days',
-    l.monthly_rent,
-    CASE 
-        WHEN RANDOM() < 0.3 THEN 'paid'
-        WHEN RANDOM() < 0.8 THEN 'pending'
-        ELSE 'overdue'
-    END,
-    'Monthly Rent - ' || TO_CHAR(CURRENT_DATE, 'Mon YYYY')
-FROM leases l
-WHERE EXISTS (SELECT 1 FROM tenants t WHERE t.id = l.tenant_id AND t.user_id IS NOT NULL);
 
 -- Create some payment records for paid invoices
-INSERT INTO payments (tenant_id, lease_id, amount, payment_date, payment_method, payment_type, status, invoice_number)
-SELECT 
-    i.tenant_id,
-    i.lease_id,
-    i.amount,
-    i.due_date - INTERVAL '2 days',
-    CASE 
-        WHEN RANDOM() < 0.5 THEN 'M-Pesa'
-        WHEN RANDOM() < 0.8 THEN 'Bank Transfer'
-        ELSE 'Cash'
-    END,
-    'Rent Payment',
-    'completed',
-    i.invoice_number
-FROM invoices i
-WHERE i.status = 'paid';
 
 -- Create some maintenance requests from tenants
-INSERT INTO maintenance_requests (
-    tenant_id, 
-    property_id, 
-    unit_id, 
-    title, 
-    description, 
-    category, 
-    priority, 
-    status
-)
-SELECT 
-    l.tenant_id,
-    u.property_id,
-    l.unit_id,
-    CASE 
-        WHEN RANDOM() < 0.3 THEN 'Plumbing Issue'
-        WHEN RANDOM() < 0.5 THEN 'Electrical Problem'
-        WHEN RANDOM() < 0.7 THEN 'AC Unit Not Working'
-        ELSE 'General Maintenance'
-    END,
-    CASE 
-        WHEN RANDOM() < 0.3 THEN 'Kitchen sink is leaking and needs urgent repair'
-        WHEN RANDOM() < 0.5 THEN 'Living room lights not working properly'
-        WHEN RANDOM() < 0.7 THEN 'Air conditioning unit making loud noise'
-        ELSE 'Door handle is loose and needs tightening'
-    END,
-    CASE 
-        WHEN RANDOM() < 0.3 THEN 'Plumbing'
-        WHEN RANDOM() < 0.5 THEN 'Electrical'
-        WHEN RANDOM() < 0.7 THEN 'HVAC'
-        ELSE 'General'
-    END,
-    CASE 
-        WHEN RANDOM() < 0.2 THEN 'high'
-        WHEN RANDOM() < 0.7 THEN 'medium'
-        ELSE 'low'
-    END,
-    CASE 
-        WHEN RANDOM() < 0.3 THEN 'pending'
-        WHEN RANDOM() < 0.6 THEN 'in_progress'
-        WHEN RANDOM() < 0.8 THEN 'completed'
-        ELSE 'cancelled'
-    END
-FROM leases l
-JOIN units u ON l.unit_id = u.id
-WHERE EXISTS (SELECT 1 FROM tenants t WHERE t.id = l.tenant_id AND t.user_id IS NOT NULL)
-AND RANDOM() < 0.4; -- Only create for about 40% of tenants
-
-
--- Migration: 20250803194447_1adb599f-28a6-453c-829e-ea3441c39127.sql
-
--- Update dummy tenants with property and unit assignments
--- First, get some sample properties and units to assign
-WITH sample_assignments AS (
-  SELECT 
-    u.id as unit_id,
-    u.property_id,
-    ROW_NUMBER() OVER (ORDER BY u.created_at) as rn
-  FROM units u
-  WHERE u.status = 'vacant'
-  LIMIT 10
-),
-tenant_assignments AS (
-  SELECT 
-    t.id as tenant_id,
-    sa.unit_id,
-    sa.property_id,
-    ROW_NUMBER() OVER (ORDER BY t.created_at) as rn
-  FROM tenants t
-  CROSS JOIN sample_assignments sa
-  WHERE NOT EXISTS (
-    SELECT 1 FROM leases l WHERE l.tenant_id = t.id
-  )
-  AND t.rn = sa.rn
-)
--- Create leases for existing tenants without assignments
-INSERT INTO leases (tenant_id, unit_id, monthly_rent, lease_start_date, lease_end_date, security_deposit, status)
-SELECT 
-  ta.tenant_id,
-  ta.unit_id,
-  50000 + (random() * 30000)::numeric, -- Random rent between 50k-80k
-  CURRENT_DATE - INTERVAL '30 days' * (random() * 12)::int, -- Random start date in past year
-  CURRENT_DATE + INTERVAL '365 days', -- 1 year lease
-  100000, -- Standard security deposit
-  'active'
-FROM tenant_assignments ta
-WHERE ta.unit_id IS NOT NULL;
 
 
 -- Migration: 20250803194526_df2342dd-67a7-4a49-b524-607f8eabe671.sql
 
 -- Create leases for existing tenants without assignments
 -- This will only work if there are vacant units available
-INSERT INTO leases (tenant_id, unit_id, monthly_rent, lease_start_date, lease_end_date, security_deposit, status)
-SELECT 
-  t.id as tenant_id,
-  u.id as unit_id,
-  50000 + (random() * 30000)::numeric, -- Random rent between 50k-80k
-  CURRENT_DATE - INTERVAL '30 days' * (random() * 12)::int, -- Random start date in past year
-  CURRENT_DATE + INTERVAL '365 days', -- 1 year lease
-  100000, -- Standard security deposit
-  'active'
-FROM tenants t
-CROSS JOIN LATERAL (
-  SELECT id 
-  FROM units 
-  WHERE status = 'vacant' 
-  ORDER BY created_at 
-  LIMIT 1 
-  OFFSET floor(random() * (SELECT COUNT(*) FROM units WHERE status = 'vacant'))
-) u
-WHERE NOT EXISTS (
-  SELECT 1 FROM leases l WHERE l.tenant_id = t.id
-)
-LIMIT 10;
 
 
 -- Migration: 20250803195126_c07cb8d2-0bfa-4c6c-b168-bddbde0fed04.sql
@@ -2161,41 +1359,26 @@ WITH CHECK (
 ALTER TYPE public.app_role ADD VALUE IF NOT EXISTS 'Partner';
 
 -- Update Zira Technologies from Admin to Partner
-UPDATE public.user_roles 
-SET role = 'Partner'
-WHERE user_id = '0b178150-5f82-435a-a515-718ec79da646' AND role = 'Admin';
 
 
 -- Migration: 20250803233812_5013cec2-de0e-4afb-8d3b-d204158d8c21.sql
 
 -- Update Zira Technologies from Admin to Landlord role
 -- This removes them from the "Partner" administrative role
-UPDATE public.user_roles 
-SET role = 'Landlord'
-WHERE user_id = '0b178150-5f82-435a-a515-718ec79da646' AND role = 'Admin';
 
 
 -- Migration: 20250803234255_2e92cabe-d285-48d8-934b-f8850e4da0d9.sql
 
 -- Update Zira Technologies to Super Admin role
 -- Zira Technologies should be the overall Super Admin, not a partner to the Landlord
-UPDATE public.user_roles 
-SET role = 'Admin'
-WHERE user_id = '0b178150-5f82-435a-a515-718ec79da646' AND role = 'Landlord';
 
 
 -- Migration: 20250803234713_8c6f89af-b603-4e88-8503-6cdabdbfef3a.sql
 
 -- Create profile and role for the missing manager user
 -- Insert profile for Mazao Plus (the manager that was created but missing profile)
-INSERT INTO public.profiles (id, first_name, last_name, email, phone)
-VALUES ('1b95861d-0bd3-4029-9841-28e5a7cc73a7', 'Mazao', 'Plus', 'mazaoplus@gmail.com', '+254723301508')
-ON CONFLICT (id) DO NOTHING;
 
 -- Insert user role for Mazao Plus
-INSERT INTO public.user_roles (user_id, role)
-VALUES ('1b95861d-0bd3-4029-9841-28e5a7cc73a7', 'Manager')
-ON CONFLICT (user_id, role) DO NOTHING;
 
 
 -- Migration: 20250804021003_365c60b5-1586-4d63-bdb3-9bb393c5e95f.sql
@@ -2286,34 +1469,10 @@ USING (id = ANY(public.get_tenant_property_ids(auth.uid())));
 
 -- Update existing properties to have proper ownership
 -- Assign the first few properties to the current landlord user
-UPDATE public.properties
-SET owner_id = 'a53f69a5-104e-489b-9b0a-48a56d6b011d'
-WHERE id IN (
-  SELECT id FROM public.properties
-  WHERE owner_id IS NULL
-  LIMIT 3
-);
 
 -- Assign remaining properties to any other landlord/admin users if they exist
-UPDATE public.properties 
-SET owner_id = (
-  SELECT ur.user_id 
-  FROM public.user_roles ur 
-  WHERE ur.role IN ('Landlord', 'Admin') 
-  AND ur.user_id != 'a53f69a5-104e-489b-9b0a-48a56d6b011d'
-  LIMIT 1
-)
-WHERE owner_id IS NULL;
 
 -- If there are still unassigned properties, assign them to any user with Landlord role
-UPDATE public.properties 
-SET owner_id = (
-  SELECT ur.user_id 
-  FROM public.user_roles ur 
-  WHERE ur.role = 'Landlord'
-  LIMIT 1
-)
-WHERE owner_id IS NULL;
 
 -- Add a constraint to ensure properties must have either an owner or manager
 ALTER TABLE public.properties 
@@ -2327,40 +1486,10 @@ CHECK (owner_id IS NOT NULL OR manager_id IS NOT NULL);
 -- Update existing properties to have proper ownership
 
 -- First, assign some properties to the current landlord user
-UPDATE public.properties 
-SET owner_id = 'a53f69a5-104e-489b-9b0a-48a56d6b011d'
-WHERE id IN (
-  SELECT id FROM public.properties 
-  WHERE owner_id IS NULL 
-  ORDER BY created_at
-  LIMIT 3
-);
 
 -- Assign remaining properties to other landlord/admin users if they exist
-UPDATE public.properties 
-SET owner_id = (
-  SELECT ur.user_id 
-  FROM public.user_roles ur 
-  WHERE ur.role IN ('Landlord', 'Admin') 
-  AND ur.user_id != 'a53f69a5-104e-489b-9b0a-48a56d6b011d'
-  LIMIT 1
-)
-WHERE owner_id IS NULL 
-AND EXISTS (
-  SELECT 1 FROM public.user_roles ur 
-  WHERE ur.role IN ('Landlord', 'Admin') 
-  AND ur.user_id != 'a53f69a5-104e-489b-9b0a-48a56d6b011d'
-);
 
 -- If there are still unassigned properties, assign them to any user with Landlord role
-UPDATE public.properties 
-SET owner_id = (
-  SELECT ur.user_id 
-  FROM public.user_roles ur 
-  WHERE ur.role = 'Landlord'
-  LIMIT 1
-)
-WHERE owner_id IS NULL;
 
 -- Add a constraint to ensure properties must have either an owner or manager (but make it NOT ENFORCED initially to avoid issues with existing data)
 ALTER TABLE public.properties 
@@ -2374,40 +1503,10 @@ CHECK (owner_id IS NOT NULL OR manager_id IS NOT NULL) NOT ENFORCED;
 -- Update existing properties to have proper ownership
 
 -- First, assign some properties to the current landlord user
-UPDATE public.properties 
-SET owner_id = 'a53f69a5-104e-489b-9b0a-48a56d6b011d'
-WHERE id IN (
-  SELECT id FROM public.properties 
-  WHERE owner_id IS NULL 
-  ORDER BY created_at
-  LIMIT 3
-);
 
 -- Assign remaining properties to other landlord/admin users if they exist
-UPDATE public.properties 
-SET owner_id = (
-  SELECT ur.user_id 
-  FROM public.user_roles ur 
-  WHERE ur.role IN ('Landlord', 'Admin') 
-  AND ur.user_id != 'a53f69a5-104e-489b-9b0a-48a56d6b011d'
-  LIMIT 1
-)
-WHERE owner_id IS NULL 
-AND EXISTS (
-  SELECT 1 FROM public.user_roles ur 
-  WHERE ur.role IN ('Landlord', 'Admin') 
-  AND ur.user_id != 'a53f69a5-104e-489b-9b0a-48a56d6b011d'
-);
 
 -- If there are still unassigned properties, assign them to any user with Landlord role
-UPDATE public.properties 
-SET owner_id = (
-  SELECT ur.user_id 
-  FROM public.user_roles ur 
-  WHERE ur.role = 'Landlord'
-  LIMIT 1
-)
-WHERE owner_id IS NULL;
 
 
 -- Migration: 20250804025940_d84863d1-fa88-4e53-8e69-4f6dfc2ecc1a.sql
@@ -2635,26 +1734,10 @@ FOR EACH ROW
 EXECUTE FUNCTION public.update_updated_at_column();
 
 -- Insert default billing settings
-INSERT INTO public.billing_settings (setting_key, setting_value, description) VALUES
-('trial_period_days', '14', 'Number of days for free trial period'),
-('sms_cost_per_unit', '0.05', 'Cost per SMS in USD'),
-('grace_period_days', '7', 'Days before suspension after overdue'),
-('auto_invoice_generation', 'true', 'Automatically generate invoices'),
-('payment_reminder_days', '[3, 1]', 'Days before due date to send payment reminders'),
-('currency_settings', '{"default": "USD", "supported": ["USD", "KES"]}', 'Currency configuration');
 
 -- Insert default billing plans
-INSERT INTO public.billing_plans (name, description, price, billing_cycle, max_properties, max_units, sms_credits_included, features) VALUES
-('Starter', 'Perfect for small landlords', 29.99, 'monthly', 5, 25, 100, '["Basic reporting", "Email support", "Mobile app access"]'),
-('Professional', 'For growing property portfolios', 79.99, 'monthly', 20, 100, 500, '["Advanced reporting", "Priority support", "API access", "Custom branding"]'),
-('Enterprise', 'For large property management companies', 199.99, 'monthly', -1, -1, 2000, '["Unlimited properties", "Dedicated support", "Custom integrations", "White labeling"]');
 
 -- Insert default SMS bundles
-INSERT INTO public.sms_bundles (name, description, sms_count, price) VALUES
-('Small Bundle', '100 SMS credits', 100, 5.00),
-('Medium Bundle', '500 SMS credits', 500, 20.00),
-('Large Bundle', '1000 SMS credits', 1000, 35.00),
-('Bulk Bundle', '5000 SMS credits', 5000, 150.00);
 
 -- Create function to generate invoice numbers
 CREATE OR REPLACE FUNCTION public.generate_invoice_number()
@@ -2908,45 +1991,15 @@ FOR EACH ROW
 EXECUTE FUNCTION public.update_updated_at_column();
 
 -- Insert default billing settings (only if they don't exist)
-INSERT INTO public.billing_settings (setting_key, setting_value, description) 
-VALUES 
-('trial_period_days', '14', 'Number of days for free trial period'),
-('sms_cost_per_unit', '0.05', 'Cost per SMS in USD'),
-('grace_period_days', '7', 'Days before suspension after overdue'),
-('auto_invoice_generation', 'true', 'Automatically generate invoices'),
-('payment_reminder_days', '[3, 1]', 'Days before due date to send payment reminders'),
-('currency_settings', '{"default": "USD", "supported": ["USD", "KES"]}', 'Currency configuration')
-ON CONFLICT (setting_key) DO NOTHING;
 
 -- Insert default billing plans (only if they don't exist)
-INSERT INTO public.billing_plans (name, description, price, billing_cycle, max_properties, max_units, sms_credits_included, features) 
-SELECT 'Starter', 'Perfect for small landlords', 29.99, 'monthly', 5, 25, 100, '["Basic reporting", "Email support", "Mobile app access"]'
-WHERE NOT EXISTS (SELECT 1 FROM public.billing_plans WHERE name = 'Starter');
 
-INSERT INTO public.billing_plans (name, description, price, billing_cycle, max_properties, max_units, sms_credits_included, features) 
-SELECT 'Professional', 'For growing property portfolios', 79.99, 'monthly', 20, 100, 500, '["Advanced reporting", "Priority support", "API access", "Custom branding"]'
-WHERE NOT EXISTS (SELECT 1 FROM public.billing_plans WHERE name = 'Professional');
 
-INSERT INTO public.billing_plans (name, description, price, billing_cycle, max_properties, max_units, sms_credits_included, features) 
-SELECT 'Enterprise', 'For large property management companies', 199.99, 'monthly', -1, -1, 2000, '["Unlimited properties", "Dedicated support", "Custom integrations", "White labeling"]'
-WHERE NOT EXISTS (SELECT 1 FROM public.billing_plans WHERE name = 'Enterprise');
 
 -- Insert default SMS bundles (only if they don't exist)
-INSERT INTO public.sms_bundles (name, description, sms_count, price) 
-SELECT 'Small Bundle', '100 SMS credits', 100, 5.00
-WHERE NOT EXISTS (SELECT 1 FROM public.sms_bundles WHERE name = 'Small Bundle');
 
-INSERT INTO public.sms_bundles (name, description, sms_count, price) 
-SELECT 'Medium Bundle', '500 SMS credits', 500, 20.00
-WHERE NOT EXISTS (SELECT 1 FROM public.sms_bundles WHERE name = 'Medium Bundle');
 
-INSERT INTO public.sms_bundles (name, description, sms_count, price) 
-SELECT 'Large Bundle', '1000 SMS credits', 1000, 35.00
-WHERE NOT EXISTS (SELECT 1 FROM public.sms_bundles WHERE name = 'Large Bundle');
 
-INSERT INTO public.sms_bundles (name, description, sms_count, price) 
-SELECT 'Bulk Bundle', '5000 SMS credits', 5000, 150.00
-WHERE NOT EXISTS (SELECT 1 FROM public.sms_bundles WHERE name = 'Bulk Bundle');
 
 -- Create function to generate invoice numbers
 CREATE OR REPLACE FUNCTION public.generate_invoice_number()
@@ -3113,45 +2166,15 @@ CREATE POLICY "Admins can manage billing settings" ON public.billing_settings
 FOR ALL USING (has_role(auth.uid(), 'Admin'::app_role));
 
 -- Insert default billing settings (only if they don't exist)
-INSERT INTO public.billing_settings (setting_key, setting_value, description) 
-VALUES 
-('trial_period_days', '14', 'Number of days for free trial period'),
-('sms_cost_per_unit', '0.05', 'Cost per SMS in USD'),
-('grace_period_days', '7', 'Days before suspension after overdue'),
-('auto_invoice_generation', 'true', 'Automatically generate invoices'),
-('payment_reminder_days', '[3, 1]', 'Days before due date to send payment reminders'),
-('currency_settings', '{"default": "USD", "supported": ["USD", "KES"]}', 'Currency configuration')
-ON CONFLICT (setting_key) DO NOTHING;
 
 -- Insert default billing plans (only if they don't exist)
-INSERT INTO public.billing_plans (name, description, price, billing_cycle, max_properties, max_units, sms_credits_included, features) 
-SELECT 'Starter', 'Perfect for small landlords', 29.99, 'monthly', 5, 25, 100, '["Basic reporting", "Email support", "Mobile app access"]'
-WHERE NOT EXISTS (SELECT 1 FROM public.billing_plans WHERE name = 'Starter');
 
-INSERT INTO public.billing_plans (name, description, price, billing_cycle, max_properties, max_units, sms_credits_included, features) 
-SELECT 'Professional', 'For growing property portfolios', 79.99, 'monthly', 20, 100, 500, '["Advanced reporting", "Priority support", "API access", "Custom branding"]'
-WHERE NOT EXISTS (SELECT 1 FROM public.billing_plans WHERE name = 'Professional');
 
-INSERT INTO public.billing_plans (name, description, price, billing_cycle, max_properties, max_units, sms_credits_included, features) 
-SELECT 'Enterprise', 'For large property management companies', 199.99, 'monthly', -1, -1, 2000, '["Unlimited properties", "Dedicated support", "Custom integrations", "White labeling"]'
-WHERE NOT EXISTS (SELECT 1 FROM public.billing_plans WHERE name = 'Enterprise');
 
 -- Insert default SMS bundles (only if they don't exist)
-INSERT INTO public.sms_bundles (name, description, sms_count, price) 
-SELECT 'Small Bundle', '100 SMS credits', 100, 5.00
-WHERE NOT EXISTS (SELECT 1 FROM public.sms_bundles WHERE name = 'Small Bundle');
 
-INSERT INTO public.sms_bundles (name, description, sms_count, price) 
-SELECT 'Medium Bundle', '500 SMS credits', 500, 20.00
-WHERE NOT EXISTS (SELECT 1 FROM public.sms_bundles WHERE name = 'Medium Bundle');
 
-INSERT INTO public.sms_bundles (name, description, sms_count, price) 
-SELECT 'Large Bundle', '1000 SMS credits', 1000, 35.00
-WHERE NOT EXISTS (SELECT 1 FROM public.sms_bundles WHERE name = 'Large Bundle');
 
-INSERT INTO public.sms_bundles (name, description, sms_count, price) 
-SELECT 'Bulk Bundle', '5000 SMS credits', 5000, 150.00
-WHERE NOT EXISTS (SELECT 1 FROM public.sms_bundles WHERE name = 'Bulk Bundle');
 
 
 -- Migration: 20250804032008_48a468ea-b96f-469f-a0c7-37f0711bd4a3.sql
@@ -3165,11 +2188,6 @@ ADD COLUMN tier_pricing jsonb,
 ADD COLUMN currency text DEFAULT 'USD';
 
 -- Update existing plans to use percentage model
-UPDATE public.billing_plans 
-SET billing_model = 'percentage', 
-    percentage_rate = 2.0,
-    currency = 'KES'
-WHERE billing_model IS NULL;
 
 
 -- Migration: 20250804120500_42f94aea-6dda-4b92-81a2-c28ae5c70a46.sql
@@ -3259,36 +2277,8 @@ END $$;
 
 -- Fix the successful M-Pesa payment that wasn't processed correctly
 -- Insert the missing payment record for the successful M-Pesa transaction
-INSERT INTO payments (
-  tenant_id, 
-  lease_id, 
-  invoice_id, 
-  amount, 
-  payment_method, 
-  payment_date, 
-  transaction_id, 
-  payment_reference, 
-  payment_type, 
-  status, 
-  notes
-) VALUES (
-  'fc5ff96f-d6fa-4076-8d54-772f05d1e929',
-  '8c5e4212-6c4c-4dac-a327-a9d9e66af54a',
-  '6e22ca0b-cb19-4f16-9780-e24612a155c5',
-  5.00,
-  'M-Pesa',
-  '2025-08-04',
-  'TH49V60CWN',
-  'ws_CO_1754310757662723301507',
-  'rent',
-  'completed',
-  'M-Pesa payment via STK Push. Receipt: TH49V60CWN'
-);
 
 -- Update the invoice status to paid
-UPDATE invoices 
-SET status = 'paid', updated_at = now() 
-WHERE id = '6e22ca0b-cb19-4f16-9780-e24612a155c5';
 
 
 -- Migration: 20250804125441_36e99a08-01e3-49af-8099-01555b055de2.sql
@@ -3539,15 +2529,6 @@ $$;
 -- Migration: 20250804150327_0852b536-323e-40c5-bb3b-721c365dd7f9.sql
 
 -- First, let's create a default billing plan if none exists
-INSERT INTO public.billing_plans (name, description, price, billing_cycle, features, is_active)
-VALUES (
-  'Trial Plan', 
-  'Free trial plan for new landlords', 
-  0, 
-  'monthly', 
-  '["Basic property management", "Up to 5 properties", "Email support"]'::jsonb, 
-  true
-) ON CONFLICT DO NOTHING;
 
 -- Get the trial plan ID for the subscription
 DO $$
@@ -3580,14 +2561,6 @@ BEGIN
 END $$;
 
 -- Create default billing settings if none exist
-INSERT INTO public.billing_settings (setting_key, setting_value, description)
-VALUES 
-  ('default_currency', '"USD"'::jsonb, 'Default currency for billing'),
-  ('trial_period_days', '30'::jsonb, 'Default trial period in days'),
-  ('default_sms_credits', '100'::jsonb, 'Default SMS credits for new subscriptions')
-ON CONFLICT (setting_key) DO UPDATE SET
-  setting_value = EXCLUDED.setting_value,
-  updated_at = now();
 
 -- Create function to auto-create subscriptions for new landlords
 CREATE OR REPLACE FUNCTION public.create_default_landlord_subscription()
@@ -3649,15 +2622,6 @@ CREATE TRIGGER auto_create_landlord_subscription
 -- Migration: 20250804150523_6eee8f15-02f4-4df1-84aa-c9710766217b.sql
 
 -- First, let's create a default billing plan if none exists
-INSERT INTO public.billing_plans (name, description, price, billing_cycle, features, is_active)
-VALUES (
-  'Trial Plan', 
-  'Free trial plan for new landlords', 
-  0, 
-  'monthly', 
-  '["Basic property management", "Up to 5 properties", "Email support"]'::jsonb, 
-  true
-);
 
 -- Add unique constraint on landlord_id if it doesn't exist
 ALTER TABLE public.landlord_subscriptions 
@@ -3694,14 +2658,6 @@ BEGIN
 END $$;
 
 -- Create default billing settings if none exist
-INSERT INTO public.billing_settings (setting_key, setting_value, description)
-VALUES 
-  ('default_currency', '"USD"'::jsonb, 'Default currency for billing'),
-  ('trial_period_days', '30'::jsonb, 'Default trial period in days'),
-  ('default_sms_credits', '100'::jsonb, 'Default SMS credits for new subscriptions')
-ON CONFLICT (setting_key) DO UPDATE SET
-  setting_value = EXCLUDED.setting_value,
-  updated_at = now();
 
 -- Create function to auto-create subscriptions for new landlords
 CREATE OR REPLACE FUNCTION public.create_default_landlord_subscription()
@@ -3790,13 +2746,6 @@ FOR SELECT
 USING (has_role(auth.uid(), 'Landlord'::app_role));
 
 -- Insert default approved payment methods for Kenya
-INSERT INTO public.approved_payment_methods (country_code, payment_method_type, provider_name, configuration) VALUES
-('KE', 'mpesa', 'M-Pesa', '{"currency": "KES", "supported_features": ["stk_push", "c2b"]}'),
-('KE', 'card', 'Stripe', '{"currency": "KES", "supported_cards": ["visa", "mastercard"]}'),
-('KE', 'bank_transfer', 'KCB Bank', '{"currency": "KES", "transfer_types": ["rtgs", "eft"]}'),
-('KE', 'bank_transfer', 'Equity Bank', '{"currency": "KES", "transfer_types": ["rtgs", "eft"]}'),
-('US', 'card', 'Stripe', '{"currency": "USD", "supported_cards": ["visa", "mastercard", "amex"]}'),
-('US', 'bank_transfer', 'ACH', '{"currency": "USD", "transfer_types": ["ach"]}');
 
 -- Create trigger for automatic timestamp updates
 CREATE TRIGGER update_approved_payment_methods_updated_at
@@ -3808,9 +2757,6 @@ EXECUTE FUNCTION public.update_updated_at_column();
 -- Migration: 20250804195309_9806cfb8-08e8-4162-9e4d-24d2f9821776.sql
 
 -- Update billing plans currency from USD to KES
-UPDATE public.billing_plans 
-SET currency = 'KES' 
-WHERE currency = 'USD';
 
 
 -- Migration: 20250804200639_aa74f37f-b553-4c00-a3f0-c0c2b3151798.sql
@@ -3935,15 +2881,6 @@ END;
 $$;
 
 -- Update properties table to fix country consistency
-UPDATE public.properties 
-SET country = 'Kenya' 
-WHERE country = 'USA' AND id IN (
-  SELECT p.id 
-  FROM properties p
-  JOIN landlord_subscriptions ls ON ls.landlord_id = p.owner_id
-  JOIN billing_plans bp ON bp.id = ls.billing_plan_id
-  WHERE bp.currency = 'KES'
-);
 
 
 -- Migration: 20250804200701_960347b8-dc94-4183-8d6b-54eafce43e29.sql
@@ -4048,9 +2985,6 @@ END;
 $$;
 
 -- Update country data to Kenya for consistency
-UPDATE public.properties 
-SET country = 'Kenya' 
-WHERE country = 'USA';
 
 
 -- Migration: 20250804201121_8535563c-393c-428c-90e5-fc03c7a37dc3.sql
@@ -4091,18 +3025,6 @@ $$;
 -- Migration: 20250804210224_59f6845f-97e8-4644-a115-1175cb4b6758.sql
 
 -- Add some sample SMS usage data for testing
-INSERT INTO public.sms_usage (
-  landlord_id,
-  recipient_phone,
-  message_content,
-  cost,
-  status,
-  sent_at
-) VALUES 
-  -- Use first landlord in system for demo
-  ((SELECT user_id FROM public.user_roles WHERE role = 'Landlord' LIMIT 1), '+254712345678', 'Maintenance request update: Your request #MR-001 has been assigned to John Doe.', 2.50, 'sent', now() - interval '2 days'),
-  ((SELECT user_id FROM public.user_roles WHERE role = 'Landlord' LIMIT 1), '+254712345679', 'Rent reminder: Your rent payment is due in 3 days.', 2.50, 'sent', now() - interval '1 day'),
-  ((SELECT user_id FROM public.user_roles WHERE role = 'Landlord' LIMIT 1), '+254712345680', 'Welcome to Sunset Apartments! Your lease starts tomorrow.', 2.50, 'sent', now() - interval '5 hours');
 
 
 -- Migration: 20250806203232_dcb1be31-2a6c-497d-ade5-b151834b8c9c.sql
@@ -4678,46 +3600,10 @@ CREATE TRIGGER update_trial_usage_tracking_updated_at
   FOR EACH ROW EXECUTE FUNCTION public.update_trial_updated_at();
 
 -- Insert default onboarding steps
-INSERT INTO public.onboarding_steps (step_name, step_order, title, description, component_name, user_roles) VALUES
-('welcome', 1, 'Welcome to the Platform', 'Get started with your property management journey', 'WelcomeStep', ARRAY['Landlord']),
-('profile_setup', 2, 'Complete Your Profile', 'Add your basic information and preferences', 'ProfileSetupStep', ARRAY['Landlord']),
-('add_first_property', 3, 'Add Your First Property', 'Create your first property listing', 'AddPropertyStep', ARRAY['Landlord']),
-('add_units', 4, 'Add Units to Property', 'Set up units within your property', 'AddUnitsStep', ARRAY['Landlord']),
-('payment_setup', 5, 'Configure Payment Methods', 'Set up how you want to receive payments', 'PaymentSetupStep', ARRAY['Landlord']),
-('invite_tenants', 6, 'Invite Your First Tenant', 'Learn how to add and manage tenants', 'InviteTenantsStep', ARRAY['Landlord']),
-('explore_features', 7, 'Explore Key Features', 'Discover the main features of the platform', 'ExploreFeaturesStep', ARRAY['Landlord']);
 
 -- Insert default feature tours
-INSERT INTO public.feature_tours (tour_name, title, description, target_page, user_roles, steps) VALUES
-('dashboard_tour', 'Dashboard Overview', 'Learn about your main dashboard and key metrics', '/', ARRAY['Landlord'], 
-'[
-  {"target": ".stats-cards", "title": "Key Statistics", "content": "View your property portfolio overview here"},
-  {"target": ".recent-activity", "title": "Recent Activity", "content": "Keep track of recent payments and maintenance requests"},
-  {"target": ".quick-actions", "title": "Quick Actions", "content": "Access common tasks quickly from here"}
-]'::jsonb),
-('properties_tour', 'Property Management', 'Discover how to manage your properties effectively', '/properties', ARRAY['Landlord'],
-'[
-  {"target": ".add-property-button", "title": "Add Properties", "content": "Click here to add new properties to your portfolio"},
-  {"target": ".property-list", "title": "Property List", "content": "View and manage all your properties from this list"},
-  {"target": ".property-filters", "title": "Filter Options", "content": "Use filters to quickly find specific properties"}
-]'::jsonb),
-('tenants_tour', 'Tenant Management', 'Learn how to manage your tenants and leases', '/tenants', ARRAY['Landlord'],
-'[
-  {"target": ".add-tenant-button", "title": "Add Tenants", "content": "Add new tenants and create lease agreements"},
-  {"target": ".tenant-list", "title": "Tenant Directory", "content": "View all your tenants and their lease information"},
-  {"target": ".tenant-actions", "title": "Tenant Actions", "content": "Manage payments, maintenance requests, and communications"}
-]'::jsonb);
 
 -- Insert default trial configuration
-INSERT INTO public.trial_configurations (billing_plan_id, trial_duration_days, features_enabled, limitations)
-SELECT 
-  id,
-  30,
-  '["property_management", "tenant_management", "basic_reporting", "payment_tracking"]'::jsonb,
-  '{"max_properties": 2, "max_units": 10, "max_tenants": 10, "max_monthly_reports": 3}'::jsonb
-FROM public.billing_plans 
-WHERE name ILIKE '%trial%' OR name ILIKE '%free%'
-LIMIT 1;
 
 
 -- Migration: 20250806212453_5c572f9a-7214-4bd5-b9f9-b7485c65989f.sql
@@ -4960,27 +3846,6 @@ AS $$
 $$;
 
 -- Insert default trial notification templates
-INSERT INTO public.trial_notification_templates (template_name, notification_type, days_before_expiry, subject, html_content, email_content) VALUES
-('trial_reminder_7', 'trial_reminder', 7, 'Your Zira Homes trial expires in 7 days', 
- '<h1>Your trial expires soon!</h1><p>Your Zira Homes trial will expire in 7 days. Upgrade now to continue using all features.</p><p><a href="{{upgrade_url}}" style="background-color: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Upgrade Now</a></p>',
- 'Your Zira Homes trial will expire in 7 days. Upgrade now to continue using all features.'),
- 
-('trial_reminder_3', 'trial_reminder', 3, 'Your Zira Homes trial expires in 3 days', 
- '<h1>Only 3 days left!</h1><p>Your Zira Homes trial expires in 3 days. Don''t lose access to your property management tools.</p><p><a href="{{upgrade_url}}" style="background-color: #dc3545; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Upgrade Now</a></p>',
- 'Your Zira Homes trial expires in 3 days. Don''t lose access to your property management tools.'),
- 
-('trial_reminder_1', 'trial_reminder', 1, 'Last chance - Your trial expires tomorrow!', 
- '<h1>Last chance!</h1><p>Your Zira Homes trial expires tomorrow. Upgrade now to avoid losing access to your data and features.</p><p><a href="{{upgrade_url}}" style="background-color: #dc3545; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Upgrade Immediately</a></p>',
- 'Your Zira Homes trial expires tomorrow. Upgrade now to avoid losing access to your data and features.'),
- 
-('trial_expired', 'trial_expired', 0, 'Your Zira Homes trial has expired', 
- '<h1>Trial Expired</h1><p>Your Zira Homes trial has expired. You have 7 days of limited access to export your data and upgrade.</p><p><a href="{{upgrade_url}}" style="background-color: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Upgrade Now</a></p>',
- 'Your Zira Homes trial has expired. You have 7 days of limited access to export your data and upgrade.'),
- 
-('grace_period_end', 'grace_period_end', -7, 'Final notice - Account will be suspended', 
- '<h1>Final Notice</h1><p>Your grace period ends today. Your account will be suspended if you don''t upgrade immediately.</p><p><a href="{{upgrade_url}}" style="background-color: #dc3545; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Upgrade Now</a></p>',
- 'Your grace period ends today. Your account will be suspended if you don''t upgrade immediately.') 
-ON CONFLICT DO NOTHING;
 
 -- Create trigger to update trial notification templates timestamps
 CREATE TRIGGER update_trial_notification_templates_updated_at
@@ -5014,195 +3879,6 @@ SELECT cron.schedule(
 -- Migration: 20250806221300_41935113-1cce-48fd-aefb-b2c9ff65745b.sql
 
 -- Create trial notification templates with pre-populated content
-INSERT INTO trial_notification_templates (
-  notification_type,
-  template_name,
-  subject,
-  days_before_expiry,
-  email_content,
-  html_content,
-  is_active
-) VALUES 
-(
-  'trial_reminder_7_days',
-  '7 Day Trial Reminder',
-  'Your trial expires in 7 days - Don''t lose access!',
-  7,
-  'Hi {{first_name}},
-
-Your Zira Homes trial expires in 7 days! Don''t lose access to your property management tools.
-
-Trial ends: {{trial_end_date}}
-Days remaining: {{days_remaining}}
-
-What you''ll keep with a paid plan:
-✅ Unlimited properties and units
-✅ Advanced financial reporting  
-✅ Automated rent collection
-✅ Maintenance request management
-✅ Tenant communication tools
-✅ SMS notifications
-✅ Priority customer support
-
-Upgrade now: {{upgrade_url}}
-
-Need help? Contact support@zirahomes.com
-
-Best regards,
-The Zira Homes Team',
-  '<h2>Your trial expires in 7 days</h2><p>Hi {{first_name}},</p><p>Your Zira Homes trial expires in 7 days! Don''t lose access to your property management tools.</p><div style="background:#fef3c7;padding:20px;border-radius:8px;margin:20px 0;"><strong>Trial ends:</strong> {{trial_end_date}}<br><strong>Days remaining:</strong> {{days_remaining}}</div><h3>What you''ll keep with a paid plan:</h3><ul><li>✅ Unlimited properties and units</li><li>✅ Advanced financial reporting</li><li>✅ Automated rent collection</li><li>✅ Maintenance request management</li><li>✅ Tenant communication tools</li><li>✅ SMS notifications</li><li>✅ Priority customer support</li></ul><p><a href="{{upgrade_url}}" style="background:#2563eb;color:white;padding:12px 24px;text-decoration:none;border-radius:5px;">Upgrade Your Account</a></p>',
-  true
-),
-(
-  'trial_reminder_3_days',
-  '3 Day Trial Reminder',
-  'Only 3 days left in your trial',
-  3,
-  'Hi {{first_name}},
-
-Time is running out! Your Zira Homes trial expires in just 3 days.
-
-Don''t lose access to:
-- Your property data
-- Tenant management tools  
-- Financial reports
-- All your valuable information
-
-Trial ends: {{trial_end_date}}
-Days remaining: {{days_remaining}}
-
-⚠️ URGENT: Upgrade now to maintain uninterrupted service!
-
-Upgrade immediately: {{upgrade_url}}
-
-Questions? Reply to this email or contact support@zirahomes.com
-
-The Zira Homes Team',
-  '<h2 style="color:#dc2626;">Only 3 days remaining!</h2><p>Hi {{first_name}},</p><p><strong>Time is running out!</strong> Your Zira Homes trial expires in just 3 days.</p><div style="background:#fef2f2;border:2px solid #dc2626;padding:20px;border-radius:8px;margin:20px 0;"><strong>Trial ends:</strong> {{trial_end_date}}<br><strong>Days remaining:</strong> {{days_remaining}}</div><p><strong>Don''t lose access to:</strong></p><ul><li>Your property data</li><li>Tenant management tools</li><li>Financial reports</li><li>All your valuable information</li></ul><p style="background:#fef2f2;padding:15px;border-radius:6px;color:#dc2626;">⚠️ <strong>URGENT:</strong> Upgrade now to maintain uninterrupted service!</p><p><a href="{{upgrade_url}}" style="background:#dc2626;color:white;padding:16px 32px;text-decoration:none;border-radius:5px;font-size:18px;">Upgrade Now - Don''t Lose Access!</a></p>',
-  true
-),
-(
-  'trial_reminder_1_day',
-  '1 Day Trial Reminder',
-  'Last day of your trial - Upgrade now!',
-  1,
-  'Hi {{first_name}},
-
-🚨 FINAL REMINDER: Your Zira Homes trial expires TOMORROW!
-
-This is your last chance to upgrade before losing access to all your:
-- Property management data
-- Tenant information
-- Financial records
-- Reports and analytics
-
-Trial ends: {{trial_end_date}}
-Hours remaining: Less than 24!
-
-Don''t lose years of valuable data - upgrade RIGHT NOW!
-
-UPGRADE IMMEDIATELY: {{upgrade_url}}
-
-After tomorrow, your account will be restricted and you may lose access to your data.
-
-URGENT - Contact us: support@zirahomes.com
-
-The Zira Homes Team',
-  '<h2 style="color:#dc2626;">🚨 Final reminder: 1 day left!</h2><p>Hi {{first_name}},</p><p><strong style="color:#dc2626;">FINAL REMINDER:</strong> Your Zira Homes trial expires TOMORROW!</p><div style="background:#fef2f2;border:3px solid #dc2626;padding:20px;border-radius:8px;margin:20px 0;text-align:center;"><strong>Trial ends:</strong> {{trial_end_date}}<br><strong style="color:#dc2626;">Hours remaining: Less than 24!</strong></div><p><strong>This is your last chance to upgrade before losing access to all your:</strong></p><ul><li>Property management data</li><li>Tenant information</li><li>Financial records</li><li>Reports and analytics</li></ul><div style="background:#fef2f2;padding:15px;border-radius:6px;color:#dc2626;text-align:center;margin:20px 0;"><strong>⚠️ Don''t lose years of valuable data - upgrade RIGHT NOW!</strong></div><p style="text-align:center;"><a href="{{upgrade_url}}" style="background:#dc2626;color:white;padding:20px 40px;text-decoration:none;border-radius:5px;font-size:20px;font-weight:bold;">UPGRADE IMMEDIATELY</a></p><p style="color:#dc2626;font-size:14px;">After tomorrow, your account will be restricted and you may lose access to your data.</p>',
-  true
-),
-(
-  'trial_expired',
-  'Trial Expired Notice',
-  'Trial expired - Limited time to upgrade',
-  0,
-  'Hi {{first_name}},
-
-Your Zira Homes trial period has ended, but don''t worry!
-
-You have a 7-day grace period to upgrade your account. During this time:
-✓ Your data is completely safe
-✗ Access to features is limited
-✗ You cannot add new data
-
-Grace period ends: {{grace_period_end_date}}
-
-Don''t wait - upgrade now to restore full functionality immediately!
-
-RESTORE ACCESS NOW: {{upgrade_url}}
-
-Your data and hard work are waiting for you. Just one click to get back to managing your properties efficiently.
-
-Questions? Contact support@zirahomes.com
-
-The Zira Homes Team',
-  '<h2 style="color:#dc2626;">Your trial has expired</h2><p>Hi {{first_name}},</p><p>Your Zira Homes trial period has ended, but <strong>don''t worry!</strong></p><div style="background:#fef3c7;border:2px solid #f59e0b;padding:20px;border-radius:8px;margin:20px 0;"><p><strong>You have a 7-day grace period to upgrade your account.</strong></p><p>During this time:<br>✓ Your data is completely safe<br>✗ Access to features is limited<br>✗ You cannot add new data</p><p><strong>Grace period ends:</strong> {{grace_period_end_date}}</p></div><p><strong>Don''t wait - upgrade now to restore full functionality immediately!</strong></p><p style="text-align:center;"><a href="{{upgrade_url}}" style="background:#dc2626;color:white;padding:16px 32px;text-decoration:none;border-radius:5px;font-size:18px;">RESTORE ACCESS NOW</a></p><p>Your data and hard work are waiting for you. Just one click to get back to managing your properties efficiently.</p>',
-  true
-),
-(
-  'grace_period_reminder',
-  'Grace Period Ending',
-  'Grace period ending soon - Upgrade required',
-  -3,
-  'Hi {{first_name}},
-
-⚠️ URGENT: Your 7-day grace period is almost over!
-
-If you don''t upgrade soon, your account will be suspended and you may lose access to your property management data.
-
-Grace period ends in: {{grace_days_remaining}} days
-
-Don''t let that happen to your valuable business data!
-
-What happens if you don''t upgrade:
-❌ Complete loss of access to your account
-❌ Cannot view tenant information
-❌ Cannot access financial reports  
-❌ Risk of losing important business data
-
-UPGRADE TODAY: {{upgrade_url}}
-
-This is your final warning. Protect your business - upgrade now!
-
-URGENT SUPPORT: support@zirahomes.com
-
-The Zira Homes Team',
-  '<h2 style="color:#dc2626;">⚠️ Grace period ending soon</h2><p>Hi {{first_name}},</p><p><strong style="color:#dc2626;">URGENT:</strong> Your 7-day grace period is almost over!</p><div style="background:#fef2f2;border:3px solid #dc2626;padding:20px;border-radius:8px;margin:20px 0;text-align:center;"><p><strong>Grace period ends in: {{grace_days_remaining}} days</strong></p><p style="color:#dc2626;">Don''t let that happen to your valuable business data!</p></div><p><strong>What happens if you don''t upgrade:</strong></p><ul style="color:#dc2626;"><li>❌ Complete loss of access to your account</li><li>❌ Cannot view tenant information</li><li>❌ Cannot access financial reports</li><li>❌ Risk of losing important business data</li></ul><div style="background:#fef2f2;padding:20px;border-radius:6px;text-align:center;margin:20px 0;"><p style="color:#dc2626;font-size:18px;font-weight:bold;">This is your final warning. Protect your business - upgrade now!</p></div><p style="text-align:center;"><a href="{{upgrade_url}}" style="background:#dc2626;color:white;padding:20px 40px;text-decoration:none;border-radius:5px;font-size:20px;font-weight:bold;">UPGRADE TODAY</a></p>',
-  true
-),
-(
-  'account_suspended',
-  'Account Suspended',
-  'Account suspended - Upgrade to restore access',
-  -7,
-  'Hi {{first_name}},
-
-Your Zira Homes account has been suspended due to an expired trial.
-
-🔒 ACCOUNT STATUS: Suspended
-📊 DATA STATUS: Safe and secure
-🚀 SOLUTION: Upgrade to restore immediate access
-
-Your property management data is still safe, but you currently have no access to the platform.
-
-The good news? You can restore everything instantly by upgrading now!
-
-RESTORE ACCESS IMMEDIATELY: {{upgrade_url}}
-
-Once you upgrade, you''ll immediately regain access to:
-✅ All your property data
-✅ Tenant management tools
-✅ Financial reports and analytics
-✅ All platform features
-
-Don''t stay locked out - upgrade now and get back to managing your properties!
-
-IMMEDIATE SUPPORT: support@zirahomes.com
-
-The Zira Homes Team',
-  '<h2 style="color:#dc2626;">🔒 Account suspended</h2><p>Hi {{first_name}},</p><p>Your Zira Homes account has been suspended due to an expired trial.</p><div style="background:#fef2f2;border:2px solid #dc2626;padding:20px;border-radius:8px;margin:20px 0;"><p><strong>🔒 ACCOUNT STATUS:</strong> Suspended<br><strong>📊 DATA STATUS:</strong> Safe and secure<br><strong>🚀 SOLUTION:</strong> Upgrade to restore immediate access</p></div><p>Your property management data is still safe, but you currently have no access to the platform.</p><p><strong>The good news? You can restore everything instantly by upgrading now!</strong></p><p style="text-align:center;margin:30px 0;"><a href="{{upgrade_url}}" style="background:#dc2626;color:white;padding:20px 40px;text-decoration:none;border-radius:5px;font-size:20px;font-weight:bold;">RESTORE ACCESS IMMEDIATELY</a></p><div style="background:#f0f9ff;padding:20px;border-radius:8px;"><p><strong>Once you upgrade, you''ll immediately regain access to:</strong></p><ul><li>✅ All your property data</li><li>✅ Tenant management tools</li><li>✅ Financial reports and analytics</li><li>✅ All platform features</li></ul></div><p style="text-align:center;font-weight:bold;">Don''t stay locked out - upgrade now and get back to managing your properties!</p>',
-  true
-);
 
 -- Update the trial-manager cron job to also trigger trial reminders
 SELECT cron.unschedule('daily-trial-manager');
@@ -5281,36 +3957,18 @@ WITH CHECK (has_role(auth.uid(), 'Admin'::app_role) OR has_role(auth.uid(), 'Lan
 -- Migration: 20250806223211_93daeb60-dca7-458d-8936-fa5d84bad60e.sql
 
 -- Assign Admin role to the user profile we found
-INSERT INTO public.user_roles (user_id, role)
-VALUES ('a53f69a5-104e-489b-9b0a-48a56d6b011d', 'Admin'::app_role)
-ON CONFLICT (user_id, role) DO NOTHING;
 
 
 -- Migration: 20250807071253_cd0293a6-47c9-43a9-809a-bbbf195fabe3.sql
 
 -- Create missing profile for user david.wanjau@deevabits.com
-INSERT INTO public.profiles (id, first_name, last_name, phone, email)
-VALUES (
-  '18c1ba95-defd-46ef-920a-600bae6443e1', 
-  'David', 
-  'Wanjau',
-  NULL,
-  'david.wanjau@deevabits.com'
-);
 
 -- Assign default role (Agent) to the user 
-INSERT INTO public.user_roles (user_id, role)
-VALUES (
-  '18c1ba95-defd-46ef-920a-600bae6443e1', 
-  'Agent'::public.app_role
-);
 
 
 -- Migration: 20250807071710_8eefa193-7bd3-4db7-99cb-f480ac647dbc.sql
 
 -- Delete the user records we just created for david.wanjau@deevabits.com
-DELETE FROM public.user_roles WHERE user_id = '18c1ba95-defd-46ef-920a-600bae6443e1';
-DELETE FROM public.profiles WHERE id = '18c1ba95-defd-46ef-920a-600bae6443e1';
 
 
 -- Migration: 20250807072339_94b541bd-a285-405e-b963-8657c74578e1.sql
@@ -5336,13 +3994,6 @@ FOR ALL
 USING (has_role(auth.uid(), 'Admin'::app_role));
 
 -- Insert default communication preferences
-INSERT INTO public.communication_preferences (setting_name, email_enabled, sms_enabled, description) VALUES
-('tenant_account_creation', true, true, 'Communication method when creating new tenant accounts'),
-('password_reset', true, true, 'Communication method for password reset requests'),
-('payment_notifications', true, true, 'Communication method for payment confirmations'),
-('maintenance_notifications', true, true, 'Communication method for maintenance updates'),
-('general_announcements', true, false, 'Communication method for general announcements')
-ON CONFLICT (setting_name) DO NOTHING;
 
 -- Create trigger for updated_at
 CREATE TRIGGER update_communication_preferences_updated_at
@@ -5355,9 +4006,6 @@ EXECUTE FUNCTION public.update_updated_at_column();
 
 -- Make phone numbers required for SMS communication
 -- First, let's set a default phone number for existing users without one
-UPDATE public.profiles 
-SET phone = '+000000000000' 
-WHERE phone IS NULL OR phone = '';
 
 -- Now make the phone field required
 ALTER TABLE public.profiles 
@@ -5404,15 +4052,8 @@ $$;
 -- Migration: 20250807073835_8581fd44-f156-4154-8033-4c35d39870ee.sql
 
 -- Update tenant_account_creation to be for all users, not just tenants
-UPDATE communication_preferences 
-SET setting_name = 'user_account_creation',
-    description = 'Communication method when creating new user accounts (all roles)'
-WHERE setting_name = 'tenant_account_creation';
 
 -- Add new communication preference for general user account creation if needed
-INSERT INTO communication_preferences (setting_name, description, email_enabled, sms_enabled)
-VALUES ('user_account_creation', 'Communication method when creating new user accounts (all roles)', true, true)
-ON CONFLICT (setting_name) DO NOTHING;
 
 
 -- Migration: 20250807080909_7a9d13c0-dd31-4579-b895-81dde45a34ea.sql
@@ -5468,33 +4109,8 @@ FOR EACH ROW
 EXECUTE FUNCTION public.update_updated_at_column();
 
 -- Insert default email templates
-INSERT INTO public.email_templates (name, subject, content, category, variables, enabled) VALUES
-('User Welcome Email', 'Welcome to ZIRA Property Management - Your {{user_role}} account is ready', 'Professional React Email template for user welcome emails with role-specific content, login credentials, and feature highlights. This uses the UserWelcomeEmail React Email component.', 'authentication', ARRAY['user_name', 'user_email', 'user_role', 'temporary_password', 'login_url', 'property_name', 'unit_number'], true),
-('Tenant Welcome Email', 'Welcome to Zira Homes - Your Tenant Portal Access', 'Professional React Email template for tenant welcome emails with property details, login credentials, and portal features. This uses the enhanced tenant welcome email template.', 'authentication', ARRAY['tenant_name', 'property_name', 'unit_number', 'temporary_password', 'login_url'], true),
-('Password Reset', 'Reset your ZIRA Property password', 'Password reset email using Supabase''s built-in email template. SMS notification is also sent if enabled in communication preferences.', 'authentication', ARRAY['user_name', 'reset_link'], true),
-('Payment Reminder', 'Rent Payment Due - {{property_name}}', 'Professional React Email template for rent payment reminders with payment details, due dates, and online payment options. Uses PaymentReminderEmail component.', 'payments', ARRAY['tenant_name', 'property_name', 'unit_number', 'amount_due', 'due_date', 'invoice_number', 'payment_url'], true),
-('Overdue Payment Notice', 'Overdue Payment Notice - {{property_name}}', 'Urgent payment reminder template for overdue rent payments with late fees warning and immediate action required. Uses PaymentReminderEmail component with urgency styling.', 'payments', ARRAY['tenant_name', 'property_name', 'unit_number', 'amount_due', 'due_date', 'days_overdue', 'invoice_number'], true),
-('Payment Confirmation', 'Payment Received - {{property_name}}', 'Payment confirmation email template with transaction details, receipt information, and account status updates. Uses PaymentConfirmationEmail component.', 'payments', ARRAY['tenant_name', 'property_name', 'unit_number', 'amount_paid', 'payment_date', 'payment_method', 'transaction_id', 'invoice_number'], true),
-('Maintenance Status Update', 'Maintenance Request Update - {{request_title}}', 'Maintenance request status update email with current status, update notes, and next steps. Uses structured HTML template.', 'maintenance', ARRAY['tenant_name', 'request_title', 'status', 'property_name', 'unit_number', 'update_date', 'update_notes'], true),
-('Service Provider Assignment', 'Service Provider Assigned - {{request_title}}', 'Email notification when a service provider is assigned to a maintenance request with provider details and contact information.', 'maintenance', ARRAY['tenant_name', 'request_title', 'property_name', 'unit_number', 'service_provider_name'], true),
-('Maintenance Completion', 'Maintenance Request Completed - {{request_title}}', 'Maintenance completion notification with resolution details and follow-up instructions.', 'maintenance', ARRAY['tenant_name', 'request_title', 'property_name', 'unit_number', 'completion_notes'], true),
-('General Announcement', '{{announcement_title}} - {{property_name}}', 'General property announcement email template with urgency indicators, expiration dates, and professional formatting. Uses GeneralAnnouncementEmail component.', 'announcements', ARRAY['tenant_name', 'property_name', 'announcement_title', 'announcement_message', 'announcement_type', 'is_urgent', 'expires_at'], true),
-('Emergency Notice', '🚨 URGENT: {{announcement_title}} - {{property_name}}', 'Emergency announcement template with high priority styling, immediate attention indicators, and urgent action requirements.', 'announcements', ARRAY['tenant_name', 'property_name', 'announcement_title', 'announcement_message', 'expires_at'], true),
-('Lease Expiry Reminder', 'Lease Expiry Notice - {{property_name}}', 'Dear {{tenant_name}},\n\nThis is a reminder that your lease for {{property_name}}, Unit {{unit_number}} is set to expire on {{expiry_date}}.\n\nPlease contact your property manager to discuss renewal options or move-out procedures.\n\nProperty Details:\n- Property: {{property_name}}\n- Unit: {{unit_number}}\n- Lease End Date: {{expiry_date}}\n- Days Remaining: {{days_remaining}}\n\nBest regards,\nThe ZIRA Property Team', 'leases', ARRAY['tenant_name', 'property_name', 'unit_number', 'expiry_date', 'days_remaining'], true);
 
 -- Insert default message templates
-INSERT INTO public.message_templates (name, type, category, content, variables, enabled) VALUES
-('Rent Payment Reminder', 'sms', 'payment', 'Rent reminder: KES {{amount}} due for {{property_name}}, Unit {{unit_number}}. Due: {{due_date}}. Pay online or via M-Pesa. - ZIRA Property', ARRAY['amount', 'property_name', 'unit_number', 'due_date'], true),
-('Overdue Payment Notice', 'sms', 'payment', 'OVERDUE: Rent payment of KES {{amount}} is {{days_overdue}} days overdue for {{property_name}}. Please pay immediately to avoid late fees. - ZIRA Property', ARRAY['amount', 'days_overdue', 'property_name'], true),
-('Payment Confirmation', 'sms', 'payment', 'Payment received! KES {{amount}} for {{property_name}}, Unit {{unit_number}}. Transaction: {{transaction_id}}. Thank you! - ZIRA Property', ARRAY['amount', 'property_name', 'unit_number', 'transaction_id'], true),
-('Welcome New User', 'sms', 'account', 'Welcome to the platform! Your account has been created.\n\nRole: {{user_role}}\nEmail: {{email}}\nTemporary Password: {{temporary_password}}\n\nPlease log in and change your password immediately.\n\n- ZIRA Property Management', ARRAY['user_role', 'email', 'temporary_password'], true),
-('Welcome New Tenant', 'sms', 'account', 'Welcome to Zira Homes! Your login details:\nEmail: {{email}}\nPassword: {{temporary_password}}\nLogin: {{login_url}}\n\nProperty: {{property_name}}\nUnit: {{unit_number}}', ARRAY['email', 'temporary_password', 'login_url', 'property_name', 'unit_number'], true),
-('Password Reset Notification', 'sms', 'account', 'Hi {{first_name}}, a password reset was requested for your Zira Homes account. If this wasn''t you, please contact support. Reset link sent to your email.', ARRAY['first_name'], true),
-('Maintenance Status Update', 'sms', 'maintenance', 'Maintenance Update: {{request_title}} status changed to {{new_status}}. Property: {{property_name}}{{#if message}}. Note: {{message}}{{/if}}', ARRAY['request_title', 'new_status', 'property_name', 'message'], true),
-('Service Provider Assignment', 'sms', 'maintenance', 'Service provider {{service_provider_name}} assigned to your maintenance request: {{request_title}}. They will contact you soon.', ARRAY['service_provider_name', 'request_title'], true),
-('Maintenance Completion', 'sms', 'maintenance', 'Maintenance request completed: {{request_title}} at {{property_name}}{{#if message}}. Notes: {{message}}{{/if}}', ARRAY['request_title', 'property_name', 'message'], true),
-('General Announcement', 'sms', 'announcement', '{{#if is_urgent}}URGENT: {{/if}}{{announcement_title}}\n\n{{announcement_message_truncated}}\n\n- {{property_name}}', ARRAY['is_urgent', 'announcement_title', 'announcement_message_truncated', 'property_name'], true),
-('Emergency Notice', 'sms', 'announcement', 'URGENT: {{announcement_title}}\n\n{{announcement_message}}\n\nImmediate attention required.\n\n- {{property_name}}', ARRAY['announcement_title', 'announcement_message', 'property_name'], true);
 
 
 -- Migration: 20250807085939_afcfcc17-9271-4bd6-8e22-bdeb5a516077.sql
@@ -5553,9 +4169,6 @@ WITH orphaned_users AS (
   LEFT JOIN public.profiles p ON au.id = p.id
   WHERE p.id IS NULL
 )
-INSERT INTO public.profiles (id, first_name, last_name, phone, email)
-SELECT id, first_name, last_name, phone, email
-FROM orphaned_users;
 
 -- Insert missing user roles for orphaned users
 WITH orphaned_users AS (
@@ -5566,9 +4179,6 @@ WITH orphaned_users AS (
   LEFT JOIN public.user_roles ur ON au.id = ur.user_id
   WHERE ur.user_id IS NULL
 )
-INSERT INTO public.user_roles (user_id, role)
-SELECT id, role
-FROM orphaned_users;
 
 -- Create landlord subscriptions for users with 'Landlord' or 'Manager' roles who don't have them
 WITH landlord_users AS (
@@ -5578,24 +4188,6 @@ WITH landlord_users AS (
   WHERE ur.role IN ('Landlord', 'Manager') 
     AND ls.landlord_id IS NULL
 )
-INSERT INTO public.landlord_subscriptions (
-  landlord_id,
-  billing_plan_id,
-  status,
-  trial_start_date,
-  trial_end_date,
-  sms_credits_balance,
-  auto_renewal
-)
-SELECT 
-  lu.user_id,
-  (SELECT id FROM public.billing_plans WHERE is_active = true ORDER BY created_at ASC LIMIT 1),
-  'trial',
-  now(),
-  now() + interval '30 days',
-  100,
-  true
-FROM landlord_users;
 
 
 -- Migration: 20250807090011_a615ef65-fd03-4377-bbbf-a716725052ca.sql
@@ -5638,48 +4230,10 @@ CREATE TRIGGER on_auth_user_created
   FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
 
 -- Fix orphaned user data by finding users in auth.users who don't have profiles
-INSERT INTO public.profiles (id, first_name, last_name, phone, email)
-SELECT 
-  au.id,
-  au.raw_user_meta_data->>'first_name' as first_name,
-  au.raw_user_meta_data->>'last_name' as last_name,
-  COALESCE(au.raw_user_meta_data->>'phone', au.phone, '+254700000000') as phone,
-  au.email
-FROM auth.users au
-LEFT JOIN public.profiles p ON au.id = p.id
-WHERE p.id IS NULL;
 
 -- Insert missing user roles for orphaned users
-INSERT INTO public.user_roles (user_id, role)
-SELECT 
-  au.id,
-  COALESCE(au.raw_user_meta_data->>'role', 'Agent')::public.app_role as role
-FROM auth.users au
-LEFT JOIN public.user_roles ur ON au.id = ur.user_id
-WHERE ur.user_id IS NULL;
 
 -- Create landlord subscriptions for users with 'Landlord' or 'Manager' roles who don't have them
-INSERT INTO public.landlord_subscriptions (
-  landlord_id,
-  billing_plan_id,
-  status,
-  trial_start_date,
-  trial_end_date,
-  sms_credits_balance,
-  auto_renewal
-)
-SELECT 
-  ur.user_id,
-  (SELECT id FROM public.billing_plans WHERE is_active = true ORDER BY created_at ASC LIMIT 1),
-  'trial',
-  now(),
-  now() + interval '30 days',
-  100,
-  true
-FROM public.user_roles ur
-LEFT JOIN public.landlord_subscriptions ls ON ur.user_id = ls.landlord_id
-WHERE ur.role IN ('Landlord', 'Manager') 
-  AND ls.landlord_id IS NULL;
 
 
 -- Migration: 20250807090126_401b3ee3-0ad1-404e-a6e3-29821096f85e.sql
@@ -5798,119 +4352,24 @@ $$;
 
 -- Fix Simon Gichuki's trial period to 70 days instead of 30
 -- First, find Simon's user ID and update his trial period
-UPDATE public.landlord_subscriptions 
-SET 
-  trial_end_date = trial_start_date + interval '70 days',
-  updated_at = now()
-WHERE landlord_id IN (
-  SELECT p.id 
-  FROM public.profiles p 
-  WHERE p.email = 'gichukisimon@gmail.com'
-) AND status = 'trial';
 
 -- Ensure billing settings exist for trial configuration
-INSERT INTO public.billing_settings (setting_key, setting_value, description)
-VALUES (
-  'trial_settings',
-  jsonb_build_object(
-    'trial_period_days', 70,
-    'grace_period_days', 7,
-    'default_sms_credits', 100,
-    'trial_limitations', jsonb_build_object(
-      'properties', 2,
-      'units_per_property', 10,
-      'tenants', 20,
-      'maintenance_requests', 50,
-      'invoices', 100
-    )
-  ),
-  'Trial subscription configuration settings'
-) ON CONFLICT (setting_key) DO UPDATE SET
-  setting_value = EXCLUDED.setting_value,
-  updated_at = now();
 
 
 -- Migration: 20250807091413_a5b8a4ba-1823-4ca1-9fe9-3dac319395d0.sql
 
 -- Fix dmwangui@gmail.com role - remove Admin role, keep only Landlord
-DELETE FROM public.user_roles 
-WHERE user_id = (SELECT id FROM public.profiles WHERE email = 'dmwangui@gmail.com')
-AND role = 'Admin';
 
 -- Ensure Simon Gichuki has a proper Free Trial billing plan assignment
 -- First, get the Free Trial plan ID and assign it properly
-UPDATE public.landlord_subscriptions
-SET 
-  billing_plan_id = (SELECT id FROM public.billing_plans WHERE name = 'Free Trial' AND is_active = true LIMIT 1),
-  status = 'trial',
-  updated_at = now()
-WHERE landlord_id = (SELECT id FROM public.profiles WHERE email = 'gichukisimon@gmail.com');
 
 -- Ensure the countdown feature works by setting proper trial limitations
-UPDATE public.landlord_subscriptions
-SET 
-  trial_limitations = jsonb_build_object(
-    'properties', 2,
-    'units_per_property', 10,
-    'tenants', 20,
-    'maintenance_requests', 50,
-    'invoices', 100
-  ),
-  trial_features_enabled = jsonb_build_array(
-    'property_management',
-    'tenant_management',
-    'maintenance_tracking',
-    'payment_processing',
-    'reporting'
-  )
-WHERE landlord_id = (SELECT id FROM public.profiles WHERE email = 'gichukisimon@gmail.com');
 
 
 -- Migration: 20250807092226_648313ea-1cdb-4a45-a274-43c713c317a3.sql
 
 -- Fix missing subscription for John Kibe (Agent role)
 -- Ensure Agents also get trial subscriptions
-INSERT INTO public.landlord_subscriptions (
-  landlord_id,
-  billing_plan_id,
-  status,
-  trial_start_date,
-  trial_end_date,
-  sms_credits_balance,
-  auto_renewal,
-  trial_limitations,
-  trial_features_enabled
-)
-SELECT 
-  p.id,
-  (SELECT id FROM public.billing_plans WHERE name = 'Free Trial' AND is_active = true LIMIT 1),
-  'trial',
-  now(),
-  now() + interval '30 days',
-  100,
-  true,
-  jsonb_build_object(
-    'properties', 2,
-    'units_per_property', 10,
-    'tenants', 20,
-    'maintenance_requests', 50,
-    'invoices', 100
-  ),
-  jsonb_build_array(
-    'property_management',
-    'tenant_management',
-    'maintenance_tracking',
-    'payment_processing',
-    'reporting'
-  )
-FROM public.profiles p
-JOIN public.user_roles ur ON p.id = ur.user_id
-WHERE p.email = 'Kibe@mail.com' 
-  AND ur.role = 'Agent'
-  AND NOT EXISTS (
-    SELECT 1 FROM public.landlord_subscriptions 
-    WHERE landlord_id = p.id
-  );
 
 
 -- Migration: 20250807093224_9644bcbe-2411-4d84-a001-1149bacc9ade.sql
@@ -6278,51 +4737,10 @@ END $$;
 -- Migration: 20250807094443_35a9eb59-b84b-404a-be79-8eb01dfa35c3.sql
 
 -- Fix existing trial periods from 70 days to 30 days
-UPDATE landlord_subscriptions 
-SET trial_end_date = trial_start_date + INTERVAL '30 days'
-WHERE status = 'trial' 
-  AND trial_start_date IS NOT NULL 
-  AND trial_end_date IS NOT NULL
-  AND (trial_end_date - trial_start_date) > INTERVAL '35 days';
 
 -- Ensure all property stakeholders have subscriptions with Free Trial plan
-INSERT INTO landlord_subscriptions (
-  landlord_id,
-  billing_plan_id,
-  status,
-  trial_start_date,
-  trial_end_date,
-  created_at,
-  updated_at
-)
-SELECT 
-  ur.user_id,
-  bp.id as billing_plan_id,
-  'trial' as status,
-  NOW() as trial_start_date,
-  NOW() + INTERVAL '30 days' as trial_end_date,
-  NOW() as created_at,
-  NOW() as updated_at
-FROM user_roles ur
-CROSS JOIN billing_plans bp
-WHERE ur.role IN ('Landlord', 'Manager', 'Agent')
-  AND bp.name = 'Free Trial'
-  AND NOT EXISTS (
-    SELECT 1 FROM landlord_subscriptions ls 
-    WHERE ls.landlord_id = ur.user_id
-  );
 
 -- Add trial period setting to billing_settings
-INSERT INTO billing_settings (setting_key, setting_value, description, created_at, updated_at)
-VALUES (
-  'default_trial_period_days',
-  '30',
-  'Default trial period in days for new subscriptions',
-  NOW(),
-  NOW()
-) ON CONFLICT (setting_key) DO UPDATE SET
-  setting_value = EXCLUDED.setting_value,
-  updated_at = NOW();
 
 
 -- Migration: 20250807100128_f4030b4e-578f-4b7b-93ef-4816895c44ca.sql
@@ -6335,68 +4753,22 @@ ALTER TABLE user_roles ADD COLUMN IF NOT EXISTS metadata jsonb;
 
 -- Consolidate Free Trial plans and fix trial settings
 -- Keep the newer Free Trial plan and deactivate the older one
-UPDATE billing_plans 
-SET is_active = false 
-WHERE id = '3a717c3b-6443-4b4a-a8d2-06c4788b3023';
 
 -- Update the active Free Trial plan to have consistent settings
-UPDATE billing_plans 
-SET 
-  max_units = 50,
-  sms_credits_included = 200,
-  description = 'Free trial plan for new landlords with enhanced limits'
-WHERE id = '045aa292-c722-4791-8f4d-5b9f760a4200';
 
 -- Remove the old trial_period_days setting to eliminate confusion
-DELETE FROM billing_settings 
-WHERE setting_key = 'trial_period_days';
 
 -- Update trial_settings to be the single source of truth
-UPDATE billing_settings 
-SET setting_value = jsonb_build_object(
-  'trial_period_days', 30,
-  'grace_period_days', 7,
-  'payment_reminder_days', ARRAY[3, 1],
-  'auto_invoice_generation', true,
-  'default_sms_credits', 200,
-  'sms_cost_per_unit', 0.05
-)
-WHERE setting_key = 'trial_settings';
 
 
 -- Migration: 20250807102441_349a6071-7f57-4d1c-8915-fb2430016669.sql
 
 -- Step 1: Migrate Mazao Plus from inactive "Free Trial " to active "Free Trial" plan
 -- First, get the IDs of both Free Trial plans
-UPDATE landlord_subscriptions 
-SET billing_plan_id = (
-  SELECT id FROM billing_plans 
-  WHERE name = 'Free Trial' AND is_active = true
-  LIMIT 1
-)
-WHERE billing_plan_id = (
-  SELECT id FROM billing_plans 
-  WHERE name = 'Free Trial ' AND is_active = false
-  LIMIT 1
-);
 
 -- Step 2: Fix Simon Gichuki's status back to trial
-UPDATE landlord_subscriptions 
-SET status = 'trial'
-WHERE landlord_id = (
-  SELECT id FROM profiles 
-  WHERE first_name = 'Simon' AND last_name = 'Gichuki'
-  LIMIT 1
-)
-AND billing_plan_id = (
-  SELECT id FROM billing_plans 
-  WHERE name = 'Free Trial' AND is_active = true
-  LIMIT 1
-);
 
 -- Step 3: Delete the old inactive "Free Trial " plan (with trailing space)
-DELETE FROM billing_plans 
-WHERE name = 'Free Trial ' AND is_active = false;
 
 
 -- Migration: 20250807110549_574c9a9b-1180-4789-9278-d1ae8ae2dd9e.sql
@@ -6490,9 +4862,6 @@ FOR ALL
 USING (has_role(auth.uid(), 'Admin'::app_role));
 
 -- Insert default automated billing settings
-INSERT INTO public.automated_billing_settings (enabled, billing_day_of_month, grace_period_days)
-VALUES (true, 1, 7)
-ON CONFLICT DO NOTHING;
 
 -- Create trigger for updated_at
 CREATE TRIGGER update_automated_billing_settings_updated_at
@@ -6761,36 +5130,18 @@ END $$;
 -- Migration: 20250807152803_06a267ae-a015-4d65-8b14-3e60feeb1347.sql
 
 -- Update Simon Gichuki's role from Manager to Landlord
-UPDATE user_roles 
-SET role = 'Landlord'
-WHERE user_id = '23054b29-a494-42f2-bb35-d1bdf9cfdfcb' 
-  AND role = 'Manager';
 
 -- Also ensure he has a landlord payment preferences record
-INSERT INTO landlord_payment_preferences (landlord_id, preferred_payment_method, payment_reminders_enabled)
-VALUES ('23054b29-a494-42f2-bb35-d1bdf9cfdfcb', 'mpesa', true)
-ON CONFLICT (landlord_id) DO NOTHING;
 
 
 -- Migration: 20250807153346_fe375890-8b80-40e4-a5e0-ec3473014bef.sql
 
 -- Update Simon Gichuki's auth metadata to reflect correct Landlord role
-UPDATE auth.users 
-SET raw_user_meta_data = jsonb_set(
-  COALESCE(raw_user_meta_data, '{}'::jsonb),
-  '{role}',
-  '"Landlord"'
-)
-WHERE id = '23054b29-a494-42f2-bb35-d1bdf9cfdfcb';
 
 
 -- Migration: 20250807155425_555e56f9-ff28-4716-b9d7-82fcf286bc85.sql
 
 -- Remove duplicate payment record with same transaction_id and payment_reference
-DELETE FROM payments 
-WHERE id = 'f1239140-cacd-47e6-a6c3-8ef050e53b1a' 
-AND transaction_id = 'TH70CQ9VBG' 
-AND payment_reference = 'ws_CO_070820251842134723301507';
 
 
 -- Migration: 20250807155609_ab4fbdc2-12e7-4349-9292-4761469b3cc1.sql
@@ -6811,21 +5162,6 @@ SELECT cron.schedule(
 );
 
 -- Ensure automated billing is enabled by default
-INSERT INTO automated_billing_settings (
-  enabled, 
-  billing_day_of_month, 
-  grace_period_days, 
-  auto_payment_enabled,
-  notification_enabled
-) VALUES (
-  true, 
-  1, 
-  7, 
-  false,
-  true
-) ON CONFLICT (id) DO UPDATE SET
-  enabled = true,
-  updated_at = now();
 
 
 -- Migration: 20250807162930_0733f244-e9b8-456e-8fa0-fa261ba0b624.sql
@@ -6942,55 +5278,12 @@ CREATE TRIGGER update_sms_automation_settings_updated_at
   EXECUTE FUNCTION public.update_sms_provider_updated_at();
 
 -- Insert default communication preferences if they don't exist
-INSERT INTO public.communication_preferences (setting_name, email_enabled, sms_enabled, description)
-VALUES 
-  ('user_account_creation', true, true, 'Communication method when creating new user accounts (all roles)'),
-  ('password_reset', true, true, 'Communication method for password reset requests'),
-  ('payment_notifications', true, true, 'Communication method for payment confirmations'),
-  ('maintenance_notifications', true, true, 'Communication method for maintenance updates'),
-  ('general_announcements', true, false, 'Communication method for general announcements')
-ON CONFLICT (setting_name) DO NOTHING;
 
 -- Insert default message templates if they don't exist  
-INSERT INTO public.message_templates (name, type, category, content, variables, enabled)
-VALUES 
-  ('Rent Payment Reminder', 'sms', 'payment', 'Rent reminder: KES {{amount}} due for {{property_name}}, Unit {{unit_number}}. Due: {{due_date}}. Pay online or via M-Pesa. - ZIRA Property', ARRAY['amount', 'property_name', 'unit_number', 'due_date'], true),
-  ('Overdue Payment Notice', 'sms', 'payment', 'OVERDUE: Rent payment of KES {{amount}} is {{days_overdue}} days overdue for {{property_name}}. Please pay immediately to avoid late fees. - ZIRA Property', ARRAY['amount', 'days_overdue', 'property_name'], true),
-  ('Payment Confirmation', 'sms', 'payment', 'Payment received! KES {{amount}} for {{property_name}}, Unit {{unit_number}}. Transaction: {{transaction_id}}. Thank you! - ZIRA Property', ARRAY['amount', 'property_name', 'unit_number', 'transaction_id'], true),
-  ('Welcome New User', 'sms', 'account', 'Welcome to the platform! Your account has been created.\n\nRole: {{user_role}}\nEmail: {{email}}\nTemporary Password: {{temporary_password}}\n\nPlease log in and change your password immediately.\n\n- ZIRA Property Management', ARRAY['user_role', 'email', 'temporary_password'], true),
-  ('Welcome New Tenant', 'sms', 'account', 'Welcome to Zira Homes! Your login details:\nEmail: {{email}}\nPassword: {{temporary_password}}\nLogin: {{login_url}}\n\nProperty: {{property_name}}\nUnit: {{unit_number}}', ARRAY['email', 'temporary_password', 'login_url', 'property_name', 'unit_number'], true),
-  ('Password Reset Notification', 'sms', 'account', 'Hi {{first_name}}, a password reset was requested for your Zira Homes account. If this wasn''t you, please contact support. Reset link sent to your email.', ARRAY['first_name'], true),
-  ('Maintenance Status Update', 'sms', 'maintenance', 'Maintenance Update: {{request_title}} status changed to {{new_status}}. Property: {{property_name}}{{#if message}}. Note: {{message}}{{/if}}', ARRAY['request_title', 'new_status', 'property_name', 'message'], true),
-  ('Service Provider Assignment', 'sms', 'maintenance', 'Service provider {{service_provider_name}} assigned to your maintenance request: {{request_title}}. They will contact you soon.', ARRAY['service_provider_name', 'request_title'], true),
-  ('Maintenance Completion', 'sms', 'maintenance', 'Maintenance request completed: {{request_title}} at {{property_name}}{{#if message}}. Notes: {{message}}{{/if}}', ARRAY['request_title', 'property_name', 'message'], true),
-  ('General Announcement', 'sms', 'announcement', '{{#if is_urgent}}URGENT: {{/if}}{{announcement_title}}\n\n{{announcement_message_truncated}}\n\n- {{property_name}}', ARRAY['is_urgent', 'announcement_title', 'announcement_message_truncated', 'property_name'], true)
-ON CONFLICT (name) DO NOTHING;
 
 -- Insert default SMS provider configuration
-INSERT INTO public.sms_providers (provider_name, authorization_token, username, sender_id, base_url, unique_identifier, sender_type, is_active, is_default, config_data)
-VALUES (
-  'InHouse SMS',
-  'f22b2aa230b02b428a71023c7eb7f7bb9d440f38',
-  'ZIRA TECH',
-  'ZIRA TECH',
-  'http://68.183.101.252:803/bulk_api/',
-  '77',
-  '10',
-  true,
-  true,
-  '{"username": "ZIRA TECH", "authorization_token": "f22b2aa230b02b428a71023c7eb7f7bb9d440f38", "unique_identifier": "77", "sender_type": "10"}'
-)
-ON CONFLICT (provider_name) DO NOTHING;
 
 -- Insert default SMS automation settings
-INSERT INTO public.sms_automation_settings (automation_key, enabled, timing, audience_type, template_content)
-VALUES 
-  ('rent_due_reminder', true, '5-7-days', 'tenants', 'Reminder: Your rent of KES {{rent_amount}} is due on {{due_date}} for Unit {{unit_number}}.'),
-  ('payment_confirmation', true, 'instant', 'tenants', 'Payment of KES {{amount}} received. Thank you! - Zira Homes'),
-  ('maintenance_update', true, 'instant', 'tenants', 'Maintenance Update: {{request_title}} status changed to {{new_status}}.'),
-  ('account_creation', true, 'instant', 'all', 'Welcome! Your account: Email: {{email}}, Password: {{temporary_password}}'),
-  ('password_reset', true, 'instant', 'all', 'Password reset requested for your Zira Homes account. Check your email.')
-ON CONFLICT (automation_key) DO NOTHING;
 
 
 -- Migration: 20250807163008_d7b3b8e8-e18f-40d4-981c-f3b11b9b771a.sql
@@ -7090,20 +5383,6 @@ CREATE TRIGGER update_sms_providers_updated_at
   EXECUTE FUNCTION public.update_sms_provider_updated_at();
 
 -- Insert default SMS provider configuration
-INSERT INTO public.sms_providers (provider_name, authorization_token, username, sender_id, base_url, unique_identifier, sender_type, is_active, is_default, config_data)
-VALUES (
-  'InHouse SMS',
-  'f22b2aa230b02b428a71023c7eb7f7bb9d440f38',
-  'ZIRA TECH',
-  'ZIRA TECH',
-  'http://68.183.101.252:803/bulk_api/',
-  '77',
-  '10',
-  true,
-  true,
-  '{"username": "ZIRA TECH", "authorization_token": "f22b2aa230b02b428a71023c7eb7f7bb9d440f38", "unique_identifier": "77", "sender_type": "10"}'
-)
-ON CONFLICT (provider_name) DO NOTHING;
 
 
 -- Migration: 20250807163123_f890b61f-e3a5-4ea2-a19a-cd24506a1907.sql
@@ -7203,20 +5482,6 @@ CREATE TRIGGER update_sms_providers_updated_at
   EXECUTE FUNCTION public.update_sms_provider_updated_at();
 
 -- Insert default SMS provider configuration
-INSERT INTO public.sms_providers (provider_name, authorization_token, username, sender_id, base_url, unique_identifier, sender_type, is_active, is_default, config_data)
-VALUES (
-  'InHouse SMS',
-  'f22b2aa230b02b428a71023c7eb7f7bb9d440f38',
-  'ZIRA TECH',
-  'ZIRA TECH',
-  'http://68.183.101.252:803/bulk_api/',
-  '77',
-  '10',
-  true,
-  true,
-  '{"username": "ZIRA TECH", "authorization_token": "f22b2aa230b02b428a71023c7eb7f7bb9d440f38", "unique_identifier": "77", "sender_type": "10"}'
-)
-ON CONFLICT (provider_name) DO NOTHING;
 
 
 -- Migration: 20250807163213_f269207d-8a98-4b98-b48e-871965834356.sql
@@ -7277,30 +5542,6 @@ TO authenticated
 WITH CHECK (true);
 
 -- Insert default SMS provider configuration (update if exists)
-INSERT INTO public.sms_providers (provider_name, authorization_token, username, sender_id, base_url, unique_identifier, sender_type, is_active, is_default, config_data)
-VALUES (
-  'InHouse SMS',
-  'f22b2aa230b02b428a71023c7eb7f7bb9d440f38',
-  'ZIRA TECH',
-  'ZIRA TECH',
-  'http://68.183.101.252:803/bulk_api/',
-  '77',
-  '10',
-  true,
-  true,
-  '{"username": "ZIRA TECH", "authorization_token": "f22b2aa230b02b428a71023c7eb7f7bb9d440f38", "unique_identifier": "77", "sender_type": "10"}'
-)
-ON CONFLICT (provider_name) DO UPDATE SET
-  authorization_token = EXCLUDED.authorization_token,
-  username = EXCLUDED.username,
-  sender_id = EXCLUDED.sender_id,
-  base_url = EXCLUDED.base_url,
-  unique_identifier = EXCLUDED.unique_identifier,
-  sender_type = EXCLUDED.sender_type,
-  is_active = EXCLUDED.is_active,
-  is_default = EXCLUDED.is_default,
-  config_data = EXCLUDED.config_data,
-  updated_at = now();
 
 
 -- Migration: 20250807164043_6189221f-69f6-4f68-91bc-a90e80ba11dd.sql
@@ -7311,9 +5552,6 @@ ON CONFLICT (provider_name) DO UPDATE SET
 ALTER TYPE public.app_role ADD VALUE IF NOT EXISTS 'landlord_subuser';
 
 -- Update all existing property-related roles to 'landlord'
-UPDATE public.user_roles 
-SET role = 'Landlord'::app_role 
-WHERE role IN ('Manager', 'Agent', 'Property_Owner', 'Property_Manager');
 
 -- Create sub_users table for landlord delegation system
 CREATE TABLE IF NOT EXISTS public.sub_users (
@@ -7741,9 +5979,6 @@ WITH CHECK (
 
 -- First, let's fix the immediate issue: David Wanjau should remain a Landlord only
 -- Remove the duplicate Tenant role for the user who should be a Landlord
-DELETE FROM public.user_roles 
-WHERE user_id = 'a53f69a5-104e-489b-9b0a-48a56d6b011d' 
-AND role = 'Tenant';
 
 -- ==================================================
 -- PHASE 2: EMAIL UNIQUENESS ENFORCEMENT
@@ -8680,13 +6915,6 @@ BEFORE UPDATE ON public.pdf_template_bindings
 FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 
 -- Seed a default platform branding row if none exists
-INSERT INTO public.branding_profiles (scope, company_name, company_tagline, company_address, company_phone, company_email, logo_url, colors, footer_text, website_url, is_default)
-SELECT 'platform', 'Zira Technologies', 'Professional Property Management Solutions', 'P.O. Box 1234, Nairobi, Kenya', '+254 700 000 000', 'info@ziratechnologies.com', '/src/assets/zira-logo.png',
-       jsonb_build_object('primary', '#1B365D', 'secondary', '#64748B', 'accent', '#F36F21', 'neutral', '#F8F9FB'),
-       'Powered by Zira Technologies - Transforming Property Management', 'www.ziratechnologies.com', true
-WHERE NOT EXISTS (
-  SELECT 1 FROM public.branding_profiles WHERE scope = 'platform' AND is_default = true
-);
 
 
 
@@ -8711,20 +6939,8 @@ $$;
 
 -- 1) Ensure "Free Trial" billing plan exists and is active with price 0
 -- Create it if missing
-INSERT INTO public.billing_plans (
-  id, name, price, billing_cycle, description, billing_model, features, sms_credits_included, currency, is_active
-)
-SELECT
-  gen_random_uuid(), 'Free Trial', 0, 'monthly', 'Free 14-day trial plan', 'percentage', '["Core features during trial"]'::jsonb, 100, 'USD', true
-WHERE NOT EXISTS (
-  SELECT 1 FROM public.billing_plans WHERE name = 'Free Trial'
-);
 
 -- Ensure existing "Free Trial" (if any) is active and free
-UPDATE public.billing_plans
-SET is_active = true,
-    price = 0
-WHERE name = 'Free Trial';
 
 -- 2) Create trigger to auto-provision default landlord subscription on role assignment
 DO $$
@@ -11106,17 +9322,6 @@ ON public.user_roles (user_id)
 WHERE role = 'Admin';
 
 -- Log this security fix
-INSERT INTO public.system_logs (type, message, service, details)
-VALUES (
-  'security_fix', 
-  'Fixed critical privilege escalation vulnerability in user roles',
-  'database',
-  jsonb_build_object(
-    'fix_type', 'privilege_escalation',
-    'severity', 'critical',
-    'description', 'Removed overly permissive RLS policies and added secure role management functions'
-  )
-);
 
 
 -- Migration: 20250814113232_af180356-634f-4654-87cc-c1fcf1fda5c4.sql
@@ -11303,18 +9508,6 @@ ON public.user_roles (user_id)
 WHERE role = 'Admin';
 
 -- Log this security fix
-INSERT INTO public.system_logs (type, message, service, details)
-VALUES (
-  'security_fix', 
-  'Fixed critical privilege escalation vulnerability in user roles',
-  'database',
-  jsonb_build_object(
-    'fix_type', 'privilege_escalation',
-    'severity', 'critical',
-    'description', 'Removed overly permissive RLS policies and added secure role management functions',
-    'timestamp', now()
-  )
-);
 
 
 -- Migration: 20250814113529_d695d12b-7308-4017-89c1-15a1be771f63.sql
@@ -11885,107 +10078,6 @@ WHERE role = 'Admin';
 -- Migration: 20250814192939_06aa2ff6-cf0c-41fb-bc6c-d51aedb1528d.sql
 
 -- Create the master PDF template with Zira Homes professional layout
-INSERT INTO public.pdf_templates (
-    id,
-    name,
-    type,
-    description,
-    content,
-    version,
-    is_active,
-    created_by
-) VALUES (
-    gen_random_uuid(),
-    'Zira Professional Template',
-    'universal',
-    'Professional PDF template for all Zira documents with consistent branding and layout',
-    '{
-        "layout": {
-            "type": "professional",
-            "orientation": "portrait",
-            "margins": {
-                "top": 30,
-                "bottom": 30,
-                "left": 20,
-                "right": 20
-            }
-        },
-        "header": {
-            "type": "branded",
-            "showLogo": true,
-            "showCompanyInfo": true,
-            "style": {
-                "backgroundColor": "#1B365D",
-                "textColor": "#FFFFFF",
-                "accentColor": "#F36F21"
-            }
-        },
-        "sections": {
-            "title": {
-                "style": {
-                    "fontSize": 24,
-                    "fontWeight": "bold",
-                    "color": "#1B365D",
-                    "marginBottom": 20
-                }
-            },
-            "kpi": {
-                "layout": "grid",
-                "columns": 4,
-                "cardStyle": {
-                    "backgroundColor": "#F8F9FB",
-                    "borderColor": "#E2E8F0",
-                    "borderWidth": 1,
-                    "borderRadius": 8,
-                    "padding": 15
-                }
-            },
-            "content": {
-                "style": {
-                    "fontSize": 11,
-                    "lineHeight": 1.4,
-                    "color": "#374151"
-                }
-            },
-            "tables": {
-                "headerStyle": {
-                    "backgroundColor": "#1B365D",
-                    "textColor": "#FFFFFF",
-                    "fontWeight": "bold"
-                },
-                "alternateRowColor": "#F8F9FB",
-                "borderColor": "#E2E8F0"
-            }
-        },
-        "footer": {
-            "type": "branded",
-            "showCompanyInfo": true,
-            "showPageNumbers": true,
-            "style": {
-                "backgroundColor": "#F8F9FB",
-                "textColor": "#64748B",
-                "borderColor": "#E2E8F0"
-            }
-        },
-        "colors": {
-            "primary": "#1B365D",
-            "secondary": "#64748B",
-            "accent": "#F36F21",
-            "neutral": "#F8F9FB",
-            "border": "#E2E8F0",
-            "text": "#374151"
-        },
-        "typography": {
-            "fontFamily": "Helvetica",
-            "baseFontSize": 11,
-            "headingFontSize": 14,
-            "titleFontSize": 24
-        }
-    }'::jsonb,
-    1,
-    true,
-    null
-);
 
 -- Get the template ID for creating bindings
 WITH template_data AS (
@@ -12000,170 +10092,13 @@ user_roles AS (
     SELECT unnest(ARRAY['Admin', 'Landlord', 'Manager', 'Agent', 'Tenant']) as role,
            unnest(ARRAY[100, 90, 80, 70, 60]) as priority
 )
-INSERT INTO public.pdf_template_bindings (
-    template_id,
-    document_type,
-    role,
-    landlord_id,
-    priority,
-    is_active
-)
-SELECT 
-    t.template_id,
-    d.doc_type,
-    r.role,
-    null, -- Global template (not landlord-specific)
-    r.priority,
-    true
-FROM template_data t
-CROSS JOIN document_types d
-CROSS JOIN user_roles r;
 
 
 -- Migration: 20250814193020_abe479c2-68ba-4c87-8267-cf45e4d8eb72.sql
 
 -- Create the master PDF template with Zira Homes professional layout
-INSERT INTO public.pdf_templates (
-    id,
-    name,
-    type,
-    description,
-    content,
-    version,
-    is_active,
-    created_by
-) VALUES (
-    gen_random_uuid(),
-    'Zira Professional Template',
-    'report',
-    'Professional PDF template for all Zira documents with consistent branding and layout',
-    '{
-        "layout": {
-            "type": "professional",
-            "orientation": "portrait",
-            "margins": {
-                "top": 30,
-                "bottom": 30,
-                "left": 20,
-                "right": 20
-            }
-        },
-        "header": {
-            "type": "branded",
-            "showLogo": true,
-            "showCompanyInfo": true,
-            "style": {
-                "backgroundColor": "#1B365D",
-                "textColor": "#FFFFFF",
-                "accentColor": "#F36F21"
-            }
-        },
-        "sections": {
-            "title": {
-                "style": {
-                    "fontSize": 24,
-                    "fontWeight": "bold",
-                    "color": "#1B365D",
-                    "marginBottom": 20
-                }
-            },
-            "kpi": {
-                "layout": "grid",
-                "columns": 4,
-                "cardStyle": {
-                    "backgroundColor": "#F8F9FB",
-                    "borderColor": "#E2E8F0",
-                    "borderWidth": 1,
-                    "borderRadius": 8,
-                    "padding": 15
-                }
-            },
-            "content": {
-                "style": {
-                    "fontSize": 11,
-                    "lineHeight": 1.4,
-                    "color": "#374151"
-                }
-            },
-            "tables": {
-                "headerStyle": {
-                    "backgroundColor": "#1B365D",
-                    "textColor": "#FFFFFF",
-                    "fontWeight": "bold"
-                },
-                "alternateRowColor": "#F8F9FB",
-                "borderColor": "#E2E8F0"
-            }
-        },
-        "footer": {
-            "type": "branded",
-            "showCompanyInfo": true,
-            "showPageNumbers": true,
-            "style": {
-                "backgroundColor": "#F8F9FB",
-                "textColor": "#64748B",
-                "borderColor": "#E2E8F0"
-            }
-        },
-        "colors": {
-            "primary": "#1B365D",
-            "secondary": "#64748B",
-            "accent": "#F36F21",
-            "neutral": "#F8F9FB",
-            "border": "#E2E8F0",
-            "text": "#374151"
-        },
-        "typography": {
-            "fontFamily": "Helvetica",
-            "baseFontSize": 11,
-            "headingFontSize": 14,
-            "titleFontSize": 24
-        }
-    }'::jsonb,
-    1,
-    true,
-    null
-);
 
 -- Create additional templates for each document type
-INSERT INTO public.pdf_templates (name, type, description, content, version, is_active)
-VALUES 
-('Zira Invoice Template', 'invoice', 'Professional invoice template', '{
-    "extends": "zira-professional",
-    "documentSpecific": {
-        "showPaymentTerms": true,
-        "showDueDate": true,
-        "includeItemizedList": true
-    }
-}'::jsonb, 1, true),
-('Zira Letter Template', 'letter', 'Professional letter template', '{
-    "extends": "zira-professional",
-    "documentSpecific": {
-        "showLetterhead": true,
-        "includeSignature": true
-    }
-}'::jsonb, 1, true),
-('Zira Notice Template', 'notice', 'Professional notice template', '{
-    "extends": "zira-professional",
-    "documentSpecific": {
-        "emphasizeUrgency": true,
-        "includeActionRequired": true
-    }
-}'::jsonb, 1, true),
-('Zira Lease Template', 'lease', 'Professional lease template', '{
-    "extends": "zira-professional",
-    "documentSpecific": {
-        "showTermsAndConditions": true,
-        "includeSignatureBlocks": true
-    }
-}'::jsonb, 1, true),
-('Zira Receipt Template', 'receipt', 'Professional receipt template', '{
-    "extends": "zira-professional",
-    "documentSpecific": {
-        "showPaymentMethod": true,
-        "includeTransactionId": true
-    }
-}'::jsonb, 1, true);
 
 -- Get template IDs and create bindings for all document types and roles
 WITH template_data AS (
@@ -12175,192 +10110,10 @@ user_roles AS (
     SELECT unnest(ARRAY['Admin', 'Landlord', 'Manager', 'Agent', 'Tenant']) as role,
            unnest(ARRAY[100, 90, 80, 70, 60]) as priority
 )
-INSERT INTO public.pdf_template_bindings (
-    template_id,
-    document_type,
-    role,
-    landlord_id,
-    priority,
-    is_active
-)
-SELECT 
-    t.template_id,
-    t.doc_type,
-    r.role,
-    null, -- Global template (not landlord-specific)
-    r.priority,
-    true
-FROM template_data t
-CROSS JOIN user_roles r;
 
 
 -- Migration: 20250814193539_bdb2c3f4-5b3f-4d14-99db-a727308b6d9c.sql
 
-UPDATE pdf_templates 
-SET content = '{
-  "layout": {
-    "type": "professional",
-    "orientation": "portrait",
-    "margins": {
-      "top": 30,
-      "right": 20,
-      "bottom": 30,
-      "left": 20
-    },
-    "spacing": {
-      "sectionGap": 15,
-      "cardGap": 8,
-      "textLineHeight": 1.4
-    }
-  },
-  "header": {
-    "type": "branded",
-    "height": 35,
-    "showLogo": true,
-    "showCompanyInfo": true,
-    "style": {
-      "backgroundColor": "#1B365D",
-      "textColor": "#FFFFFF",
-      "accentColor": "#F36F21",
-      "logoMaxHeight": 15,
-      "companyNameSize": 18,
-      "taglineSize": 10
-    }
-  },
-  "typography": {
-    "fontFamily": "Helvetica",
-    "baseFontSize": 11,
-    "titleFontSize": 24,
-    "headingFontSize": 14,
-    "subtitleFontSize": 12,
-    "hierarchy": {
-      "h1": {"size": 16, "weight": "bold", "color": "#1B365D"},
-      "h2": {"size": 14, "weight": "bold", "color": "#1B365D"},
-      "h3": {"size": 12, "weight": "bold", "color": "#374151"},
-      "body": {"size": 11, "weight": "normal", "color": "#374151"},
-      "caption": {"size": 9, "weight": "normal", "color": "#64748B"}
-    }
-  },
-  "colors": {
-    "primary": "#1B365D",
-    "secondary": "#64748B", 
-    "accent": "#F36F21",
-    "neutral": "#F8F9FB",
-    "border": "#E2E8F0",
-    "text": "#374151",
-    "textMuted": "#64748B",
-    "success": "#10B981",
-    "warning": "#F59E0B",
-    "error": "#EF4444"
-  },
-  "sections": {
-    "title": {
-      "style": {
-        "fontSize": 24,
-        "fontWeight": "bold",
-        "color": "#1B365D",
-        "marginBottom": 20,
-        "underlineColor": "#F36F21",
-        "underlineWidth": 2
-      }
-    },
-    "kpi": {
-      "layout": "grid",
-      "columns": 4,
-      "maxPerRow": 4,
-      "cardStyle": {
-        "backgroundColor": "#FFFFFF",
-        "borderColor": "#E2E8F0",
-        "borderWidth": 1,
-        "borderRadius": 8,
-        "padding": 16,
-        "shadow": "0 2px 4px rgba(0,0,0,0.1)",
-        "height": 28,
-        "spacing": 8
-      },
-      "typography": {
-        "valueSize": 16,
-        "valueFontWeight": "bold",
-        "valueColor": "#1B365D",
-        "labelSize": 9,
-        "labelColor": "#64748B",
-        "labelWeight": "normal"
-      }
-    },
-    "content": {
-      "style": {
-        "fontSize": 11,
-        "lineHeight": 1.4,
-        "color": "#374151"
-      }
-    },
-    "tables": {
-      "headerStyle": {
-        "backgroundColor": "#1B365D",
-        "textColor": "#FFFFFF",
-        "fontWeight": "bold",
-        "fontSize": 10,
-        "padding": 8
-      },
-      "rowStyle": {
-        "fontSize": 9,
-        "padding": 6,
-        "borderColor": "#E2E8F0"
-      },
-      "alternateRowColor": "#F8F9FB",
-      "borderColor": "#E2E8F0"
-    },
-    "charts": {
-      "titleSize": 12,
-      "titleColor": "#1B365D",
-      "backgroundColor": "#FFFFFF",
-      "borderColor": "#E2E8F0",
-      "gridColor": "#F1F5F9"
-    }
-  },
-  "footer": {
-    "type": "branded",
-    "height": 20,
-    "showCompanyInfo": true,
-    "showPageNumbers": true,
-    "showGenerationDate": true,
-    "style": {
-      "backgroundColor": "#F8F9FB",
-      "textColor": "#64748B",
-      "borderColor": "#E2E8F0",
-      "fontSize": 8,
-      "companyInfoFormat": "{companyName} • {phone} • {email}",
-      "dateFormat": "MMM dd, yyyy"
-    }
-  },
-  "branding": {
-    "showWatermark": false,
-    "professionalMode": true,
-    "compactMode": false,
-    "colorTheme": "corporate"
-  }
-}'::jsonb
-WHERE name = 'Zira Professional Template'
-
-
--- Migration: 20250818185838_1b141ffe-d601-4ce6-8c05-20231329b0d4.sql
-
-
--- Rent Collection Report (Live Data)
--- Returns JSON in the shape expected by ReportData:
--- {
---   kpis: { total_collected, collection_rate, outstanding_amount, late_payments },
---   charts: { collection_trend: [...], payment_status: [...] },
---   table: [...]
--- }
-create or replace function public.get_rent_collection_report(p_start_date date default null, p_end_date date default null)
-returns jsonb
-language plpgsql
-security definer
-set search_path to ''
-as $$
-declare
-  v_start date := coalesce(p_start_date, date_trunc('month', now())::date);
   v_end   date := coalesce(p_end_date, now()::date);
   v_result jsonb;
 begin
