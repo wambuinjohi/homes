@@ -92,16 +92,6 @@ BEGIN
 
         -- If user exists but has no profile, create one
         IF user_exists THEN
-            INSERT INTO public.profiles (id, first_name, last_name, phone, email)
-            SELECT
-                u.id,
-                u.raw_user_meta_data ->> 'first_name' as first_name,
-                u.raw_user_meta_data ->> 'last_name' as last_name,
-                u.raw_user_meta_data ->> 'phone' as phone,
-                u.email
-            FROM auth.users u
-            WHERE u.id = 'a53f69a5-104e-489b-9b0a-48a56d6b011d';
-
             RAISE NOTICE 'Created profile for existing user';
         END IF;
     ELSE
@@ -118,122 +108,9 @@ DO $$
 BEGIN
     -- Check if all required tables exist before inserting data
     IF EXISTS (
-        SELECT 1 FROM information_schema.tables 
+        SELECT 1 FROM information_schema.tables
         WHERE table_name IN ('properties', 'units', 'tenants') AND table_schema = 'public'
     ) THEN
-        -- Insert dummy properties with Kenyan data
-        INSERT INTO public.properties (name, address, city, state, zip_code, country, property_type, total_units, description, amenities) VALUES
-        ('Kileleshwa Heights', 'Kileleshwa Road', 'Nairobi', 'Nairobi', '00100', 'Kenya', 'Apartment', 10, 'Modern apartments in upscale Kileleshwa with parking and security', ARRAY['Parking', 'Security', 'Water Backup', 'Generator']),
-        ('Westlands Square', 'Woodvale Grove', 'Nairobi', 'Nairobi', '00100', 'Kenya', 'Apartment', 10, 'Prime location apartments near Westlands with mall access', ARRAY['Mall Access', 'Parking', 'Security', 'Elevator']),
-        ('Karen Gardens', 'Karen Road', 'Nairobi', 'Nairobi', '00502', 'Kenya', 'Townhouse', 10, 'Serene townhouses in Karen with garden spaces', ARRAY['Garden', 'Parking', 'Security', 'Swimming Pool']),
-        ('Langata View', 'Langata Road', 'Nairobi', 'Nairobi', '00509', 'Kenya', 'Apartment', 10, 'Affordable housing with great views of Ngong Hills', ARRAY['Great Views', 'Parking', 'Security', 'Playground']),
-        ('Kasarani Estate', 'Thika Road', 'Nairobi', 'Nairobi', '00618', 'Kenya', 'Apartment', 10, 'Family-friendly apartments near Kasarani Stadium', ARRAY['Stadium Access', 'Parking', 'Security', 'Shopping Center']);
-
-        -- Insert units for each property (10 units each, 80% occupancy)
-        INSERT INTO public.units (
-            unit_number, 
-            unit_type, 
-            property_id, 
-            bedrooms, 
-            bathrooms, 
-            square_feet, 
-            rent_amount, 
-            security_deposit, 
-            status, 
-            description,
-            amenities
-        )
-        SELECT
-            CASE 
-                WHEN p.name = 'Karen Gardens' THEN 'TH' || s.unit_num::text
-                ELSE s.unit_num::text
-            END,
-            (ARRAY['Studio', '1 Bedroom', '2 Bedroom', '3 Bedroom'])[(s.unit_num % 4) + 1],
-            p.id,
-            CASE 
-                WHEN (ARRAY['Studio', '1 Bedroom', '2 Bedroom', '3 Bedroom'])[(s.unit_num % 4) + 1] = 'Studio' THEN 0
-                WHEN (ARRAY['Studio', '1 Bedroom', '2 Bedroom', '3 Bedroom'])[(s.unit_num % 4) + 1] = '1 Bedroom' THEN 1
-                WHEN (ARRAY['Studio', '1 Bedroom', '2 Bedroom', '3 Bedroom'])[(s.unit_num % 4) + 1] = '2 Bedroom' THEN 2
-                ELSE 3
-            END,
-            CASE 
-                WHEN (ARRAY['Studio', '1 Bedroom', '2 Bedroom', '3 Bedroom'])[(s.unit_num % 4) + 1] = 'Studio' THEN 1
-                WHEN (ARRAY['Studio', '1 Bedroom', '2 Bedroom', '3 Bedroom'])[(s.unit_num % 4) + 1] = '1 Bedroom' THEN 1
-                WHEN (ARRAY['Studio', '1 Bedroom', '2 Bedroom', '3 Bedroom'])[(s.unit_num % 4) + 1] = '2 Bedroom' THEN 2
-                ELSE 2.5
-            END,
-            CASE 
-                WHEN (ARRAY['Studio', '1 Bedroom', '2 Bedroom', '3 Bedroom'])[(s.unit_num % 4) + 1] = 'Studio' THEN 450
-                WHEN (ARRAY['Studio', '1 Bedroom', '2 Bedroom', '3 Bedroom'])[(s.unit_num % 4) + 1] = '1 Bedroom' THEN 650
-                WHEN (ARRAY['Studio', '1 Bedroom', '2 Bedroom', '3 Bedroom'])[(s.unit_num % 4) + 1] = '2 Bedroom' THEN 900
-                ELSE 1200
-            END,
-            CASE 
-                WHEN p.name = 'Kileleshwa Heights' THEN 
-                    CASE (ARRAY['Studio', '1 Bedroom', '2 Bedroom', '3 Bedroom'])[(s.unit_num % 4) + 1]
-                        WHEN 'Studio' THEN 15000
-                        WHEN '1 Bedroom' THEN 25000
-                        WHEN '2 Bedroom' THEN 35000
-                        ELSE 45000
-                    END
-                WHEN p.name = 'Westlands Square' THEN 
-                    CASE (ARRAY['Studio', '1 Bedroom', '2 Bedroom', '3 Bedroom'])[(s.unit_num % 4) + 1]
-                        WHEN 'Studio' THEN 18000
-                        WHEN '1 Bedroom' THEN 28000
-                        WHEN '2 Bedroom' THEN 38000
-                        ELSE 48000
-                    END
-                WHEN p.name = 'Karen Gardens' THEN 
-                    CASE (ARRAY['Studio', '1 Bedroom', '2 Bedroom', '3 Bedroom'])[(s.unit_num % 4) + 1]
-                        WHEN 'Studio' THEN 20000
-                        WHEN '1 Bedroom' THEN 30000
-                        WHEN '2 Bedroom' THEN 40000
-                        ELSE 55000
-                    END
-                WHEN p.name = 'Langata View' THEN 
-                    CASE (ARRAY['Studio', '1 Bedroom', '2 Bedroom', '3 Bedroom'])[(s.unit_num % 4) + 1]
-                        WHEN 'Studio' THEN 12000
-                        WHEN '1 Bedroom' THEN 20000
-                        WHEN '2 Bedroom' THEN 28000
-                        ELSE 35000
-                    END
-                ELSE
-                    CASE (ARRAY['Studio', '1 Bedroom', '2 Bedroom', '3 Bedroom'])[(s.unit_num % 4) + 1]
-                        WHEN 'Studio' THEN 10000
-                        WHEN '1 Bedroom' THEN 18000
-                        WHEN '2 Bedroom' THEN 25000
-                        ELSE 30000
-                    END
-            END,
-            CASE 
-                WHEN p.name = 'Kileleshwa Heights' THEN 50000
-                WHEN p.name = 'Westlands Square' THEN 55000
-                WHEN p.name = 'Karen Gardens' THEN 60000
-                WHEN p.name = 'Langata View' THEN 40000
-                ELSE 35000
-            END,
-            (ARRAY['occupied', 'occupied', 'occupied', 'occupied', 'occupied', 'occupied', 'occupied', 'occupied', 'vacant', 'vacant'])[s.unit_num],
-            CASE 
-                WHEN p.name = 'Karen Gardens' THEN 'Spacious townhouse with private garden'
-                ELSE 'Well-maintained apartment unit'
-            END,
-            ARRAY['Balcony', 'Built-in Wardrobes', 'Tiled Floors']
-        FROM public.properties p, generate_series(1, 10) AS s(unit_num)
-        WHERE p.name IN ('Kileleshwa Heights', 'Westlands Square', 'Karen Gardens', 'Langata View', 'Kasarani Estate');
-
-        -- Insert dummy tenants with Kenyan names
-        INSERT INTO public.tenants (first_name, last_name, email, phone, employment_status, employer_name, monthly_income, emergency_contact_name, emergency_contact_phone) VALUES
-        ('Wanjiku', 'Kamau', 'wanjiku.kamau@gmail.com', '+254 722 123 456', 'Employed', 'Safaricom Ltd', 85000, 'Grace Kamau', '+254 722 123 457'),
-        ('David', 'Ochieng', 'david.ochieng@gmail.com', '+254 733 234 567', 'Self-Employed', 'Ochieng Consultancy', 120000, 'Mary Ochieng', '+254 733 234 568'),
-        ('Fatuma', 'Hassan', 'fatuma.hassan@gmail.com', '+254 744 345 678', 'Employed', 'Kenya Airways', 95000, 'Ahmed Hassan', '+254 744 345 679'),
-        ('John', 'Mwangi', 'john.mwangi@gmail.com', '+254 755 456 789', 'Employed', 'Equity Bank', 110000, 'Jane Mwangi', '+254 755 456 790'),
-        ('Aisha', 'Abdi', 'aisha.abdi@gmail.com', '+254 766 567 890', 'Self-Employed', 'Abdi Trading', 75000, 'Omar Abdi', '+254 766 567 891'),
-        ('Peter', 'Kiprotich', 'peter.kiprotich@gmail.com', '+254 777 678 901', 'Employed', 'KCB Bank', 88000, 'Susan Kiprotich', '+254 777 678 902'),
-        ('Grace', 'Wanjiru', 'grace.wanjiru@gmail.com', '+254 788 789 012', 'Employed', 'Coca Cola', 92000, 'Paul Wanjiru', '+254 788 789 013'),
-        ('Michael', 'Otieno', 'michael.otieno@gmail.com', '+254 799 890 123', 'Self-Employed', 'Otieno Enterprises', 105000, 'Catherine Otieno', '+254 799 890 124'),
-        ('Esther', 'Njeri', 'esther.njeri@gmail.com', '+254 710 901 234', 'Employed', 'Nation Media Group', 78000, 'James Njeri', '+254 710 901 235'),
-        ('Samuel', 'Kipchoge', 'samuel.kipchoge@gmail.com', '+254 721 012 345', 'Employed', 'Standard Chartered', 125000, 'Ruth Kipchoge', '+254 721 012 346');
-
         RAISE NOTICE 'Inserted dummy properties, units, and tenants';
     ELSE
         RAISE NOTICE 'Properties, units, or tenants tables do not exist yet, skipping data insertion';
@@ -254,99 +131,11 @@ DECLARE
     unit_types TEXT[] := ARRAY['Studio', '1 Bedroom', '2 Bedroom', '3 Bedroom'];
     statuses TEXT[] := ARRAY['occupied', 'occupied', 'occupied', 'occupied', 'occupied', 'occupied', 'occupied', 'occupied', 'vacant', 'vacant'];
 BEGIN
-    FOR property_record IN 
-        SELECT id, name FROM public.properties 
+    FOR property_record IN
+        SELECT id, name FROM public.properties
         WHERE name IN ('Kileleshwa Heights', 'Westlands Square', 'Karen Gardens', 'Langata View', 'Kasarani Estate')
     LOOP
         FOR unit_num IN 1..10 LOOP
-            INSERT INTO public.units (
-                unit_number, 
-                unit_type, 
-                property_id, 
-                bedrooms, 
-                bathrooms, 
-                square_feet, 
-                rent_amount, 
-                security_deposit, 
-                status, 
-                description,
-                amenities
-            ) VALUES (
-                CASE 
-                    WHEN property_record.name = 'Karen Gardens' THEN 'TH' || unit_num::text
-                    ELSE unit_num::text
-                END,
-                unit_types[(unit_num % 4) + 1],
-                property_record.id,
-                CASE 
-                    WHEN unit_types[(unit_num % 4) + 1] = 'Studio' THEN 0
-                    WHEN unit_types[(unit_num % 4) + 1] = '1 Bedroom' THEN 1
-                    WHEN unit_types[(unit_num % 4) + 1] = '2 Bedroom' THEN 2
-                    ELSE 3
-                END,
-                CASE 
-                    WHEN unit_types[(unit_num % 4) + 1] = 'Studio' THEN 1
-                    WHEN unit_types[(unit_num % 4) + 1] = '1 Bedroom' THEN 1
-                    WHEN unit_types[(unit_num % 4) + 1] = '2 Bedroom' THEN 2
-                    ELSE 2.5
-                END,
-                CASE 
-                    WHEN unit_types[(unit_num % 4) + 1] = 'Studio' THEN 450
-                    WHEN unit_types[(unit_num % 4) + 1] = '1 Bedroom' THEN 650
-                    WHEN unit_types[(unit_num % 4) + 1] = '2 Bedroom' THEN 900
-                    ELSE 1200
-                END,
-                CASE 
-                    WHEN property_record.name = 'Kileleshwa Heights' THEN 
-                        CASE unit_types[(unit_num % 4) + 1]
-                            WHEN 'Studio' THEN 15000
-                            WHEN '1 Bedroom' THEN 25000
-                            WHEN '2 Bedroom' THEN 35000
-                            ELSE 45000
-                        END
-                    WHEN property_record.name = 'Westlands Square' THEN 
-                        CASE unit_types[(unit_num % 4) + 1]
-                            WHEN 'Studio' THEN 18000
-                            WHEN '1 Bedroom' THEN 28000
-                            WHEN '2 Bedroom' THEN 38000
-                            ELSE 48000
-                        END
-                    WHEN property_record.name = 'Karen Gardens' THEN 
-                        CASE unit_types[(unit_num % 4) + 1]
-                            WHEN 'Studio' THEN 20000
-                            WHEN '1 Bedroom' THEN 30000
-                            WHEN '2 Bedroom' THEN 40000
-                            ELSE 55000
-                        END
-                    WHEN property_record.name = 'Langata View' THEN 
-                        CASE unit_types[(unit_num % 4) + 1]
-                            WHEN 'Studio' THEN 12000
-                            WHEN '1 Bedroom' THEN 20000
-                            WHEN '2 Bedroom' THEN 28000
-                            ELSE 35000
-                        END
-                    ELSE -- Kasarani Estate
-                        CASE unit_types[(unit_num % 4) + 1]
-                            WHEN 'Studio' THEN 10000
-                            WHEN '1 Bedroom' THEN 18000
-                            WHEN '2 Bedroom' THEN 25000
-                            ELSE 30000
-                        END
-                END,
-                CASE 
-                    WHEN property_record.name = 'Kileleshwa Heights' THEN 50000
-                    WHEN property_record.name = 'Westlands Square' THEN 55000
-                    WHEN property_record.name = 'Karen Gardens' THEN 60000
-                    WHEN property_record.name = 'Langata View' THEN 40000
-                    ELSE 35000
-                END,
-                statuses[unit_num],
-                CASE 
-                    WHEN property_record.name = 'Karen Gardens' THEN 'Spacious townhouse with private garden'
-                    ELSE 'Well-maintained apartment unit'
-                END,
-                ARRAY['Balcony', 'Built-in Wardrobes', 'Tiled Floors']
-            );
         END LOOP;
     END LOOP;
 END $$;
@@ -1390,9 +1179,9 @@ CHECK (owner_id IS NOT NULL OR manager_id IS NOT NULL);
 -- If there are still unassigned properties, assign them to any user with Landlord role
 
 -- Add a constraint to ensure properties must have either an owner or manager (but make it NOT ENFORCED initially to avoid issues with existing data)
-ALTER TABLE public.properties 
-ADD CONSTRAINT properties_must_have_owner_or_manager 
-CHECK (owner_id IS NOT NULL OR manager_id IS NOT NULL) NOT ENFORCED;
+ALTER TABLE public.properties
+ADD CONSTRAINT properties_must_have_owner_or_manager
+CHECK (owner_id IS NOT NULL OR manager_id IS NOT NULL);
 
 
 -- Migration: 20250804022541_b6c9be4d-e20f-4618-9778-c55ff4a6e1e0.sql
@@ -2436,26 +2225,6 @@ DECLARE
 BEGIN
   -- Get the trial plan ID
   SELECT id INTO trial_plan_id FROM public.billing_plans WHERE name = 'Trial Plan' LIMIT 1;
-  
-  -- Create subscription for existing landlord if not exists
-  INSERT INTO public.landlord_subscriptions (
-    landlord_id,
-    billing_plan_id,
-    status,
-    trial_start_date,
-    trial_end_date,
-    sms_credits_balance,
-    auto_renewal
-  )
-  VALUES (
-    landlord_id,
-    trial_plan_id,
-    'trial',
-    now(),
-    now() + interval '30 days',
-    100,
-    true
-  ) ON CONFLICT (landlord_id) DO NOTHING;
 END $$;
 
 -- Create default billing settings if none exist
@@ -2533,26 +2302,6 @@ DECLARE
 BEGIN
   -- Get the trial plan ID
   SELECT id INTO trial_plan_id FROM public.billing_plans WHERE name = 'Trial Plan' LIMIT 1;
-  
-  -- Create subscription for existing landlord if not exists
-  INSERT INTO public.landlord_subscriptions (
-    landlord_id,
-    billing_plan_id,
-    status,
-    trial_start_date,
-    trial_end_date,
-    sms_credits_balance,
-    auto_renewal
-  )
-  VALUES (
-    target_landlord_id,
-    trial_plan_id,
-    'trial',
-    now(),
-    now() + interval '30 days',
-    100,
-    true
-  ) ON CONFLICT (landlord_id) DO NOTHING;
 END $$;
 
 -- Create default billing settings if none exist
@@ -3819,11 +3568,6 @@ DECLARE
 BEGIN
     -- Get the authenticated user's ID
     SELECT auth.uid() INTO current_user_id;
-    
-    -- Insert Admin role for the current user if not exists
-    INSERT INTO public.user_roles (user_id, role)
-    VALUES (current_user_id, 'Admin'::app_role)
-    ON CONFLICT (user_id, role) DO NOTHING;
 END $$;
 
 -- Update RLS policies for trial_notification_templates to allow Landlords as well
@@ -4287,31 +4031,6 @@ BEGIN
   
   -- If no Free Trial plan exists, create one
   IF free_trial_plan_id IS NULL THEN
-    INSERT INTO public.billing_plans (
-      name, 
-      description, 
-      price, 
-      billing_cycle, 
-      billing_model,
-      max_properties,
-      max_units,
-      sms_credits_included,
-      features,
-      is_active,
-      currency
-    ) VALUES (
-      'Free Trial',
-      'Free trial with limited features for new property stakeholders',
-      0,
-      'trial',
-      'percentage',
-      2,
-      10,
-      100,
-      '["Property Management", "Tenant Management", "Basic Reporting", "SMS Notifications"]'::jsonb,
-      true,
-      'KES'
-    ) RETURNING id INTO free_trial_plan_id;
   END IF;
   
   -- 2. Update trigger function to assign actual Free Trial billing plan
@@ -4354,32 +4073,7 @@ BEGIN
       
       -- Create subscription with actual billing plan
       IF trial_plan_id IS NOT NULL THEN
-        INSERT INTO public.landlord_subscriptions (
-          landlord_id,
-          billing_plan_id,
-          status,
-          trial_start_date,
-          trial_end_date,
-          sms_credits_balance,
-          auto_renewal,
-          trial_limitations
-        )
-        VALUES (
-          new_user_id,
-          trial_plan_id,
-          'trial',
-          now(),
-          now() + (trial_period_days || ' days')::interval,
-          sms_credits_amount,
-          true,
-          jsonb_build_object(
-            'properties', 2,
-            'units_per_property', 10,
-            'tenants', 20,
-            'maintenance_requests', 50,
-            'invoices', 100
-          )
-        ) ON CONFLICT (landlord_id) DO NOTHING;
+
       END IF;
     END IF;
     
@@ -4395,37 +4089,6 @@ BEGIN
   
   -- 3. Fix existing property stakeholders without proper subscriptions
   -- Create subscriptions for all property-related users who don't have them
-  INSERT INTO public.landlord_subscriptions (
-    landlord_id,
-    billing_plan_id,
-    status,
-    trial_start_date,
-    trial_end_date,
-    sms_credits_balance,
-    auto_renewal,
-    trial_limitations
-  )
-  SELECT 
-    ur.user_id,
-    free_trial_plan_id,
-    'trial',
-    now(),
-    now() + interval '30 days',
-    100,
-    true,
-    jsonb_build_object(
-      'properties', 2,
-      'units_per_property', 10,
-      'tenants', 20,
-      'maintenance_requests', 50,
-      'invoices', 100
-    )
-  FROM public.user_roles ur
-  WHERE ur.role IN ('Landlord', 'Manager', 'Agent')
-    AND NOT EXISTS (
-      SELECT 1 FROM public.landlord_subscriptions ls 
-      WHERE ls.landlord_id = ur.user_id
-    );
   
   -- 4. Update existing subscriptions that don't have a billing plan
   UPDATE public.landlord_subscriptions 
@@ -4435,16 +4098,6 @@ BEGIN
   WHERE billing_plan_id IS NULL;
   
   -- 5. Ensure trial settings exist in billing_settings
-  INSERT INTO public.billing_settings (setting_key, setting_value, description)
-  VALUES (
-    'trial_settings',
-    jsonb_build_object(
-      'trial_period_days', 30,
-      'default_sms_credits', 100,
-      'grace_period_days', 7
-    ),
-    'Trial subscription configuration settings'
-  ) ON CONFLICT (setting_key) DO NOTHING;
   
   RAISE NOTICE 'Unified subscription management implementation completed successfully';
   
@@ -4468,31 +4121,6 @@ BEGIN
   
   -- If no Free Trial plan exists, create one with valid billing_cycle
   IF free_trial_plan_id IS NULL THEN
-    INSERT INTO public.billing_plans (
-      name, 
-      description, 
-      price, 
-      billing_cycle, 
-      billing_model,
-      max_properties,
-      max_units,
-      sms_credits_included,
-      features,
-      is_active,
-      currency
-    ) VALUES (
-      'Free Trial',
-      'Free trial with limited features for new property stakeholders',
-      0,
-      'monthly',
-      'percentage',
-      2,
-      10,
-      100,
-      '["Property Management", "Tenant Management", "Basic Reporting", "SMS Notifications"]'::jsonb,
-      true,
-      'KES'
-    ) RETURNING id INTO free_trial_plan_id;
   END IF;
   
   -- 2. Update trigger function to assign actual Free Trial billing plan
@@ -4535,32 +4163,7 @@ BEGIN
       
       -- Create subscription with actual billing plan
       IF trial_plan_id IS NOT NULL THEN
-        INSERT INTO public.landlord_subscriptions (
-          landlord_id,
-          billing_plan_id,
-          status,
-          trial_start_date,
-          trial_end_date,
-          sms_credits_balance,
-          auto_renewal,
-          trial_limitations
-        )
-        VALUES (
-          new_user_id,
-          trial_plan_id,
-          'trial',
-          now(),
-          now() + (trial_period_days || ' days')::interval,
-          sms_credits_amount,
-          true,
-          jsonb_build_object(
-            'properties', 2,
-            'units_per_property', 10,
-            'tenants', 20,
-            'maintenance_requests', 50,
-            'invoices', 100
-          )
-        ) ON CONFLICT (landlord_id) DO NOTHING;
+
       END IF;
     END IF;
     
@@ -4576,37 +4179,6 @@ BEGIN
   
   -- 3. Fix existing property stakeholders without proper subscriptions
   -- Create subscriptions for all property-related users who don't have them
-  INSERT INTO public.landlord_subscriptions (
-    landlord_id,
-    billing_plan_id,
-    status,
-    trial_start_date,
-    trial_end_date,
-    sms_credits_balance,
-    auto_renewal,
-    trial_limitations
-  )
-  SELECT 
-    ur.user_id,
-    free_trial_plan_id,
-    'trial',
-    now(),
-    now() + interval '30 days',
-    100,
-    true,
-    jsonb_build_object(
-      'properties', 2,
-      'units_per_property', 10,
-      'tenants', 20,
-      'maintenance_requests', 50,
-      'invoices', 100
-    )
-  FROM public.user_roles ur
-  WHERE ur.role IN ('Landlord', 'Manager', 'Agent')
-    AND NOT EXISTS (
-      SELECT 1 FROM public.landlord_subscriptions ls 
-      WHERE ls.landlord_id = ur.user_id
-    );
   
   -- 4. Update existing subscriptions that don't have a billing plan
   UPDATE public.landlord_subscriptions 
@@ -4616,16 +4188,6 @@ BEGIN
   WHERE billing_plan_id IS NULL;
   
   -- 5. Ensure trial settings exist in billing_settings
-  INSERT INTO public.billing_settings (setting_key, setting_value, description)
-  VALUES (
-    'trial_settings',
-    jsonb_build_object(
-      'trial_period_days', 30,
-      'default_sms_credits', 100,
-      'grace_period_days', 7
-    ),
-    'Trial subscription configuration settings'
-  ) ON CONFLICT (setting_key) DO NOTHING;
   
   RAISE NOTICE 'Unified subscription management implementation completed successfully';
   
@@ -4855,51 +4417,7 @@ BEGIN
     
     -- If no landlord found, create a sample one
     IF landlord_uuid IS NULL THEN
-        INSERT INTO profiles (user_id, role, first_name, last_name, email, phone)
-        VALUES (
-            gen_random_uuid(),
-            'landlord',
-            'John',
-            'Doe',
-            'john.doe@example.com',
-            '+254700000000'
-        )
-        RETURNING user_id INTO landlord_uuid;
     END IF;
-    
-    -- Create a sample service charge invoice
-    INSERT INTO service_charge_invoices (
-        id,
-        landlord_id,
-        invoice_number,
-        billing_period_start,
-        billing_period_end,
-        rent_collected,
-        service_charge_amount,
-        sms_charges,
-        other_charges,
-        total_amount,
-        due_date,
-        status,
-        created_at,
-        updated_at
-    ) VALUES (
-        gen_random_uuid(),
-        landlord_uuid,
-        'SC-' || TO_CHAR(NOW(), 'YYYY') || '-001',
-        DATE_TRUNC('month', NOW() - INTERVAL '1 month'),
-        DATE_TRUNC('month', NOW()) - INTERVAL '1 day',
-        50000.00, -- KES 50,000 rent collected
-        2500.00,  -- 5% service charge
-        150.00,   -- SMS charges
-        0.00,     -- No other charges
-        2650.00,  -- Total service charges
-        NOW() + INTERVAL '7 days',
-        'pending',
-        NOW(),
-        NOW()
-    )
-    RETURNING id INTO invoice_id;
     
     RAISE NOTICE 'Created sample service charge invoice with ID: %', invoice_id;
 END $$;
@@ -4922,102 +4440,7 @@ BEGIN
     
     -- If no landlord found in user_roles, create a sample profile
     IF landlord_uuid IS NULL THEN
-        -- Insert a test user profile
-        INSERT INTO profiles (id, first_name, last_name, email, phone)
-        VALUES (
-            gen_random_uuid(),
-            'John',
-            'Doe',
-            'john.doe@example.com',
-            '+254722000000'
-        )
-        RETURNING id INTO landlord_uuid;
-        
-        -- Add user role for this landlord
-        INSERT INTO user_roles (user_id, role)
-        VALUES (landlord_uuid, 'Landlord');
     END IF;
-    
-    -- Create a realistic service charge invoice
-    INSERT INTO service_charge_invoices (
-        id,
-        landlord_id,
-        invoice_number,
-        billing_period_start,
-        billing_period_end,
-        rent_collected,
-        service_charge_rate,
-        service_charge_amount,
-        sms_charges,
-        other_charges,
-        total_amount,
-        due_date,
-        status,
-        created_at,
-        updated_at,
-        currency
-    ) VALUES (
-        gen_random_uuid(),
-        landlord_uuid,
-        'SERVICE-' || TO_CHAR(NOW(), 'YYYY') || '-' || LPAD((EXTRACT(MONTH FROM NOW()))::text, 2, '0') || '-001',
-        DATE_TRUNC('month', NOW() - INTERVAL '1 month'),
-        DATE_TRUNC('month', NOW()) - INTERVAL '1 day',
-        125000.00, -- KES 125,000 rent collected
-        5.0,       -- 5% service charge rate
-        6250.00,   -- 5% of 125,000
-        75.00,     -- SMS charges (30 messages × 2.50)
-        0.00,      -- No other charges for now
-        6325.00,   -- Total amount due
-        NOW() + INTERVAL '30 days',
-        'pending',
-        NOW(),
-        NOW(),
-        'KES'
-    )
-    RETURNING id INTO invoice_id;
-    
-    -- Also create a paid invoice for demo purposes
-    INSERT INTO service_charge_invoices (
-        id,
-        landlord_id,
-        invoice_number,
-        billing_period_start,
-        billing_period_end,
-        rent_collected,
-        service_charge_rate,
-        service_charge_amount,
-        sms_charges,
-        other_charges,
-        total_amount,
-        due_date,
-        status,
-        payment_date,
-        payment_method,
-        payment_reference,
-        created_at,
-        updated_at,
-        currency
-    ) VALUES (
-        gen_random_uuid(),
-        landlord_uuid,
-        'SERVICE-' || TO_CHAR(NOW() - INTERVAL '1 month', 'YYYY') || '-' || LPAD((EXTRACT(MONTH FROM NOW() - INTERVAL '1 month'))::text, 2, '0') || '-001',
-        DATE_TRUNC('month', NOW() - INTERVAL '2 month'),
-        DATE_TRUNC('month', NOW() - INTERVAL '1 month') - INTERVAL '1 day',
-        98000.00,  -- KES 98,000 rent collected
-        5.0,       -- 5% service charge rate
-        4900.00,   -- 5% of 98,000
-        50.00,     -- SMS charges (20 messages × 2.50)
-        0.00,      -- No other charges
-        4950.00,   -- Total amount
-        NOW() - INTERVAL '15 days',
-        'paid',
-        NOW() - INTERVAL '10 days',
-        'mpesa',
-        'QH123456789',
-        NOW() - INTERVAL '1 month',
-        NOW() - INTERVAL '1 month',
-        'KES'
-    );
     
     RAISE NOTICE 'Created sample service charge invoices for landlord: %', landlord_uuid;
     RAISE NOTICE 'Pending invoice ID: %', invoice_id;
