@@ -2286,10 +2286,13 @@ USING (id = ANY(public.get_tenant_property_ids(auth.uid())));
 
 -- Update existing properties to have proper ownership
 -- Assign the first few properties to the current landlord user
-UPDATE public.properties 
+UPDATE public.properties
 SET owner_id = 'a53f69a5-104e-489b-9b0a-48a56d6b011d'
-WHERE owner_id IS NULL 
-LIMIT 3;
+WHERE id IN (
+  SELECT id FROM public.properties
+  WHERE owner_id IS NULL
+  LIMIT 3
+);
 
 -- Assign remaining properties to any other landlord/admin users if they exist
 UPDATE public.properties 
