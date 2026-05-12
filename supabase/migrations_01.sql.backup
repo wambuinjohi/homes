@@ -1179,9 +1179,9 @@ CHECK (owner_id IS NOT NULL OR manager_id IS NOT NULL);
 -- If there are still unassigned properties, assign them to any user with Landlord role
 
 -- Add a constraint to ensure properties must have either an owner or manager (but make it NOT ENFORCED initially to avoid issues with existing data)
-ALTER TABLE public.properties 
-ADD CONSTRAINT properties_must_have_owner_or_manager 
-CHECK (owner_id IS NOT NULL OR manager_id IS NOT NULL) NOT ENFORCED;
+ALTER TABLE public.properties
+ADD CONSTRAINT properties_must_have_owner_or_manager
+CHECK (owner_id IS NOT NULL OR manager_id IS NOT NULL);
 
 
 -- Migration: 20250804022541_b6c9be4d-e20f-4618-9778-c55ff4a6e1e0.sql
