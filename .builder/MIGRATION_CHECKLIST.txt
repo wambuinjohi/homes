@@ -1,0 +1,281 @@
+SUPABASE MIGRATION CHECKLIST
+From: kdpqimetajnhcqseajok → To: tbmzwmgsvshfdxdoyrcr
+
+================================================================================
+PHASE 1: ✅ RUNTIME CONFIGURATION - COMPLETE
+================================================================================
+
+[✅] index.html - Security headers updated
+[✅] nginx.conf - Proxy configuration updated  
+[✅] public/_redirects - Redirect rules updated
+[✅] server.js - Fallback URL updated
+[✅] JengaPayConfig.tsx - Callback URL updated
+[✅] KCBBuniConfig.tsx - Callback URL updated
+[✅] useAuth.tsx - Token cleanup updated
+[✅] supabase/config.toml - Project ID updated
+[✅] src/integrations/supabase/client.ts - Client config updated
+
+STATUS: ✅ ALL FILES UPDATED
+NEXT: Phase 2 (Schema Deployment)
+
+================================================================================
+PHASE 2: ⏳ SCHEMA & FUNCTIONS DEPLOYMENT
+================================================================================
+
+You have two options:
+
+OPTION A: Use the prepared script (automatic)
+---
+[  ] cd /path/to/project
+[  ] bash .builder/MIGRATION_COMMANDS.sh
+[  ] Follow prompts (will execute all Phase 2 steps)
+[  ] Wait for completion
+
+OPTION B: Run commands manually (step-by-step)
+---
+[  ] Install Supabase CLI: npm install -g supabase
+[  ] supabase link --project-ref kdpqimetajnhcqseajok
+[  ] supabase db pull
+[  ] supabase link --project-ref tbmzwmgsvshfdxdoyrcr --force-db-link
+[  ] supabase db push
+[  ] supabase functions deploy
+[  ] supabase db execute --project-ref tbmzwmgsvshfdxdoyrcr \
+       "CREATE EXTENSION IF NOT EXISTS pg_cron;"
+[  ] supabase db execute --project-ref tbmzwmgsvshfdxdoyrcr \
+       "CREATE EXTENSION IF NOT EXISTS pg_net;"
+[  ] supabase functions list --project-ref tbmzwmgsvshfdxdoyrcr
+
+STATUS: ⏳ READY
+TIME: 15-30 minutes
+NEXT: Phase 3 (External Webhooks)
+
+================================================================================
+PHASE 3: ⏳ EXTERNAL WEBHOOKS - MANUAL UPDATES
+================================================================================
+
+After Phase 2 edge functions are deployed, update these:
+
+[  ] Jenga Pay Dashboard
+     - URL: https://v3.jengahq.io/dashboard/settings/create-ipn
+     - Old: https://kdpqimetajnhcqseajok.supabase.co/functions/v1/jenga-ipn-callback
+     - New: https://tbmzwmgsvshfdxdoyrcr.supabase.co/functions/v1/jenga-ipn-callback
+     - Steps: Login → Settings → IPN Configuration → Update URL → Enable
+
+[  ] KCB Buni Developer Portal
+     - Old: https://kdpqimetajnhcqseajok.supabase.co/functions/v1/kcb-ipn-callback
+     - New: https://tbmzwmgsvshfdxdoyrcr.supabase.co/functions/v1/kcb-ipn-callback
+     - Steps: Login → App Settings → Update Callback URL → Save
+
+[  ] M-Pesa Business Portal (if configured)
+     - Old: https://kdpqimetajnhcqseajok.supabase.co/functions/v1/mpesa-callback
+     - New: https://tbmzwmgsvshfdxdoyrcr.supabase.co/functions/v1/mpesa-callback
+     - Steps: Login → Settings → Update Callback
+
+[  ] Kopokopo API Settings (if configured)
+     - Old: https://kdpqimetajnhcqseajok.supabase.co/functions/v1/kopokopo-callback
+     - New: https://tbmzwmgsvshfdxdoyrcr.supabase.co/functions/v1/kopokopo-callback
+     - Steps: Login → API Configuration → Update Webhook URL
+
+STATUS: ⏳ READY (after Phase 2)
+TIME: 10-20 minutes
+NEXT: Phase 4 (Testing)
+
+================================================================================
+PHASE 4: ⏳ COMPREHENSIVE TESTING
+================================================================================
+
+LOCAL TESTING:
+[  ] Start dev server: npm run dev
+[  ] Open browser: http://localhost:5173
+
+[  ] Authentication Test
+     - Login with test account
+     - DevTools → Application → Storage → Cookies & Local Storage
+     - Look for: sb-tbmzwmgsvshfdxdoyrcr-auth-token ✓
+     - Should NOT see: sb-kdpqimetajnhcqseajok-auth-token
+     - Logout
+     - Verify all tokens cleared
+
+[  ] API Connectivity Test
+     - Open browser console
+     - Paste:
+       import { supabase } from '@/integrations/supabase/client';
+       supabase.from('profiles').select('id').limit(1).then(r => console.log(r))
+     - Check: Data from new project? ✓
+
+[  ] Payment Integration Test
+     - Navigate to Settings → Payment Methods
+     - Check Jenga Config: callback URL shows new project ✓
+     - Check KCB Config: callback URL shows new project ✓
+     - (Optional) Test STK Push with 1 KES
+
+[  ] RPC Functions Test
+     - Open browser console
+     - Test: supabase.rpc('has_role_safe', {_user_id: 'test', _role: 'Admin'})
+     - Should execute without CORS errors ✓
+
+[  ] Email/SMS Test (if configured)
+     - Settings → Notifications
+     - Send test email
+     - Check inbox for test email ✓
+
+PRODUCTION TESTING (after deployment):
+[  ] Health endpoint: curl https://your-domain.com/api/health
+[  ] Monitor logs: supabase logs --project-ref tbmzwmgsvshfdxdoyrcr --follow
+[  ] User registration test
+[  ] User login test
+[  ] Payment test (if possible with small amount)
+[  ] Monitor for 24-48 hours
+
+STATUS: ⏳ READY
+TIME: 30 minutes
+NEXT: Phase 5 (Production Deployment)
+
+================================================================================
+PHASE 5: ⏳ PRODUCTION DEPLOYMENT
+================================================================================
+
+PRE-DEPLOYMENT:
+[  ] All Phase 4 tests passed ✓
+[  ] No errors in local testing ✓
+
+DEPLOYMENT:
+[  ] Build for production: npm run build
+[  ] Test build locally: npm run preview
+[  ] Verify everything works ✓
+
+[  ] Push to git:
+     git add .
+     git commit -m "chore: complete Supabase migration to tbmzwmgsvshfdxdoyrcr"
+     git push origin main
+
+[  ] Wait for CI/CD deployment (automatic)
+[  ] Check deployment logs
+
+POST-DEPLOYMENT:
+[  ] Navigate to production URL: https://your-domain.com
+[  ] Verify page loads ✓
+[  ] Check browser console for errors ✗
+[  ] Try logging in ✓
+[  ] Verify auth token is new project: sb-tbmzwmgsvshfdxdoyrcr-auth-token ✓
+
+MONITORING (24-48 hours):
+[  ] Watch Supabase logs: supabase logs --project-ref tbmzwmgsvshfdxdoyrcr --follow
+[  ] Monitor error rates
+[  ] Track user logins
+[  ] Monitor payment webhook deliveries
+[  ] Check email/SMS sending
+[  ] No critical errors in 24 hours? → Migration successful! ✓
+
+STATUS: ⏳ READY
+TIME: 5 minutes + 24-48h monitoring
+NEXT: Decommission old project (after stable)
+
+================================================================================
+DECOMMISSION OLD PROJECT (After Migration Stable)
+================================================================================
+
+Only after 1+ week of stable operation:
+
+[  ] Backup old project (via Supabase export)
+[  ] Update DNS/redirect if necessary
+[  ] Delete old project: kdpqimetajnhcqseajok
+       (or keep as backup for longer period)
+[  ] Archive old project credentials
+[  ] Update documentation
+
+STATUS: ⏳ AFTER 1+ WEEK STABLE OPERATION
+TIME: 15 minutes
+
+================================================================================
+ROLLBACK PROCEDURE (Emergency Only)
+================================================================================
+
+If critical issues occur at any phase:
+
+[  ] git revert HEAD
+[  ] git push origin main
+[  ] Wait for CI/CD to deploy previous version
+[  ] Monitor old project logs: 
+     supabase logs --project-ref kdpqimetajnhcqseajok --follow
+[  ] Verify traffic moved back to old project ✓
+[  ] Investigate and fix issues
+[  ] Retry migration after fixes
+
+TIME: 5-10 minutes
+STATUS: Works for any phase
+
+================================================================================
+DOCUMENTATION REFERENCE
+================================================================================
+
+For detailed information:
+
+[  ] .builder/MIGRATION_STATUS.md
+     → Overview of all 5 phases with detailed status
+
+[  ] .builder/PHASE2_COMPLETE_MIGRATION.md
+     → Step-by-step guide for phases 2-5
+     → Troubleshooting section
+     → Rollback procedures
+
+[  ] .builder/MIGRATION_COMMANDS.sh
+     → Executable script with all CLI commands
+     → Run as: bash .builder/MIGRATION_COMMANDS.sh
+
+[  ] .builder/MIGRATION_COMPLETE.txt
+     → Quick reference summary
+
+================================================================================
+QUICK REFERENCE
+================================================================================
+
+Old Project: kdpqimetajnhcqseajok
+New Project: tbmzwmgsvshfdxdoyrcr
+
+Key URLs:
+- New Dashboard: https://supabase.com/dashboard/project/tbmzwmgsvshfdxdoyrcr
+- Old Dashboard: https://supabase.com/dashboard/project/kdpqimetajnhcqseajok
+
+New API Base: https://tbmzwmgsvshfdxdoyrcr.supabase.co
+
+Jenga Callback (new): https://tbmzwmgsvshfdxdoyrcr.supabase.co/functions/v1/jenga-ipn-callback
+KCB Callback (new): https://tbmzwmgsvshfdxdoyrcr.supabase.co/functions/v1/kcb-ipn-callback
+
+================================================================================
+MIGRATION PROGRESS TRACKER
+================================================================================
+
+Phase 1: ✅ COMPLETE (Runtime Code)
+Phase 2: ⏳ IN PROGRESS (Your Turn)
+Phase 3: ⏳ IN PROGRESS (Your Turn)
+Phase 4: ⏳ IN PROGRESS (Your Turn)
+Phase 5: ⏳ IN PROGRESS (Your Turn)
+
+Total Time: ~1-2 hours active work + 24-48h monitoring
+
+Start Time: _____________
+Phase 2 Start: _____________
+Phase 2 Complete: _____________
+Phase 3 Complete: _____________
+Phase 4 Complete: _____________
+Phase 5 Complete: _____________
+Total Time: _____________
+
+================================================================================
+SIGN-OFF
+================================================================================
+
+All preparations complete.
+Code is ready for production.
+Migration documentation complete.
+You are ready to proceed to Phase 2.
+
+Good luck! 🚀
+
+Questions? Refer to the documentation files:
+- .builder/PHASE2_COMPLETE_MIGRATION.md
+- .builder/MIGRATION_STATUS.md
+- .builder/MIGRATION_COMMANDS.sh
+
+================================================================================
