@@ -498,7 +498,7 @@
             } catch (e) {}
 
             // Resolve Supabase URL and key from env, with runtime.json fallback
-            const supabaseUrl = (process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL || runtimeConf.url || 'https://kdpqimetajnhcqseajok.supabase.co').replace(/\/$/, '');
+            const supabaseUrl = (process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL || runtimeConf.url || 'https://tbmzwmgsvshfdxdoyrcr.supabase.co').replace(/\/$/, '');
             if (!supabaseUrl) return sendJSON(res, 500, { error: 'Supabase URL not configured' });
             if (!targetUrl || !targetUrl.startsWith(supabaseUrl)) return sendJSON(res, 400, { error: 'Invalid target URL' });
 
