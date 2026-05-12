@@ -1,3 +1,5 @@
+-- Migration: 20250731234451_849f2617-760c-4d6e-87e5-dd18fc9599a6.sql
+
 -- Drop the existing enum and recreate with rental management roles
 DROP TYPE IF EXISTS public.app_role CASCADE;
 
@@ -62,7 +64,12 @@ CREATE POLICY "Admins can view all roles" ON public.user_roles
 FOR SELECT USING (public.has_role(auth.uid(), 'Admin'));
 
 CREATE POLICY "Admins can manage all roles" ON public.user_roles
-FOR ALL USING (public.has_role(auth.uid(), 'Admin'));-- Check if profiles table exists before attempting to insert
+FOR ALL USING (public.has_role(auth.uid(), 'Admin'));
+
+
+-- Migration: 20250801153853_a4eb4b61-41d6-41de-97a2-f12f215838f2.sql
+
+-- Check if profiles table exists before attempting to insert
 DO $$
 DECLARE
     user_exists BOOLEAN;
@@ -101,6 +108,11 @@ BEGIN
         RAISE NOTICE 'Profiles table does not exist yet, skipping profile creation';
     END IF;
 END $$;
+
+
+
+-- Migration: 20250801173014_9e9ad2d0-6af7-42c9-b187-eb0c9c9df57a.sql
+
 -- Insert dummy data only if tables exist
 DO $$
 BEGIN
@@ -227,6 +239,11 @@ BEGIN
         RAISE NOTICE 'Properties, units, or tenants tables do not exist yet, skipping data insertion';
     END IF;
 END $$;
+
+
+
+-- Migration: 20250801173047_f45ab3eb-0f51-4c38-a942-b6b55834d9b6.sql
+
 -- Insert dummy properties with Kenyan data
 INSERT INTO public.properties (name, address, city, state, zip_code, country, property_type, total_units, description, amenities) VALUES
 ('Kileleshwa Heights', 'Kileleshwa Road', 'Nairobi', 'Nairobi', '00100', 'Kenya', 'Apartment', 10, 'Modern apartments in upscale Kileleshwa with parking and security', ARRAY['Parking', 'Security', 'Water Backup', 'Generator']),
@@ -381,7 +398,12 @@ INSERT INTO public.tenants (first_name, last_name, email, phone, employment_stat
 ('Millicent', 'Wangari', 'millicent.wangari@gmail.com', '+254 718 789 012', 'Employed', 'Kenya Tea Development Agency', 86000, 'David Wangari', '+254 718 789 013'),
 ('Edwin', 'Mwangi', 'edwin.mwangi@gmail.com', '+254 729 890 123', 'Self-Employed', 'Mwangi Hardware', 74000, 'Ann Mwangi', '+254 729 890 124'),
 ('Lilian', 'Chege', 'lilian.chege@gmail.com', '+254 740 901 234', 'Employed', 'Brookside Dairy', 90000, 'Mark Chege', '+254 740 901 235'),
-('Ian', 'Kimanzi', 'ian.kimanzi@gmail.com', '+254 751 012 345', 'Employed', 'Kengen', 103000, 'Cynthia Kimanzi', '+254 751 012 346');-- Insert dummy properties (5 blocks/buildings)
+('Ian', 'Kimanzi', 'ian.kimanzi@gmail.com', '+254 751 012 345', 'Employed', 'Kengen', 103000, 'Cynthia Kimanzi', '+254 751 012 346');
+
+
+-- Migration: 20250801173107_df5884e2-c530-40c3-bce5-280a0a938380.sql
+
+-- Insert dummy properties (5 blocks/buildings)
 INSERT INTO properties (name, description, address, city, state, zip_code, country, property_type, total_units, owner_id) VALUES
 ('Kileleshwa Gardens', 'Modern residential apartments in Kileleshwa', 'Kileleshwa Road', 'Nairobi', 'Nairobi County', '00100', 'Kenya', 'Residential', 10, auth.uid()),
 ('Westlands Towers', 'High-rise commercial and residential complex', 'Waiyaki Way', 'Nairobi', 'Nairobi County', '00600', 'Kenya', 'Mixed-Use', 10, auth.uid()),
@@ -487,7 +509,12 @@ INSERT INTO tenants (first_name, last_name, email, phone, emergency_contact_name
 ('Winnie', 'Sang', 'winnie.sang@email.com', '+254712345037', 'Brian Sang', '+254722345037', 'Self-Employed', 'Graphic Design', 81000, null),
 ('Brian', 'Kibe', 'brian.kibe@email.com', '+254712345038', 'Stella Kibe', '+254722345038', 'Employed', 'Kenya Forest Service', 79000, null),
 ('Stella', 'Nzomo', 'stella.nzomo@email.com', '+254712345039', 'Felix Nzomo', '+254722345039', 'Employed', 'Kenya Wildlife Service', 86000, null),
-('Felix', 'Tarus', 'felix.tarus@email.com', '+254712345040', 'Beatrice Tarus', '+254722345040', 'Self-Employed', 'Construction', 112000, null);-- Clear existing data and insert fresh dummy data
+('Felix', 'Tarus', 'felix.tarus@email.com', '+254712345040', 'Beatrice Tarus', '+254722345040', 'Self-Employed', 'Construction', 112000, null);
+
+
+-- Migration: 20250801173124_a2d43254-229b-4376-b590-1c799c0da6bf.sql
+
+-- Clear existing data and insert fresh dummy data
 DELETE FROM public.units;
 DELETE FROM public.tenants;
 DELETE FROM public.properties WHERE name IN ('Kileleshwa Heights', 'Westlands Square', 'Karen Gardens', 'Langata View', 'Kasarani Estate');
@@ -498,7 +525,12 @@ INSERT INTO public.properties (name, address, city, state, zip_code, country, pr
 ('Westlands Square', 'Woodvale Grove', 'Nairobi', 'Nairobi', '00100', 'Kenya', 'Apartment', 10, 'Prime location apartments near Westlands with mall access', ARRAY['Mall Access', 'Parking', 'Security', 'Elevator']),
 ('Karen Gardens', 'Karen Road', 'Nairobi', 'Nairobi', '00502', 'Kenya', 'Townhouse', 10, 'Serene townhouses in Karen with garden spaces', ARRAY['Garden', 'Parking', 'Security', 'Swimming Pool']),
 ('Langata View', 'Langata Road', 'Nairobi', 'Nairobi', '00509', 'Kenya', 'Apartment', 10, 'Affordable housing with great views of Ngong Hills', ARRAY['Great Views', 'Parking', 'Security', 'Playground']),
-('Kasarani Estate', 'Thika Road', 'Nairobi', 'Nairobi', '00618', 'Kenya', 'Apartment', 10, 'Family-friendly apartments near Kasarani Stadium', ARRAY['Stadium Access', 'Parking', 'Security', 'Shopping Center']);-- Insert units for each property (10 units each, 80% occupancy)
+('Kasarani Estate', 'Thika Road', 'Nairobi', 'Nairobi', '00618', 'Kenya', 'Apartment', 10, 'Family-friendly apartments near Kasarani Stadium', ARRAY['Stadium Access', 'Parking', 'Security', 'Shopping Center']);
+
+
+-- Migration: 20250801173323_e2e060a7-3e96-4a45-9eae-36129e1f1acc.sql
+
+-- Insert units for each property (10 units each, 80% occupancy)
 DO $$
 DECLARE
     property_record RECORD;
@@ -601,7 +633,12 @@ BEGIN
             );
         END LOOP;
     END LOOP;
-END $$;-- Insert dummy tenants with Kenyan names (smaller subset)
+END $$;
+
+
+-- Migration: 20250801173826_895f5184-c95e-4717-8581-bec4ba2751ae.sql
+
+-- Insert dummy tenants with Kenyan names (smaller subset)
 INSERT INTO public.tenants (first_name, last_name, email, phone, employment_status, employer_name, monthly_income, emergency_contact_name, emergency_contact_phone) VALUES
 ('Wanjiku', 'Kamau', 'wanjiku.kamau@gmail.com', '+254 722 123 456', 'Employed', 'Safaricom Ltd', 85000, 'Grace Kamau', '+254 722 123 457'),
 ('David', 'Ochieng', 'david.ochieng@gmail.com', '+254 733 234 567', 'Self-Employed', 'Ochieng Consultancy', 120000, 'Mary Ochieng', '+254 733 234 568'),
@@ -643,7 +680,12 @@ INSERT INTO public.tenants (first_name, last_name, email, phone, employment_stat
 ('Edwin', 'Mwangi', 'edwin.mwangi@gmail.com', '+254 729 890 123', 'Self-Employed', 'Mwangi Hardware', 74000, 'Ann Mwangi', '+254 729 890 124'),
 ('Lilian', 'Chege', 'lilian.chege@gmail.com', '+254 740 901 234', 'Employed', 'Brookside Dairy', 90000, 'Mark Chege', '+254 740 901 235'),
 ('Ian', 'Kimanzi', 'ian.kimanzi@gmail.com', '+254 751 012 345', 'Employed', 'Kengen', 103000, 'Cynthia Kimanzi', '+254 751 012 346'),
-('Lucy', 'Wambui', 'lucy.wambui@gmail.com', '+254 762 123 456', 'Self-Employed', 'Wambui Designs', 78000, 'Peter Wambui', '+254 762 123 457');-- Add profession field to tenants table
+('Lucy', 'Wambui', 'lucy.wambui@gmail.com', '+254 762 123 456', 'Self-Employed', 'Wambui Designs', 78000, 'Peter Wambui', '+254 762 123 457');
+
+
+-- Migration: 20250801191849_ad8f41b7-f30d-4830-a1cb-0f8cec97a9d6.sql
+
+-- Add profession field to tenants table
 ALTER TABLE public.tenants ADD COLUMN profession text;
 
 -- Add national_id field to tenants table  
@@ -666,7 +708,12 @@ UPDATE public.tenants SET
     WHEN id = '550e8400-e29b-41d4-a716-446655440004' THEN '45678901'
     WHEN id = '550e8400-e29b-41d4-a716-446655440005' THEN '56789012'
     ELSE LPAD((RANDOM() * 99999999)::INT::TEXT, 8, '0')
-  END;-- Add comprehensive dummy data for all entities
+  END;
+
+
+-- Migration: 20250801195303_9c9d1ab8-28a6-470a-af0b-daeae99333df.sql
+
+-- Add comprehensive dummy data for all entities
 
 -- Insert sample properties
 INSERT INTO public.properties (id, name, address, city, state, zip_code, country, property_type, description, amenities, total_units, owner_id, created_at) VALUES
@@ -717,7 +764,12 @@ INSERT INTO public.invoices (id, lease_id, tenant_id, invoice_number, invoice_da
 ('iiiiiiii-iiii-iiii-iiii-iiiiiiiiiiii', 'llllllll-llll-llll-llll-llllllllllll', 'tttttttt-tttt-tttt-tttt-tttttttttttt', 'INV-2024-001', '2024-01-01', '2024-01-05', 45000, 'January 2024 rent', 'paid', now()),
 ('jjjjjjjj-jjjj-jjjj-jjjj-jjjjjjjjjjjj', 'mmmmmmmm-mmmm-mmmm-mmmm-mmmmmmmmmmmm', 'uuuuuuuu-uuuu-uuuu-uuuu-uuuuuuuuuuuu', 'INV-2024-002', '2024-02-01', '2024-02-05', 25000, 'February 2024 rent', 'paid', now()),
 ('kkkkkkkk-kkkk-kkkk-kkkk-kkkkkkkkkkkk', 'nnnnnnnn-nnnn-nnnn-nnnn-nnnnnnnnnnnn', 'vvvvvvvv-vvvv-vvvv-vvvv-vvvvvvvvvvvv', 'INV-2024-003', '2024-03-01', '2024-03-05', 150000, 'March 2024 rent', 'pending', now())
-ON CONFLICT (id) DO NOTHING;-- Add comprehensive dummy data for all entities with proper UUIDs
+ON CONFLICT (id) DO NOTHING;
+
+
+-- Migration: 20250801200845_935ac44d-fcc8-43e6-8737-a40a18f4b178.sql
+
+-- Add comprehensive dummy data for all entities with proper UUIDs
 
 -- Insert sample properties
 INSERT INTO public.properties (id, name, address, city, state, zip_code, country, property_type, description, amenities, total_units, owner_id, created_at) VALUES
@@ -761,7 +813,12 @@ INSERT INTO public.expenses (id, property_id, unit_id, description, category, am
 ('o4040404-4040-4040-4040-404040404040', 'a1111111-1111-1111-1111-111111111111', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'Plumbing repair in unit A101', 'Maintenance', 8500, '2024-01-15', 'Nairobi Plumbers Ltd', null, auth.uid(), now()),
 ('p5050505-5050-5050-5050-505050505050', 'a1111111-1111-1111-1111-111111111111', null, 'Monthly security service', 'Security', 25000, '2024-01-01', 'SecureGuard Kenya', null, auth.uid(), now()),
 ('q6060606-6060-6060-6060-606060606060', 'b2222222-2222-2222-2222-222222222222', null, 'Elevator maintenance', 'Maintenance', 15000, '2024-01-10', 'Otis Elevators', null, auth.uid(), now())
-ON CONFLICT (id) DO NOTHING;-- Remove all dummy data from the system
+ON CONFLICT (id) DO NOTHING;
+
+
+-- Migration: 20250801201738_e46b53b7-4a45-4f77-af10-4d6fa26eabcc.sql
+
+-- Remove all dummy data from the system
 DELETE FROM payments WHERE tenant_id IN (
   SELECT id FROM tenants WHERE email LIKE '%@zirahomes.demo'
 );
@@ -788,7 +845,12 @@ DELETE FROM blocks WHERE property_id IN (
   SELECT id FROM properties WHERE name LIKE '%Demo%' OR name LIKE '%Sample%'
 );
 
-DELETE FROM properties WHERE name LIKE '%Demo%' OR name LIKE '%Sample%';-- Fix RLS policies to allow users without roles to self-assign 'Agent' role
+DELETE FROM properties WHERE name LIKE '%Demo%' OR name LIKE '%Sample%';
+
+
+-- Migration: 20250801204748_430efdb6-091f-4e0b-b9f1-e8f0ace4b041.sql
+
+-- Fix RLS policies to allow users without roles to self-assign 'Agent' role
 CREATE POLICY "Users without roles can assign themselves Agent role"
 ON public.user_roles
 FOR INSERT
@@ -809,7 +871,12 @@ WHERE auth.uid() IS NOT NULL
 AND NOT EXISTS (
   SELECT 1 FROM public.user_roles 
   WHERE user_id = auth.uid()
-);-- First, check if the user exists and get their user_id
+);
+
+
+-- Migration: 20250801205104_49c295b4-d9b0-43ac-90e6-d09522cd2e80.sql
+
+-- First, check if the user exists and get their user_id
 -- Then assign them the Admin role
 
 -- Find the user by email and assign Admin role
@@ -830,7 +897,12 @@ DELETE FROM public.user_roles
 WHERE user_id IN (
   SELECT p.id FROM public.profiles p WHERE p.email = 'dmwangui@gmail.com'
 ) 
-AND role != 'Admin'::public.app_role;-- Add payment reference and invoice number to payments table
+AND role != 'Admin'::public.app_role;
+
+
+-- Migration: 20250801224024_1f2264f0-a80b-4a79-bc85-68dad1fba042.sql
+
+-- Add payment reference and invoice number to payments table
 ALTER TABLE public.payments 
 ADD COLUMN payment_reference TEXT,
 ADD COLUMN invoice_number TEXT;
@@ -878,7 +950,12 @@ USING (EXISTS ( SELECT 1
 CREATE TRIGGER update_maintenance_requests_updated_at
 BEFORE UPDATE ON public.maintenance_requests
 FOR EACH ROW
-EXECUTE FUNCTION public.update_updated_at_column();-- Add sample tenants
+EXECUTE FUNCTION public.update_updated_at_column();
+
+
+-- Migration: 20250803083149_0ca002f7-56e1-4133-9a1e-84b661c423e0.sql
+
+-- Add sample tenants
 INSERT INTO tenants (first_name, last_name, email, phone, national_id, employment_status, monthly_income) VALUES
 ('John', 'Doe', 'john.doe@email.com', '+254712345678', 'ID12345678', 'Employed', 80000),
 ('Jane', 'Smith', 'jane.smith@email.com', '+254723456789', 'ID23456789', 'Employed', 120000),
@@ -959,7 +1036,12 @@ SELECT
   END as vendor_name
 FROM properties p
 WHERE p.name IN ('Sunset Gardens', 'Green Valley', 'Palm Heights', 'Ocean View')
-LIMIT 8;-- First, let's get some units to work with
+LIMIT 8;
+
+
+-- Migration: 20250803083705_140e9b33-93f0-424d-8eb5-0316923752d1.sql
+
+-- First, let's get some units to work with
 INSERT INTO leases (tenant_id, unit_id, monthly_rent, security_deposit, lease_start_date, lease_end_date, status)
 SELECT 
   t.id as tenant_id,
@@ -1066,7 +1148,12 @@ SELECT
   END as vendor_name
 FROM properties p
 WHERE p.name IN ('Karen Gardens', 'Kasarani Estate', 'Kileleshwa Heights', 'Langata View', 'Westlands Square')
-LIMIT 15;-- Enhanced User & Role Management System
+LIMIT 15;
+
+
+-- Migration: 20250803104342_0ba2dd0e-3d82-4ac7-b30f-a15622130229.sql
+
+-- Enhanced User & Role Management System
 
 -- Create permissions table for fine-grained access control
 CREATE TABLE public.permissions (
@@ -1316,7 +1403,12 @@ AS $$
   ) VALUES (
     _user_id, _action, _entity_type, _entity_id, _details, _ip_address, _user_agent
   );
-$$;-- Update the handle_new_user function to properly handle admin user creation
+$$;
+
+
+-- Migration: 20250803105233_9b3ea88e-2745-44c7-92bd-b8a9d195b00d.sql
+
+-- Update the handle_new_user function to properly handle admin user creation
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS trigger
 LANGUAGE plpgsql
@@ -1346,15 +1438,30 @@ BEGIN
   
   RETURN NEW;
 END;
-$$;-- Update dmwangui@gmail.com user role from Admin to Landlord
+$$;
+
+
+-- Migration: 20250803105325_313e8337-379a-4df9-8785-79b97ee6974a.sql
+
+-- Update dmwangui@gmail.com user role from Admin to Landlord
 UPDATE public.user_roles 
 SET role = 'Landlord'
-WHERE user_id = 'a53f69a5-104e-489b-9b0a-48a56d6b011d';-- Assign Admin role to the super admin user
+WHERE user_id = 'a53f69a5-104e-489b-9b0a-48a56d6b011d';
+
+
+-- Migration: 20250803111153_1782fe07-3ed4-485c-9d0c-8a929f54dccc.sql
+
+-- Assign Admin role to the super admin user
 INSERT INTO user_roles (user_id, role)
 SELECT id, 'Admin'::app_role
 FROM profiles 
 WHERE email = 'ziratechnologies@gmail.com'
-ON CONFLICT (user_id, role) DO NOTHING;-- Create profile for admin user if it doesn't exist
+ON CONFLICT (user_id, role) DO NOTHING;
+
+
+-- Migration: 20250803111458_bd5905d7-7bba-44d3-8823-3861c66b6313.sql
+
+-- Create profile for admin user if it doesn't exist
 INSERT INTO profiles (id, first_name, last_name, email)
 SELECT 
     au.id,
@@ -1373,7 +1480,12 @@ SELECT
     'Admin'::app_role
 FROM auth.users au
 WHERE au.email = 'ziratechnologies@gmail.com'
-ON CONFLICT (user_id, role) DO NOTHING;-- Create tenant user accounts and assign proper leases
+ON CONFLICT (user_id, role) DO NOTHING;
+
+
+-- Migration: 20250803112320_e557a658-fd8f-4d0a-8a4c-c1a2927a33bc.sql
+
+-- Create tenant user accounts and assign proper leases
 
 -- Create user accounts for existing tenants in auth.users
 -- Note: This inserts into auth.users which requires special handling
@@ -1572,7 +1684,12 @@ SELECT
 FROM leases l
 JOIN units u ON l.unit_id = u.id
 WHERE EXISTS (SELECT 1 FROM tenants t WHERE t.id = l.tenant_id AND t.user_id IS NOT NULL)
-AND RANDOM() < 0.4; -- Only create for about 40% of tenants-- Update dummy tenants with property and unit assignments
+AND RANDOM() < 0.4; -- Only create for about 40% of tenants
+
+
+-- Migration: 20250803194447_1adb599f-28a6-453c-829e-ea3441c39127.sql
+
+-- Update dummy tenants with property and unit assignments
 -- First, get some sample properties and units to assign
 WITH sample_assignments AS (
   SELECT 
@@ -1607,7 +1724,12 @@ SELECT
   100000, -- Standard security deposit
   'active'
 FROM tenant_assignments ta
-WHERE ta.unit_id IS NOT NULL;-- Create leases for existing tenants without assignments
+WHERE ta.unit_id IS NOT NULL;
+
+
+-- Migration: 20250803194526_df2342dd-67a7-4a49-b524-607f8eabe671.sql
+
+-- Create leases for existing tenants without assignments
 -- This will only work if there are vacant units available
 INSERT INTO leases (tenant_id, unit_id, monthly_rent, lease_start_date, lease_end_date, security_deposit, status)
 SELECT 
@@ -1630,7 +1752,12 @@ CROSS JOIN LATERAL (
 WHERE NOT EXISTS (
   SELECT 1 FROM leases l WHERE l.tenant_id = t.id
 )
-LIMIT 10;-- Create email logs table to track all emails sent
+LIMIT 10;
+
+
+-- Migration: 20250803195126_c07cb8d2-0bfa-4c6c-b168-bddbde0fed04.sql
+
+-- Create email logs table to track all emails sent
 CREATE TABLE public.email_logs (
   id uuid NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
   recipient_email text NOT NULL,
@@ -1722,7 +1849,12 @@ AS $$
     now()
   )
   RETURNING id;
-$$;-- Add email logs table for tracking emails
+$$;
+
+
+-- Migration: 20250803205408_5accd6b4-abb3-4676-96d7-5f24a935c5af.sql
+
+-- Add email logs table for tracking emails
 CREATE TABLE IF NOT EXISTS public.email_logs (
   id UUID NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
   recipient_email TEXT NOT NULL,
@@ -1810,7 +1942,12 @@ USING (
 CREATE TRIGGER update_knowledge_base_articles_updated_at
   BEFORE UPDATE ON public.knowledge_base_articles
   FOR EACH ROW
-  EXECUTE FUNCTION public.update_email_logs_updated_at();-- Create knowledge_base_articles table for article management
+  EXECUTE FUNCTION public.update_email_logs_updated_at();
+
+
+-- Migration: 20250803205427_7e82335d-9ff4-47ca-aeb3-5bd9370fe87e.sql
+
+-- Create knowledge_base_articles table for article management
 CREATE TABLE public.knowledge_base_articles (
   id UUID NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
   title TEXT NOT NULL,
@@ -1891,14 +2028,24 @@ CREATE INDEX idx_knowledge_base_articles_status ON public.knowledge_base_article
 CREATE INDEX idx_knowledge_base_articles_category ON public.knowledge_base_articles(category);
 CREATE INDEX idx_knowledge_base_articles_user_roles ON public.knowledge_base_articles USING GIN(user_roles);
 CREATE INDEX idx_sms_provider_configs_active ON public.sms_provider_configs(is_active);
-CREATE INDEX idx_sms_provider_configs_default ON public.sms_provider_configs(is_default);-- Fix search path for existing functions
+CREATE INDEX idx_sms_provider_configs_default ON public.sms_provider_configs(is_default);
+
+
+-- Migration: 20250803205953_77d68f4f-4a0e-438b-84a5-de4c7a8d4299.sql
+
+-- Fix search path for existing functions
 CREATE OR REPLACE FUNCTION public.update_email_logs_updated_at()
 RETURNS TRIGGER AS $$
 BEGIN
   NEW.updated_at = now();
   RETURN NEW;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path TO '';-- Create edge function to handle user creation with roles
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path TO '';
+
+
+-- Migration: 20250803231653_b904e1b5-9144-462c-8ce5-e85ccea081d7.sql
+
+-- Create edge function to handle user creation with roles
 -- This function will be called from the frontend to create users
 
 -- First, let's add a function to create users with specific roles
@@ -1952,7 +2099,12 @@ $$;
 
 -- Grant execute permission to authenticated users who have permission
 REVOKE ALL ON FUNCTION public.create_user_with_role FROM PUBLIC;
-GRANT EXECUTE ON FUNCTION public.create_user_with_role TO authenticated;-- Update RLS policies to allow Landlords to view and manage all profiles and user roles
+GRANT EXECUTE ON FUNCTION public.create_user_with_role TO authenticated;
+
+
+-- Migration: 20250803232552_9f021f59-841a-4d1a-ad8f-48c8bcf3e069.sql
+
+-- Update RLS policies to allow Landlords to view and manage all profiles and user roles
 -- This is needed so Landlords can see the team members they create
 
 -- Drop existing restrictive policies and create more inclusive ones
@@ -1997,7 +2149,12 @@ FOR INSERT
 WITH CHECK (
   has_role(auth.uid(), 'Admin'::app_role) OR 
   has_role(auth.uid(), 'Landlord'::app_role)
-);-- Update Zira Technologies role from Admin to Partner (or remove entirely)
+);
+
+
+-- Migration: 20250803233554_67f7e5d0-eaf9-4d67-b946-1ff633bd4751.sql
+
+-- Update Zira Technologies role from Admin to Partner (or remove entirely)
 -- Since user wants them removed as co-admin, let's change to a Partner role
 
 -- First, let's add Partner as a role option
@@ -2006,15 +2163,30 @@ ALTER TYPE public.app_role ADD VALUE IF NOT EXISTS 'Partner';
 -- Update Zira Technologies from Admin to Partner
 UPDATE public.user_roles 
 SET role = 'Partner'
-WHERE user_id = '0b178150-5f82-435a-a515-718ec79da646' AND role = 'Admin';-- Update Zira Technologies from Admin to Landlord role
+WHERE user_id = '0b178150-5f82-435a-a515-718ec79da646' AND role = 'Admin';
+
+
+-- Migration: 20250803233812_5013cec2-de0e-4afb-8d3b-d204158d8c21.sql
+
+-- Update Zira Technologies from Admin to Landlord role
 -- This removes them from the "Partner" administrative role
 UPDATE public.user_roles 
 SET role = 'Landlord'
-WHERE user_id = '0b178150-5f82-435a-a515-718ec79da646' AND role = 'Admin';-- Update Zira Technologies to Super Admin role
+WHERE user_id = '0b178150-5f82-435a-a515-718ec79da646' AND role = 'Admin';
+
+
+-- Migration: 20250803234255_2e92cabe-d285-48d8-934b-f8850e4da0d9.sql
+
+-- Update Zira Technologies to Super Admin role
 -- Zira Technologies should be the overall Super Admin, not a partner to the Landlord
 UPDATE public.user_roles 
 SET role = 'Admin'
-WHERE user_id = '0b178150-5f82-435a-a515-718ec79da646' AND role = 'Landlord';-- Create profile and role for the missing manager user
+WHERE user_id = '0b178150-5f82-435a-a515-718ec79da646' AND role = 'Landlord';
+
+
+-- Migration: 20250803234713_8c6f89af-b603-4e88-8503-6cdabdbfef3a.sql
+
+-- Create profile and role for the missing manager user
 -- Insert profile for Mazao Plus (the manager that was created but missing profile)
 INSERT INTO public.profiles (id, first_name, last_name, email, phone)
 VALUES ('1b95861d-0bd3-4029-9841-28e5a7cc73a7', 'Mazao', 'Plus', 'mazaoplus@gmail.com', '+254723301508')
@@ -2023,7 +2195,12 @@ ON CONFLICT (id) DO NOTHING;
 -- Insert user role for Mazao Plus
 INSERT INTO public.user_roles (user_id, role)
 VALUES ('1b95861d-0bd3-4029-9841-28e5a7cc73a7', 'Manager')
-ON CONFLICT (user_id, role) DO NOTHING;-- Add RLS policy to allow tenants to view their own units
+ON CONFLICT (user_id, role) DO NOTHING;
+
+
+-- Migration: 20250804021003_365c60b5-1586-4d63-bdb3-9bb393c5e95f.sql
+
+-- Add RLS policy to allow tenants to view their own units
 CREATE POLICY "Tenants can view their own units" 
 ON public.units 
 FOR SELECT 
@@ -2035,7 +2212,12 @@ USING (
     WHERE l.unit_id = units.id 
     AND t.user_id = auth.uid()
   )
-);-- Add RLS policy to allow tenants to view properties for their units
+);
+
+
+-- Migration: 20250804021314_a62b0291-97ff-4296-944c-4656bdc4b62d.sql
+
+-- Add RLS policy to allow tenants to view properties for their units
 CREATE POLICY "Tenants can view their property information" 
 ON public.properties 
 FOR SELECT 
@@ -2048,7 +2230,12 @@ USING (
     WHERE u.property_id = properties.id 
     AND t.user_id = auth.uid()
   )
-);-- Remove the problematic policies that cause infinite recursion
+);
+
+
+-- Migration: 20250804021601_fe4939a2-c29b-4cb0-ad54-bfc3fbad60e6.sql
+
+-- Remove the problematic policies that cause infinite recursion
 DROP POLICY IF EXISTS "Tenants can view their own units" ON public.units;
 DROP POLICY IF EXISTS "Tenants can view their property information" ON public.properties;
 
@@ -2089,7 +2276,12 @@ USING (id = ANY(public.get_tenant_unit_ids(auth.uid())));
 CREATE POLICY "Tenants can view their property information" 
 ON public.properties 
 FOR SELECT 
-USING (id = ANY(public.get_tenant_property_ids(auth.uid())));-- Fix the landlord maintenance dashboard by assigning properties to landlords
+USING (id = ANY(public.get_tenant_property_ids(auth.uid())));
+
+
+-- Migration: 20250804022447_ef9e60fb-bc87-458a-9959-c1e801cffd41.sql
+
+-- Fix the landlord maintenance dashboard by assigning properties to landlords
 -- First, let's see what users we have and assign properties appropriately
 
 -- Update existing properties to have proper ownership
@@ -2123,7 +2315,12 @@ WHERE owner_id IS NULL;
 -- Add a constraint to ensure properties must have either an owner or manager
 ALTER TABLE public.properties 
 ADD CONSTRAINT properties_must_have_owner_or_manager 
-CHECK (owner_id IS NOT NULL OR manager_id IS NOT NULL);-- Fix the landlord maintenance dashboard by assigning properties to landlords
+CHECK (owner_id IS NOT NULL OR manager_id IS NOT NULL);
+
+
+-- Migration: 20250804022517_cd70dd29-2949-452e-a4d5-29645a3ec168.sql
+
+-- Fix the landlord maintenance dashboard by assigning properties to landlords
 -- Update existing properties to have proper ownership
 
 -- First, assign some properties to the current landlord user
@@ -2165,7 +2362,12 @@ WHERE owner_id IS NULL;
 -- Add a constraint to ensure properties must have either an owner or manager (but make it NOT ENFORCED initially to avoid issues with existing data)
 ALTER TABLE public.properties 
 ADD CONSTRAINT properties_must_have_owner_or_manager 
-CHECK (owner_id IS NOT NULL OR manager_id IS NOT NULL) NOT ENFORCED;-- Fix the landlord maintenance dashboard by assigning properties to landlords
+CHECK (owner_id IS NOT NULL OR manager_id IS NOT NULL) NOT ENFORCED;
+
+
+-- Migration: 20250804022541_b6c9be4d-e20f-4618-9778-c55ff4a6e1e0.sql
+
+-- Fix the landlord maintenance dashboard by assigning properties to landlords
 -- Update existing properties to have proper ownership
 
 -- First, assign some properties to the current landlord user
@@ -2202,7 +2404,12 @@ SET owner_id = (
   WHERE ur.role = 'Landlord'
   LIMIT 1
 )
-WHERE owner_id IS NULL;-- Create billing plans table
+WHERE owner_id IS NULL;
+
+
+-- Migration: 20250804025940_d84863d1-fa88-4e53-8e69-4f6dfc2ecc1a.sql
+
+-- Create billing plans table
 CREATE TABLE public.billing_plans (
   id UUID NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
   name TEXT NOT NULL,
@@ -2463,7 +2670,12 @@ BEGIN
   
   RETURN invoice_number;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;-- First, let's add the new billing-specific columns to the existing invoices table
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+
+-- Migration: 20250804030059_54b588e3-8a2b-494d-9fa1-01eb321e6a11.sql
+
+-- First, let's add the new billing-specific columns to the existing invoices table
 ALTER TABLE public.invoices 
 ADD COLUMN IF NOT EXISTS subscription_id UUID REFERENCES public.landlord_subscriptions(id),
 ADD COLUMN IF NOT EXISTS subtotal DECIMAL(10,2) DEFAULT 0,
@@ -2750,7 +2962,12 @@ BEGIN
   
   RETURN invoice_number;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;-- Create billing plans table
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+
+-- Migration: 20250804030154_4e7cf0b6-a781-453d-8cf8-cace8a0f5e2a.sql
+
+-- Create billing plans table
 CREATE TABLE IF NOT EXISTS public.billing_plans (
   id UUID NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
   name TEXT NOT NULL,
@@ -2931,7 +3148,12 @@ WHERE NOT EXISTS (SELECT 1 FROM public.sms_bundles WHERE name = 'Large Bundle');
 
 INSERT INTO public.sms_bundles (name, description, sms_count, price) 
 SELECT 'Bulk Bundle', '5000 SMS credits', 5000, 150.00
-WHERE NOT EXISTS (SELECT 1 FROM public.sms_bundles WHERE name = 'Bulk Bundle');-- Add new billing model columns to billing_plans table
+WHERE NOT EXISTS (SELECT 1 FROM public.sms_bundles WHERE name = 'Bulk Bundle');
+
+
+-- Migration: 20250804032008_48a468ea-b96f-469f-a0c7-37f0711bd4a3.sql
+
+-- Add new billing model columns to billing_plans table
 ALTER TABLE public.billing_plans 
 ADD COLUMN billing_model text DEFAULT 'percentage',
 ADD COLUMN percentage_rate numeric,
@@ -2944,7 +3166,12 @@ UPDATE public.billing_plans
 SET billing_model = 'percentage', 
     percentage_rate = 2.0,
     currency = 'KES'
-WHERE billing_model IS NULL;-- Create M-Pesa transactions table
+WHERE billing_model IS NULL;
+
+
+-- Migration: 20250804120500_42f94aea-6dda-4b92-81a2-c28ae5c70a46.sql
+
+-- Create M-Pesa transactions table
 CREATE TABLE public.mpesa_transactions (
   id UUID NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
   checkout_request_id TEXT NOT NULL UNIQUE,
@@ -2995,7 +3222,12 @@ EXECUTE FUNCTION public.update_updated_at_column();
 -- Create index for faster lookups
 CREATE INDEX idx_mpesa_transactions_checkout_request_id ON public.mpesa_transactions(checkout_request_id);
 CREATE INDEX idx_mpesa_transactions_invoice_id ON public.mpesa_transactions(invoice_id);
-CREATE INDEX idx_mpesa_transactions_status ON public.mpesa_transactions(status);-- Create function to get transaction status
+CREATE INDEX idx_mpesa_transactions_status ON public.mpesa_transactions(status);
+
+
+-- Migration: 20250804120640_2912618e-0843-4a13-95df-a92f6f77e8db.sql
+
+-- Create function to get transaction status
 CREATE OR REPLACE FUNCTION public.get_transaction_status(p_checkout_request_id TEXT)
 RETURNS TEXT
 LANGUAGE sql
@@ -3006,13 +3238,23 @@ AS $function$
   FROM public.mpesa_transactions 
   WHERE checkout_request_id = p_checkout_request_id
   LIMIT 1;
-$function$-- Add missing invoice_id field to payments table if it doesn't exist
+$function$
+
+
+-- Migration: 20250804120829_a203d0cd-ed2e-4f6c-854e-e2403b290fd5.sql
+
+-- Add missing invoice_id field to payments table if it doesn't exist
 DO $$ BEGIN
   IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
                  WHERE table_name = 'payments' AND column_name = 'invoice_id') THEN
     ALTER TABLE public.payments ADD COLUMN invoice_id UUID REFERENCES public.invoices(id);
   END IF;
-END $$;-- Fix the successful M-Pesa payment that wasn't processed correctly
+END $$;
+
+
+-- Migration: 20250804124553_50103224-784e-4640-806e-cd6625ac2327.sql
+
+-- Fix the successful M-Pesa payment that wasn't processed correctly
 -- Insert the missing payment record for the successful M-Pesa transaction
 INSERT INTO payments (
   tenant_id, 
@@ -3043,7 +3285,12 @@ INSERT INTO payments (
 -- Update the invoice status to paid
 UPDATE invoices 
 SET status = 'paid', updated_at = now() 
-WHERE id = '6e22ca0b-cb19-4f16-9780-e24612a155c5';-- Create meter readings table for tracking utility consumption
+WHERE id = '6e22ca0b-cb19-4f16-9780-e24612a155c5';
+
+
+-- Migration: 20250804125441_36e99a08-01e3-49af-8099-01555b055de2.sql
+
+-- Create meter readings table for tracking utility consumption
 CREATE TABLE public.meter_readings (
   id UUID NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
   unit_id UUID NOT NULL,
@@ -3107,7 +3354,12 @@ CREATE INDEX idx_meter_readings_unit_id ON public.meter_readings(unit_id);
 CREATE INDEX idx_meter_readings_meter_type ON public.meter_readings(meter_type);
 CREATE INDEX idx_meter_readings_reading_date ON public.meter_readings(reading_date);
 CREATE INDEX idx_expenses_type ON public.expenses(expense_type);
-CREATE INDEX idx_expenses_tenant_id ON public.expenses(tenant_id);-- Fix security warning for update_meter_readings_updated_at function
+CREATE INDEX idx_expenses_tenant_id ON public.expenses(tenant_id);
+
+
+-- Migration: 20250804125505_ac251acb-42da-4226-a308-06d96af43f29.sql
+
+-- Fix security warning for update_meter_readings_updated_at function
 DROP FUNCTION IF EXISTS public.update_meter_readings_updated_at();
 
 CREATE OR REPLACE FUNCTION public.update_meter_readings_updated_at()
@@ -3120,7 +3372,12 @@ BEGIN
   NEW.updated_at = now();
   RETURN NEW;
 END;
-$$;-- Fix security warning by recreating the function with proper search_path
+$$;
+
+
+-- Migration: 20250804125533_66e8f96a-fe8b-4dce-be98-bfa68e0e0a2c.sql
+
+-- Fix security warning by recreating the function with proper search_path
 DROP FUNCTION IF EXISTS public.update_meter_readings_updated_at() CASCADE;
 
 CREATE OR REPLACE FUNCTION public.update_meter_readings_updated_at()
@@ -3139,7 +3396,12 @@ $$;
 CREATE TRIGGER update_meter_readings_updated_at
 BEFORE UPDATE ON public.meter_readings
 FOR EACH ROW
-EXECUTE FUNCTION public.update_meter_readings_updated_at();-- Fix the existing update_updated_at_column function
+EXECUTE FUNCTION public.update_meter_readings_updated_at();
+
+
+-- Migration: 20250804125609_2bcf40c8-d8d0-47c7-940f-89912ed98a45.sql
+
+-- Fix the existing update_updated_at_column function
 DROP FUNCTION IF EXISTS public.update_updated_at_column() CASCADE;
 
 CREATE OR REPLACE FUNCTION public.update_updated_at_column()
@@ -3163,7 +3425,12 @@ EXECUTE FUNCTION public.update_updated_at_column();
 CREATE TRIGGER update_profiles_updated_at
 BEFORE UPDATE ON public.profiles
 FOR EACH ROW
-EXECUTE FUNCTION public.update_updated_at_column();-- Fix update_email_logs_updated_at function
+EXECUTE FUNCTION public.update_updated_at_column();
+
+
+-- Migration: 20250804125711_12ec8871-4b17-413f-b510-36594e8c1b95.sql
+
+-- Fix update_email_logs_updated_at function
 DROP FUNCTION IF EXISTS public.update_email_logs_updated_at() CASCADE;
 
 CREATE OR REPLACE FUNCTION public.update_email_logs_updated_at()
@@ -3182,7 +3449,12 @@ $$;
 CREATE TRIGGER update_email_logs_updated_at
 BEFORE UPDATE ON public.email_logs
 FOR EACH ROW
-EXECUTE FUNCTION public.update_email_logs_updated_at();-- Fix the create_user_with_role function
+EXECUTE FUNCTION public.update_email_logs_updated_at();
+
+
+-- Migration: 20250804125739_6ac0586c-9c33-4a8b-80e6-6a55af1a440d.sql
+
+-- Fix the create_user_with_role function
 CREATE OR REPLACE FUNCTION public.create_user_with_role(p_email text, p_first_name text, p_last_name text, p_phone text, p_role app_role)
 RETURNS jsonb
 LANGUAGE plpgsql
@@ -3223,7 +3495,12 @@ EXCEPTION WHEN OTHERS THEN
     'error', SQLERRM
   );
 END;
-$$;-- Fix the handle_new_user function
+$$;
+
+
+-- Migration: 20250804125804_c660d802-a55b-4150-b4a1-ad9f8cf25c78.sql
+
+-- Fix the handle_new_user function
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER
 LANGUAGE plpgsql
@@ -3253,7 +3530,12 @@ BEGIN
   
   RETURN NEW;
 END;
-$$;-- First, let's create a default billing plan if none exists
+$$;
+
+
+-- Migration: 20250804150327_0852b536-323e-40c5-bb3b-721c365dd7f9.sql
+
+-- First, let's create a default billing plan if none exists
 INSERT INTO public.billing_plans (name, description, price, billing_cycle, features, is_active)
 VALUES (
   'Trial Plan', 
@@ -3358,7 +3640,12 @@ DROP TRIGGER IF EXISTS auto_create_landlord_subscription ON public.user_roles;
 CREATE TRIGGER auto_create_landlord_subscription
   AFTER INSERT ON public.user_roles
   FOR EACH ROW
-  EXECUTE FUNCTION public.create_default_landlord_subscription();-- First, let's create a default billing plan if none exists
+  EXECUTE FUNCTION public.create_default_landlord_subscription();
+
+
+-- Migration: 20250804150523_6eee8f15-02f4-4df1-84aa-c9710766217b.sql
+
+-- First, let's create a default billing plan if none exists
 INSERT INTO public.billing_plans (name, description, price, billing_cycle, features, is_active)
 VALUES (
   'Trial Plan', 
@@ -3468,7 +3755,12 @@ DROP TRIGGER IF EXISTS auto_create_landlord_subscription ON public.user_roles;
 CREATE TRIGGER auto_create_landlord_subscription
   AFTER INSERT ON public.user_roles
   FOR EACH ROW
-  EXECUTE FUNCTION public.create_default_landlord_subscription();-- Create table for pre-approved payment methods by country
+  EXECUTE FUNCTION public.create_default_landlord_subscription();
+
+
+-- Migration: 20250804154348_167ff395-6e10-42c6-8b35-59b197702967.sql
+
+-- Create table for pre-approved payment methods by country
 CREATE TABLE public.approved_payment_methods (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   country_code TEXT NOT NULL,
@@ -3507,10 +3799,20 @@ INSERT INTO public.approved_payment_methods (country_code, payment_method_type, 
 CREATE TRIGGER update_approved_payment_methods_updated_at
 BEFORE UPDATE ON public.approved_payment_methods
 FOR EACH ROW
-EXECUTE FUNCTION public.update_updated_at_column();-- Update billing plans currency from USD to KES
+EXECUTE FUNCTION public.update_updated_at_column();
+
+
+-- Migration: 20250804195309_9806cfb8-08e8-4162-9e4d-24d2f9821776.sql
+
+-- Update billing plans currency from USD to KES
 UPDATE public.billing_plans 
 SET currency = 'KES' 
-WHERE currency = 'USD';-- Create service charge invoices table for tracking landlord billing
+WHERE currency = 'USD';
+
+
+-- Migration: 20250804200639_aa74f37f-b553-4c00-a3f0-c0c2b3151798.sql
+
+-- Create service charge invoices table for tracking landlord billing
 CREATE TABLE public.service_charge_invoices (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   landlord_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
@@ -3638,7 +3940,12 @@ WHERE country = 'USA' AND id IN (
   JOIN landlord_subscriptions ls ON ls.landlord_id = p.owner_id
   JOIN billing_plans bp ON bp.id = ls.billing_plan_id
   WHERE bp.currency = 'KES'
-);-- Create service charge invoices table
+);
+
+
+-- Migration: 20250804200701_960347b8-dc94-4183-8d6b-54eafce43e29.sql
+
+-- Create service charge invoices table
 CREATE TABLE public.service_charge_invoices (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   landlord_id UUID NOT NULL,
@@ -3740,7 +4047,12 @@ $$;
 -- Update country data to Kenya for consistency
 UPDATE public.properties 
 SET country = 'Kenya' 
-WHERE country = 'USA';-- Fix function security by setting search_path
+WHERE country = 'USA';
+
+
+-- Migration: 20250804201121_8535563c-393c-428c-90e5-fc03c7a37dc3.sql
+
+-- Fix function security by setting search_path
 CREATE OR REPLACE FUNCTION public.generate_service_invoice_number()
 RETURNS TEXT
 LANGUAGE plpgsql
@@ -3770,7 +4082,12 @@ BEGIN
   
   RETURN invoice_number;
 END;
-$$;-- Add some sample SMS usage data for testing
+$$;
+
+
+-- Migration: 20250804210224_59f6845f-97e8-4644-a115-1175cb4b6758.sql
+
+-- Add some sample SMS usage data for testing
 INSERT INTO public.sms_usage (
   landlord_id,
   recipient_phone,
@@ -3782,7 +4099,12 @@ INSERT INTO public.sms_usage (
   -- Use first landlord in system for demo
   ((SELECT user_id FROM public.user_roles WHERE role = 'Landlord' LIMIT 1), '+254712345678', 'Maintenance request update: Your request #MR-001 has been assigned to John Doe.', 2.50, 'sent', now() - interval '2 days'),
   ((SELECT user_id FROM public.user_roles WHERE role = 'Landlord' LIMIT 1), '+254712345679', 'Rent reminder: Your rent payment is due in 3 days.', 2.50, 'sent', now() - interval '1 day'),
-  ((SELECT user_id FROM public.user_roles WHERE role = 'Landlord' LIMIT 1), '+254712345680', 'Welcome to Sunset Apartments! Your lease starts tomorrow.', 2.50, 'sent', now() - interval '5 hours');-- Fix search path security for all functions without proper search_path setting
+  ((SELECT user_id FROM public.user_roles WHERE role = 'Landlord' LIMIT 1), '+254712345680', 'Welcome to Sunset Apartments! Your lease starts tomorrow.', 2.50, 'sent', now() - interval '5 hours');
+
+
+-- Migration: 20250806203232_dcb1be31-2a6c-497d-ade5-b151834b8c9c.sql
+
+-- Fix search path security for all functions without proper search_path setting
 -- This prevents SQL injection attacks through search_path manipulation
 
 -- Fix generate_service_invoice_number function
@@ -3956,7 +4278,12 @@ BEGIN
     _maintenance_request_id, _user_id, _action_type, _old_value, _new_value, _details
   );
 END;
-$$;-- Step 2: Fix critical RLS policy security issues for proper data isolation
+$$;
+
+
+-- Migration: 20250806203347_728e23e2-b992-40d8-85c3-a3bc8b1cc1d7.sql
+
+-- Step 2: Fix critical RLS policy security issues for proper data isolation
 
 -- Properties table has overly permissive policies for landlords
 -- Replace the broad "Landlords can manage all properties" policy with proper ownership-based access
@@ -4088,7 +4415,12 @@ USING (
     AND (p.owner_id = auth.uid() OR p.manager_id = auth.uid())
   )
   OR has_role(auth.uid(), 'Admin'::app_role)
-);-- Step 3: Add triggers to automatically set owner_id fields for security
+);
+
+
+-- Migration: 20250806203540_eb4b778e-62b9-46fb-94d6-3a8eb2333105.sql
+
+-- Step 3: Add triggers to automatically set owner_id fields for security
 
 -- Add trigger function to set owner_id automatically for properties
 CREATE OR REPLACE FUNCTION public.set_property_owner()
@@ -4151,7 +4483,12 @@ DROP TRIGGER IF EXISTS trigger_set_announcement_creator ON public.tenant_announc
 CREATE TRIGGER trigger_set_announcement_creator
   BEFORE INSERT ON public.tenant_announcements
   FOR EACH ROW
-  EXECUTE FUNCTION public.set_announcement_creator();-- Create trial management and onboarding tables
+  EXECUTE FUNCTION public.set_announcement_creator();
+
+
+-- Migration: 20250806211328_6a6b93be-99c9-477d-a440-ed4a01eab47a.sql
+
+-- Create trial management and onboarding tables
 CREATE TABLE public.trial_configurations (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   billing_plan_id UUID REFERENCES public.billing_plans(id) ON DELETE CASCADE,
@@ -4377,7 +4714,12 @@ SELECT
   '{"max_properties": 2, "max_units": 10, "max_tenants": 10, "max_monthly_reports": 3}'::jsonb
 FROM public.billing_plans 
 WHERE name ILIKE '%trial%' OR name ILIKE '%free%'
-LIMIT 1;-- Fix the infinite recursion in tenants table RLS policy
+LIMIT 1;
+
+
+-- Migration: 20250806212453_5c572f9a-7214-4bd5-b9f9-b7485c65989f.sql
+
+-- Fix the infinite recursion in tenants table RLS policy
 -- The issue is likely in the policy that checks if a user exists in the tenants table
 
 -- First, let's drop the problematic policy
@@ -4418,7 +4760,12 @@ AS $$
 $$;
 
 -- Update any policies that might be using subqueries on tenants table
--- Check if there are any policies referencing tenants table in their conditions-- Fix the infinite recursion in the "Property owners can manage their tenants" policy
+-- Check if there are any policies referencing tenants table in their conditions
+
+
+-- Migration: 20250806212745_8839add4-2ebd-4d21-8af7-a340f2ee2fa1.sql
+
+-- Fix the infinite recursion in the "Property owners can manage their tenants" policy
 -- The issue is the EXISTS subquery that references the tenants table from within the tenants table policy
 
 -- First, drop the problematic policy
@@ -4449,7 +4796,12 @@ $$;
 -- Recreate the policy using the security definer function
 CREATE POLICY "Property owners can manage their tenants" ON public.tenants
 FOR ALL
-USING (public.can_user_manage_tenant(auth.uid(), id));-- Add trial expiration status management
+USING (public.can_user_manage_tenant(auth.uid(), id));
+
+
+-- Migration: 20250806213451_b3c9d2e5-8eb6-4cf3-bbc9-60984f9cd380.sql
+
+-- Add trial expiration status management
 -- Add new status types for trial lifecycle
 ALTER TYPE app_role ADD VALUE IF NOT EXISTS 'System';
 
@@ -4631,7 +4983,12 @@ ON CONFLICT DO NOTHING;
 CREATE TRIGGER update_trial_notification_templates_updated_at
     BEFORE UPDATE ON public.trial_notification_templates
     FOR EACH ROW
-    EXECUTE FUNCTION public.update_updated_at_column();-- Create cron job to run trial manager daily
+    EXECUTE FUNCTION public.update_updated_at_column();
+
+
+-- Migration: 20250806213833_fbb330e1-4587-41be-ae58-8eed1bf6c31b.sql
+
+-- Create cron job to run trial manager daily
 -- First enable the pg_cron extension if not already enabled
 CREATE EXTENSION IF NOT EXISTS pg_cron;
 CREATE EXTENSION IF NOT EXISTS pg_net;
@@ -4648,7 +5005,12 @@ SELECT cron.schedule(
         body:='{"source": "cron"}'::jsonb
     ) as request_id;
   $$
-);-- Create trial notification templates with pre-populated content
+);
+
+
+-- Migration: 20250806221300_41935113-1cce-48fd-aefb-b2c9ff65745b.sql
+
+-- Create trial notification templates with pre-populated content
 INSERT INTO trial_notification_templates (
   notification_type,
   template_name,
@@ -4868,7 +5230,12 @@ SELECT cron.schedule(
         body:='{"source": "cron"}'::jsonb
     ) as request_id;
   $$
-);-- Get the current user's ID and assign Admin role
+);
+
+
+-- Migration: 20250806222808_2fd240c6-44d4-4308-9404-a3764e10b526.sql
+
+-- Get the current user's ID and assign Admin role
 DO $$
 DECLARE
     current_user_id uuid;
@@ -4891,7 +5258,12 @@ CREATE POLICY "Admins and Landlords can manage trial notification templates"
 ON public.trial_notification_templates 
 FOR ALL 
 USING (has_role(auth.uid(), 'Admin'::app_role) OR has_role(auth.uid(), 'Landlord'::app_role))
-WITH CHECK (has_role(auth.uid(), 'Admin'::app_role) OR has_role(auth.uid(), 'Landlord'::app_role));-- Update RLS policies for trial_notification_templates to allow Landlords as well
+WITH CHECK (has_role(auth.uid(), 'Admin'::app_role) OR has_role(auth.uid(), 'Landlord'::app_role));
+
+
+-- Migration: 20250806223123_51a9e37c-74d3-4ece-8122-c944387a5c2e.sql
+
+-- Update RLS policies for trial_notification_templates to allow Landlords as well
 DROP POLICY IF EXISTS "Admins can manage trial notification templates" ON public.trial_notification_templates;
 DROP POLICY IF EXISTS "Landlords can view trial notification templates" ON public.trial_notification_templates;
 
@@ -4900,10 +5272,20 @@ CREATE POLICY "Admins and Landlords can manage trial notification templates"
 ON public.trial_notification_templates 
 FOR ALL 
 USING (has_role(auth.uid(), 'Admin'::app_role) OR has_role(auth.uid(), 'Landlord'::app_role))
-WITH CHECK (has_role(auth.uid(), 'Admin'::app_role) OR has_role(auth.uid(), 'Landlord'::app_role));-- Assign Admin role to the user profile we found
+WITH CHECK (has_role(auth.uid(), 'Admin'::app_role) OR has_role(auth.uid(), 'Landlord'::app_role));
+
+
+-- Migration: 20250806223211_93daeb60-dca7-458d-8936-fa5d84bad60e.sql
+
+-- Assign Admin role to the user profile we found
 INSERT INTO public.user_roles (user_id, role)
 VALUES ('a53f69a5-104e-489b-9b0a-48a56d6b011d', 'Admin'::app_role)
-ON CONFLICT (user_id, role) DO NOTHING;-- Create missing profile for user david.wanjau@deevabits.com
+ON CONFLICT (user_id, role) DO NOTHING;
+
+
+-- Migration: 20250807071253_cd0293a6-47c9-43a9-809a-bbbf195fabe3.sql
+
+-- Create missing profile for user david.wanjau@deevabits.com
 INSERT INTO public.profiles (id, first_name, last_name, phone, email)
 VALUES (
   '18c1ba95-defd-46ef-920a-600bae6443e1', 
@@ -4918,9 +5300,19 @@ INSERT INTO public.user_roles (user_id, role)
 VALUES (
   '18c1ba95-defd-46ef-920a-600bae6443e1', 
   'Agent'::public.app_role
-);-- Delete the user records we just created for david.wanjau@deevabits.com
+);
+
+
+-- Migration: 20250807071710_8eefa193-7bd3-4db7-99cb-f480ac647dbc.sql
+
+-- Delete the user records we just created for david.wanjau@deevabits.com
 DELETE FROM public.user_roles WHERE user_id = '18c1ba95-defd-46ef-920a-600bae6443e1';
-DELETE FROM public.profiles WHERE id = '18c1ba95-defd-46ef-920a-600bae6443e1';-- Create communication preferences table for admin settings
+DELETE FROM public.profiles WHERE id = '18c1ba95-defd-46ef-920a-600bae6443e1';
+
+
+-- Migration: 20250807072339_94b541bd-a285-405e-b963-8657c74578e1.sql
+
+-- Create communication preferences table for admin settings
 CREATE TABLE IF NOT EXISTS public.communication_preferences (
   id uuid NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
   setting_name text NOT NULL UNIQUE,
@@ -4953,7 +5345,12 @@ ON CONFLICT (setting_name) DO NOTHING;
 CREATE TRIGGER update_communication_preferences_updated_at
 BEFORE UPDATE ON public.communication_preferences
 FOR EACH ROW
-EXECUTE FUNCTION public.update_updated_at_column();-- Make phone numbers required for SMS communication
+EXECUTE FUNCTION public.update_updated_at_column();
+
+
+-- Migration: 20250807073337_1302d5a0-cd13-42c4-af80-4eab50fc06b0.sql
+
+-- Make phone numbers required for SMS communication
 -- First, let's set a default phone number for existing users without one
 UPDATE public.profiles 
 SET phone = '+000000000000' 
@@ -4998,7 +5395,12 @@ BEGIN
   
   RETURN NEW;
 END;
-$$;-- Update tenant_account_creation to be for all users, not just tenants
+$$;
+
+
+-- Migration: 20250807073835_8581fd44-f156-4154-8033-4c35d39870ee.sql
+
+-- Update tenant_account_creation to be for all users, not just tenants
 UPDATE communication_preferences 
 SET setting_name = 'user_account_creation',
     description = 'Communication method when creating new user accounts (all roles)'
@@ -5007,7 +5409,12 @@ WHERE setting_name = 'tenant_account_creation';
 -- Add new communication preference for general user account creation if needed
 INSERT INTO communication_preferences (setting_name, description, email_enabled, sms_enabled)
 VALUES ('user_account_creation', 'Communication method when creating new user accounts (all roles)', true, true)
-ON CONFLICT (setting_name) DO NOTHING;-- Create email_templates table
+ON CONFLICT (setting_name) DO NOTHING;
+
+
+-- Migration: 20250807080909_7a9d13c0-dd31-4579-b895-81dde45a34ea.sql
+
+-- Create email_templates table
 CREATE TABLE public.email_templates (
   id UUID NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
   name TEXT NOT NULL,
@@ -5084,7 +5491,12 @@ INSERT INTO public.message_templates (name, type, category, content, variables, 
 ('Service Provider Assignment', 'sms', 'maintenance', 'Service provider {{service_provider_name}} assigned to your maintenance request: {{request_title}}. They will contact you soon.', ARRAY['service_provider_name', 'request_title'], true),
 ('Maintenance Completion', 'sms', 'maintenance', 'Maintenance request completed: {{request_title}} at {{property_name}}{{#if message}}. Notes: {{message}}{{/if}}', ARRAY['request_title', 'property_name', 'message'], true),
 ('General Announcement', 'sms', 'announcement', '{{#if is_urgent}}URGENT: {{/if}}{{announcement_title}}\n\n{{announcement_message_truncated}}\n\n- {{property_name}}', ARRAY['is_urgent', 'announcement_title', 'announcement_message_truncated', 'property_name'], true),
-('Emergency Notice', 'sms', 'announcement', 'URGENT: {{announcement_title}}\n\n{{announcement_message}}\n\nImmediate attention required.\n\n- {{property_name}}', ARRAY['announcement_title', 'announcement_message', 'property_name'], true);-- First, let's check for orphaned users (users in auth.users but not in profiles)
+('Emergency Notice', 'sms', 'announcement', 'URGENT: {{announcement_title}}\n\n{{announcement_message}}\n\nImmediate attention required.\n\n- {{property_name}}', ARRAY['announcement_title', 'announcement_message', 'property_name'], true);
+
+
+-- Migration: 20250807085939_afcfcc17-9271-4bd6-8e22-bdeb5a516077.sql
+
+-- First, let's check for orphaned users (users in auth.users but not in profiles)
 -- This will help us identify all affected users, not just gichukisimon@gmail.com
 
 -- Recreate the missing trigger to prevent future issues
@@ -5180,7 +5592,12 @@ SELECT
   now() + interval '30 days',
   100,
   true
-FROM landlord_users;-- Recreate the missing trigger to prevent future issues
+FROM landlord_users;
+
+
+-- Migration: 20250807090011_a615ef65-fd03-4377-bbbf-a716725052ca.sql
+
+-- Recreate the missing trigger to prevent future issues
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS trigger
 LANGUAGE plpgsql
@@ -5259,7 +5676,12 @@ SELECT
 FROM public.user_roles ur
 LEFT JOIN public.landlord_subscriptions ls ON ur.user_id = ls.landlord_id
 WHERE ur.role IN ('Landlord', 'Manager') 
-  AND ls.landlord_id IS NULL;-- Fix the search_path security issue for functions that don't have it set
+  AND ls.landlord_id IS NULL;
+
+
+-- Migration: 20250807090126_401b3ee3-0ad1-404e-a6e3-29821096f85e.sql
+
+-- Fix the search_path security issue for functions that don't have it set
 -- This addresses the WARN 1: Function Search Path Mutable security warning
 
 -- Fix the handle_new_user function to set search_path properly
@@ -5292,7 +5714,12 @@ BEGIN
   
   RETURN NEW;
 END;
-$$;-- Update the create_default_landlord_subscription function to:
+$$;
+
+
+-- Migration: 20250807091112_a4dcb479-f58e-4266-a0fd-ace8fd763b9b.sql
+
+-- Update the create_default_landlord_subscription function to:
 -- 1. Read trial period from billing_settings instead of hardcoded 30 days
 -- 2. Expand role coverage to include Landlord, Manager, Agent roles
 -- 3. Make SMS credits dynamic from settings
@@ -5397,7 +5824,12 @@ VALUES (
   'Trial subscription configuration settings'
 ) ON CONFLICT (setting_key) DO UPDATE SET
   setting_value = EXCLUDED.setting_value,
-  updated_at = now();-- Fix dmwangui@gmail.com role - remove Admin role, keep only Landlord
+  updated_at = now();
+
+
+-- Migration: 20250807091413_a5b8a4ba-1823-4ca1-9fe9-3dac319395d0.sql
+
+-- Fix dmwangui@gmail.com role - remove Admin role, keep only Landlord
 DELETE FROM public.user_roles 
 WHERE user_id = (SELECT id FROM public.profiles WHERE email = 'dmwangui@gmail.com')
 AND role = 'Admin';
@@ -5428,7 +5860,12 @@ SET
     'payment_processing',
     'reporting'
   )
-WHERE landlord_id = (SELECT id FROM public.profiles WHERE email = 'gichukisimon@gmail.com');-- Fix missing subscription for John Kibe (Agent role)
+WHERE landlord_id = (SELECT id FROM public.profiles WHERE email = 'gichukisimon@gmail.com');
+
+
+-- Migration: 20250807092226_648313ea-1cdb-4a45-a274-43c713c317a3.sql
+
+-- Fix missing subscription for John Kibe (Agent role)
 -- Ensure Agents also get trial subscriptions
 INSERT INTO public.landlord_subscriptions (
   landlord_id,
@@ -5470,7 +5907,12 @@ WHERE p.email = 'Kibe@mail.com'
   AND NOT EXISTS (
     SELECT 1 FROM public.landlord_subscriptions 
     WHERE landlord_id = p.id
-  );-- Unified Subscription Management Implementation
+  );
+
+
+-- Migration: 20250807093224_9644bcbe-2411-4d84-a001-1149bacc9ade.sql
+
+-- Unified Subscription Management Implementation
 
 -- 1. First, get the Free Trial billing plan ID
 DO $$
@@ -5646,7 +6088,12 @@ BEGIN
   
   RAISE NOTICE 'Unified subscription management implementation completed successfully';
   
-END $$;-- Unified Subscription Management Implementation (Fixed)
+END $$;
+
+
+-- Migration: 20250807093312_72edc0ae-0ad2-45bd-922b-8f38f63ff35d.sql
+
+-- Unified Subscription Management Implementation (Fixed)
 
 -- 1. First, get the Free Trial billing plan ID
 DO $$
@@ -5822,7 +6269,12 @@ BEGIN
   
   RAISE NOTICE 'Unified subscription management implementation completed successfully';
   
-END $$;-- Fix existing trial periods from 70 days to 30 days
+END $$;
+
+
+-- Migration: 20250807094443_35a9eb59-b84b-404a-be79-8eb01dfa35c3.sql
+
+-- Fix existing trial periods from 70 days to 30 days
 UPDATE landlord_subscriptions 
 SET trial_end_date = trial_start_date + INTERVAL '30 days'
 WHERE status = 'trial' 
@@ -5867,8 +6319,18 @@ VALUES (
   NOW()
 ) ON CONFLICT (setting_key) DO UPDATE SET
   setting_value = EXCLUDED.setting_value,
-  updated_at = NOW();-- Add metadata column to user_roles table to store custom trial configurations
-ALTER TABLE user_roles ADD COLUMN IF NOT EXISTS metadata jsonb;-- Consolidate Free Trial plans and fix trial settings
+  updated_at = NOW();
+
+
+-- Migration: 20250807100128_f4030b4e-578f-4b7b-93ef-4816895c44ca.sql
+
+-- Add metadata column to user_roles table to store custom trial configurations
+ALTER TABLE user_roles ADD COLUMN IF NOT EXISTS metadata jsonb;
+
+
+-- Migration: 20250807100652_a3dde00d-9120-4e27-9f51-8234cd471e67.sql
+
+-- Consolidate Free Trial plans and fix trial settings
 -- Keep the newer Free Trial plan and deactivate the older one
 UPDATE billing_plans 
 SET is_active = false 
@@ -5896,7 +6358,12 @@ SET setting_value = jsonb_build_object(
   'default_sms_credits', 200,
   'sms_cost_per_unit', 0.05
 )
-WHERE setting_key = 'trial_settings';-- Step 1: Migrate Mazao Plus from inactive "Free Trial " to active "Free Trial" plan
+WHERE setting_key = 'trial_settings';
+
+
+-- Migration: 20250807102441_349a6071-7f57-4d1c-8915-fb2430016669.sql
+
+-- Step 1: Migrate Mazao Plus from inactive "Free Trial " to active "Free Trial" plan
 -- First, get the IDs of both Free Trial plans
 UPDATE landlord_subscriptions 
 SET billing_plan_id = (
@@ -5926,7 +6393,12 @@ AND billing_plan_id = (
 
 -- Step 3: Delete the old inactive "Free Trial " plan (with trailing space)
 DELETE FROM billing_plans 
-WHERE name = 'Free Trial ' AND is_active = false;-- Update RLS policy for billing_plans to include Manager role
+WHERE name = 'Free Trial ' AND is_active = false;
+
+
+-- Migration: 20250807110549_574c9a9b-1180-4789-9278-d1ae8ae2dd9e.sql
+
+-- Update RLS policy for billing_plans to include Manager role
 DROP POLICY IF EXISTS "Landlords can view active billing plans" ON public.billing_plans;
 
 CREATE POLICY "Property stakeholders can view active billing plans" 
@@ -5938,7 +6410,12 @@ USING (
     has_role(auth.uid(), 'Manager'::app_role) OR 
     has_role(auth.uid(), 'Agent'::app_role)
   )
-);-- Fix RLS policy for landlord_subscriptions to include Manager role
+);
+
+
+-- Migration: 20250807111446_ef8c0852-afbe-45c4-a763-52ec0a47996c.sql
+
+-- Fix RLS policy for landlord_subscriptions to include Manager role
 DROP POLICY IF EXISTS "Landlords can view their own subscription" ON public.landlord_subscriptions;
 
 CREATE POLICY "Property stakeholders can view their own subscription" 
@@ -5977,7 +6454,12 @@ WITH CHECK (
    has_role(auth.uid(), 'Manager'::app_role) OR 
    has_role(auth.uid(), 'Agent'::app_role)) AND 
   landlord_id = auth.uid()
-);-- Add M-Pesa transaction tracking to service charge invoices
+);
+
+
+-- Migration: 20250807112618_e9d2635b-db2f-4332-adcb-d67381e912cf.sql
+
+-- Add M-Pesa transaction tracking to service charge invoices
 ALTER TABLE public.service_charge_invoices 
 ADD COLUMN IF NOT EXISTS mpesa_checkout_request_id text,
 ADD COLUMN IF NOT EXISTS mpesa_receipt_number text,
@@ -6013,7 +6495,12 @@ ON CONFLICT DO NOTHING;
 CREATE TRIGGER update_automated_billing_settings_updated_at
 BEFORE UPDATE ON public.automated_billing_settings
 FOR EACH ROW
-EXECUTE FUNCTION public.update_updated_at_column();-- Make total_units optional in properties table and create auto-calculation trigger
+EXECUTE FUNCTION public.update_updated_at_column();
+
+
+-- Migration: 20250807113945_8e338fb0-3308-4b01-9bad-7f39b47e1574.sql
+
+-- Make total_units optional in properties table and create auto-calculation trigger
 ALTER TABLE public.properties ALTER COLUMN total_units SET DEFAULT 0;
 
 -- Create function to calculate total units
@@ -6047,7 +6534,12 @@ CREATE TRIGGER update_property_total_units_on_update
 CREATE TRIGGER update_property_total_units_on_delete
   AFTER DELETE ON public.units
   FOR EACH ROW
-  EXECUTE FUNCTION public.calculate_property_total_units();-- Fix search path security issues for functions
+  EXECUTE FUNCTION public.calculate_property_total_units();
+
+
+-- Migration: 20250807114007_ac77873a-295d-4f70-8f96-4b59ece18e52.sql
+
+-- Fix search path security issues for functions
 CREATE OR REPLACE FUNCTION public.calculate_property_total_units()
 RETURNS TRIGGER
 LANGUAGE plpgsql
@@ -6066,10 +6558,20 @@ BEGIN
   
   RETURN COALESCE(NEW, OLD);
 END;
-$$;-- Add payment_type and metadata columns to mpesa_transactions table
+$$;
+
+
+-- Migration: 20250807140054_51b817af-174c-4821-8076-0d0dee2c208c.sql
+
+-- Add payment_type and metadata columns to mpesa_transactions table
 ALTER TABLE public.mpesa_transactions 
 ADD COLUMN IF NOT EXISTS payment_type text DEFAULT 'rent',
-ADD COLUMN IF NOT EXISTS metadata jsonb DEFAULT NULL;-- Create a sample service charge invoice for testing
+ADD COLUMN IF NOT EXISTS metadata jsonb DEFAULT NULL;
+
+
+-- Migration: 20250807144920_210cfb9e-95d8-4e53-9da9-1dab15c31262.sql
+
+-- Create a sample service charge invoice for testing
 DO $$
 DECLARE
     landlord_uuid UUID;
@@ -6130,7 +6632,12 @@ BEGIN
     RETURNING id INTO invoice_id;
     
     RAISE NOTICE 'Created sample service charge invoice with ID: %', invoice_id;
-END $$;-- Generate a sample service charge invoice with real data for testing
+END $$;
+
+
+-- Migration: 20250807150052_8861bc19-e05c-4441-b250-da036fcc5e01.sql
+
+-- Generate a sample service charge invoice with real data for testing
 DO $$
 DECLARE
     landlord_uuid UUID;
@@ -6245,7 +6752,12 @@ BEGIN
     RAISE NOTICE 'Created sample service charge invoices for landlord: %', landlord_uuid;
     RAISE NOTICE 'Pending invoice ID: %', invoice_id;
     
-END $$;-- Update Simon Gichuki's role from Manager to Landlord
+END $$;
+
+
+-- Migration: 20250807152803_06a267ae-a015-4d65-8b14-3e60feeb1347.sql
+
+-- Update Simon Gichuki's role from Manager to Landlord
 UPDATE user_roles 
 SET role = 'Landlord'
 WHERE user_id = '23054b29-a494-42f2-bb35-d1bdf9cfdfcb' 
@@ -6254,18 +6766,33 @@ WHERE user_id = '23054b29-a494-42f2-bb35-d1bdf9cfdfcb'
 -- Also ensure he has a landlord payment preferences record
 INSERT INTO landlord_payment_preferences (landlord_id, preferred_payment_method, payment_reminders_enabled)
 VALUES ('23054b29-a494-42f2-bb35-d1bdf9cfdfcb', 'mpesa', true)
-ON CONFLICT (landlord_id) DO NOTHING;-- Update Simon Gichuki's auth metadata to reflect correct Landlord role
+ON CONFLICT (landlord_id) DO NOTHING;
+
+
+-- Migration: 20250807153346_fe375890-8b80-40e4-a5e0-ec3473014bef.sql
+
+-- Update Simon Gichuki's auth metadata to reflect correct Landlord role
 UPDATE auth.users 
 SET raw_user_meta_data = jsonb_set(
   COALESCE(raw_user_meta_data, '{}'::jsonb),
   '{role}',
   '"Landlord"'
 )
-WHERE id = '23054b29-a494-42f2-bb35-d1bdf9cfdfcb';-- Remove duplicate payment record with same transaction_id and payment_reference
+WHERE id = '23054b29-a494-42f2-bb35-d1bdf9cfdfcb';
+
+
+-- Migration: 20250807155425_555e56f9-ff28-4716-b9d7-82fcf286bc85.sql
+
+-- Remove duplicate payment record with same transaction_id and payment_reference
 DELETE FROM payments 
 WHERE id = 'f1239140-cacd-47e6-a6c3-8ef050e53b1a' 
 AND transaction_id = 'TH70CQ9VBG' 
-AND payment_reference = 'ws_CO_070820251842134723301507';-- Set up automated monthly billing cron job
+AND payment_reference = 'ws_CO_070820251842134723301507';
+
+
+-- Migration: 20250807155609_ab4fbdc2-12e7-4349-9292-4761469b3cc1.sql
+
+-- Set up automated monthly billing cron job
 -- Schedule monthly billing to run on the 1st of each month at 9:00 AM
 SELECT cron.schedule(
   'monthly-billing-automation',
@@ -6295,7 +6822,12 @@ INSERT INTO automated_billing_settings (
   true
 ) ON CONFLICT (id) DO UPDATE SET
   enabled = true,
-  updated_at = now();-- Create tables for SMS provider configurations and automation settings
+  updated_at = now();
+
+
+-- Migration: 20250807162930_0733f244-e9b8-456e-8fa0-fa261ba0b624.sql
+
+-- Create tables for SMS provider configurations and automation settings
 CREATE TABLE IF NOT EXISTS public.sms_providers (
   id uuid NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
   provider_name text NOT NULL,
@@ -6455,7 +6987,12 @@ VALUES
   ('maintenance_update', true, 'instant', 'tenants', 'Maintenance Update: {{request_title}} status changed to {{new_status}}.'),
   ('account_creation', true, 'instant', 'all', 'Welcome! Your account: Email: {{email}}, Password: {{temporary_password}}'),
   ('password_reset', true, 'instant', 'all', 'Password reset requested for your Zira Homes account. Check your email.')
-ON CONFLICT (automation_key) DO NOTHING;-- Create tables for SMS provider configurations and automation settings (handle existing objects)
+ON CONFLICT (automation_key) DO NOTHING;
+
+
+-- Migration: 20250807163008_d7b3b8e8-e18f-40d4-981c-f3b11b9b771a.sql
+
+-- Create tables for SMS provider configurations and automation settings (handle existing objects)
 CREATE TABLE IF NOT EXISTS public.sms_providers (
   id uuid NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
   provider_name text NOT NULL,
@@ -6563,7 +7100,12 @@ VALUES (
   true,
   '{"username": "ZIRA TECH", "authorization_token": "f22b2aa230b02b428a71023c7eb7f7bb9d440f38", "unique_identifier": "77", "sender_type": "10"}'
 )
-ON CONFLICT (provider_name) DO NOTHING;-- Create tables for SMS provider configurations and logs
+ON CONFLICT (provider_name) DO NOTHING;
+
+
+-- Migration: 20250807163123_f890b61f-e3a5-4ea2-a19a-cd24506a1907.sql
+
+-- Create tables for SMS provider configurations and logs
 CREATE TABLE IF NOT EXISTS public.sms_providers (
   id uuid NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
   provider_name text NOT NULL UNIQUE,
@@ -6671,7 +7213,12 @@ VALUES (
   true,
   '{"username": "ZIRA TECH", "authorization_token": "f22b2aa230b02b428a71023c7eb7f7bb9d440f38", "unique_identifier": "77", "sender_type": "10"}'
 )
-ON CONFLICT (provider_name) DO NOTHING;-- Check if sms_providers table exists and add unique constraint
+ON CONFLICT (provider_name) DO NOTHING;
+
+
+-- Migration: 20250807163213_f269207d-8a98-4b98-b48e-871965834356.sql
+
+-- Check if sms_providers table exists and add unique constraint
 DO $$
 BEGIN
     -- Add unique constraint to provider_name if it doesn't exist
@@ -6750,7 +7297,12 @@ ON CONFLICT (provider_name) DO UPDATE SET
   is_active = EXCLUDED.is_active,
   is_default = EXCLUDED.is_default,
   config_data = EXCLUDED.config_data,
-  updated_at = now();-- PART 1: Role Unification - Consolidate all property-related roles to 'landlord'
+  updated_at = now();
+
+
+-- Migration: 20250807164043_6189221f-69f6-4f68-91bc-a90e80ba11dd.sql
+
+-- PART 1: Role Unification - Consolidate all property-related roles to 'landlord'
 
 -- First, update existing role enum to include new sub-user role
 ALTER TYPE public.app_role ADD VALUE IF NOT EXISTS 'landlord_subuser';
@@ -6885,7 +7437,12 @@ WITH CHECK (true);
 CREATE POLICY "Admins can view all activity logs"
 ON public.sub_user_activity_logs
 FOR SELECT
-USING (has_role(auth.uid(), 'Admin'::app_role));-- Create support tickets table
+USING (has_role(auth.uid(), 'Admin'::app_role));
+
+
+-- Migration: 20250807165409_7c522503-9b00-464c-a1db-d286fd399a53.sql
+
+-- Create support tickets table
 CREATE TABLE public.support_tickets (
   id UUID NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
   title TEXT NOT NULL,
@@ -6994,7 +7551,12 @@ SET search_path = ''
 AS $$
   INSERT INTO public.system_logs (type, message, service, details, user_id)
   VALUES (_type, _message, _service, _details, _user_id);
-$$;-- Create support_tickets table
+$$;
+
+
+-- Migration: 20250807165851_541b77fa-29e0-4250-943f-210e94fd20a4.sql
+
+-- Create support_tickets table
 CREATE TABLE public.support_tickets (
   id UUID NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
   title TEXT NOT NULL,
@@ -7124,7 +7686,12 @@ SECURITY DEFINER
 AS $$
   INSERT INTO public.system_logs (type, message, service, metadata)
   VALUES (_type, _message, _service, _metadata);
-$$;-- Add foreign key constraints to support_tickets table
+$$;
+
+
+-- Migration: 20250807170410_6bc07c5f-027e-4c0d-93a9-83ed0710d3d5.sql
+
+-- Add foreign key constraints to support_tickets table
 ALTER TABLE public.support_tickets 
 ADD CONSTRAINT support_tickets_user_id_fkey 
 FOREIGN KEY (user_id) REFERENCES public.profiles(id) ON DELETE CASCADE;
@@ -7136,7 +7703,12 @@ FOREIGN KEY (assigned_to) REFERENCES public.profiles(id) ON DELETE SET NULL;
 -- Add foreign key constraint to support_messages table
 ALTER TABLE public.support_messages 
 ADD CONSTRAINT support_messages_user_id_fkey 
-FOREIGN KEY (user_id) REFERENCES public.profiles(id) ON DELETE CASCADE;-- Add missing INSERT policy for notifications table
+FOREIGN KEY (user_id) REFERENCES public.profiles(id) ON DELETE CASCADE;
+
+
+-- Migration: 20250807173804_fb076369-227d-4e2a-a125-c5c8894d5a50.sql
+
+-- Add missing INSERT policy for notifications table
 CREATE POLICY "System can create notifications" 
 ON public.notifications 
 FOR INSERT 
@@ -7155,7 +7727,12 @@ FOR INSERT
 WITH CHECK (
   type = 'support' AND 
   (related_type = 'support_ticket' OR related_type IS NULL)
-);-- ==================================================
+);
+
+
+-- Migration: 20250807200351_a1b70f3f-add9-446a-8f62-cbb61d8b53e1.sql
+
+-- ==================================================
 -- PHASE 1: DATA CLEANUP & INTEGRITY FIXES
 -- ==================================================
 
@@ -7487,7 +8064,12 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 -- Grant permissions to admins
 GRANT EXECUTE ON FUNCTION public.create_user_safe TO authenticated;
-GRANT EXECUTE ON FUNCTION public.get_data_integrity_report TO authenticated;CREATE OR REPLACE FUNCTION public.get_data_integrity_report()
+GRANT EXECUTE ON FUNCTION public.get_data_integrity_report TO authenticated;
+
+
+-- Migration: 20250807201825_528f838d-1a6a-4858-ae59-e82f50a54cda.sql
+
+CREATE OR REPLACE FUNCTION public.get_data_integrity_report()
 RETURNS jsonb
 LANGUAGE plpgsql
 SECURITY DEFINER
@@ -7575,7 +8157,12 @@ BEGIN
         'generated_at', now()
     );
 END;
-$function$-- Create bulk upload logs table for audit trail
+$function$
+
+
+-- Migration: 20250807202815_8d8820c7-8ff3-4697-b74f-edfeeb15abf5.sql
+
+-- Create bulk upload logs table for audit trail
 CREATE TABLE public.bulk_upload_logs (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   operation_type TEXT NOT NULL CHECK (operation_type IN ('tenant', 'unit', 'property')),
@@ -7623,7 +8210,12 @@ CREATE TRIGGER update_bulk_upload_logs_updated_at
 -- Create indexes for performance
 CREATE INDEX idx_bulk_upload_logs_uploaded_by ON public.bulk_upload_logs(uploaded_by);
 CREATE INDEX idx_bulk_upload_logs_operation_type ON public.bulk_upload_logs(operation_type);
-CREATE INDEX idx_bulk_upload_logs_created_at ON public.bulk_upload_logs(created_at DESC);-- Create user_audit_logs table for tracking admin actions
+CREATE INDEX idx_bulk_upload_logs_created_at ON public.bulk_upload_logs(created_at DESC);
+
+
+-- Migration: 20250807210955_dccad5a4-4bdd-4731-aa19-7ad6cf208a31.sql
+
+-- Create user_audit_logs table for tracking admin actions
 CREATE TABLE public.user_audit_logs (
   id UUID NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
   user_id UUID NOT NULL,
@@ -7901,7 +8493,12 @@ CREATE TRIGGER update_user_status_updated_at
 CREATE TRIGGER update_impersonation_sessions_updated_at
   BEFORE UPDATE ON public.impersonation_sessions
   FOR EACH ROW
-  EXECUTE FUNCTION public.update_updated_at_column();-- Create user_sessions table to support admin tools and session auditing
+  EXECUTE FUNCTION public.update_updated_at_column();
+
+
+-- Migration: 20250807213255_23ee5db8-12ae-404e-9caa-2a782f646896.sql
+
+-- Create user_sessions table to support admin tools and session auditing
 CREATE TABLE IF NOT EXISTS public.user_sessions (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL,
@@ -7957,6 +8554,11 @@ END $$;
 -- Helpful indexes
 CREATE INDEX IF NOT EXISTS idx_user_sessions_user_id ON public.user_sessions(user_id);
 CREATE INDEX IF NOT EXISTS idx_user_sessions_active ON public.user_sessions(is_active);
+
+
+
+-- Migration: 20250808104755_a2139218-6f19-49a9-8974-1233c5ac4381.sql
+
 -- Create centralized PDF templates and branding tables
 -- 1) pdf_templates
 CREATE TABLE IF NOT EXISTS public.pdf_templates (
@@ -8082,6 +8684,11 @@ SELECT 'platform', 'Zira Technologies', 'Professional Property Management Soluti
 WHERE NOT EXISTS (
   SELECT 1 FROM public.branding_profiles WHERE scope = 'platform' AND is_default = true
 );
+
+
+
+-- Migration: 20250808104830_2c5452b4-cf8f-464e-acc9-e64330b785fa.sql
+
 -- Fix security linter warning for update_updated_at_column by setting search_path and security definer
 CREATE OR REPLACE FUNCTION public.update_updated_at_column()
 RETURNS trigger
@@ -8094,6 +8701,11 @@ BEGIN
   RETURN NEW;
 END;
 $$;
+
+
+
+-- Migration: 20250812181136-.sql
+
 -- 1) Ensure "Free Trial" billing plan exists and is active with price 0
 -- Create it if missing
 INSERT INTO public.billing_plans (
@@ -8187,7 +8799,12 @@ BEGIN
   LEFT JOIN public.landlord_subscriptions ls ON ls.landlord_id = ur.user_id
   WHERE ur.role = 'Landlord'::public.app_role
     AND ls.landlord_id IS NULL;
-END$$;-- 1) Add per-subscription grace period column
+END$$;
+
+
+-- Migration: 20250812204537-.sql
+
+-- 1) Add per-subscription grace period column
 ALTER TABLE public.landlord_subscriptions
 ADD COLUMN IF NOT EXISTS grace_period_days integer NOT NULL DEFAULT 7;
 
@@ -8413,14 +9030,24 @@ BEGIN
     'post_cutoff_days', _post_cutoff_days
   );
 END;
-$function$;-- Dry-run backfill based on inferred cutoff (first 70-day creation time)
+$function$;
+
+
+-- Migration: 20250812204810-.sql
+
+-- Dry-run backfill based on inferred cutoff (first 70-day creation time)
 select public.backfill_trial_periods(
   timestamp '2025-08-07 09:00:08.306142+00',
   30,
   70,
   false,
   true
-) as result;-- Upsert trial_settings with cutoff and policy days
+) as result;
+
+
+-- Migration: 20250812205617-.sql
+
+-- Upsert trial_settings with cutoff and policy days
 DO $$
 DECLARE
   v_exists BOOLEAN;
@@ -8455,6 +9082,11 @@ BEGIN
     );
   END IF;
 END$$;
+
+
+
+-- Migration: 20250813175429_41bd54b2-b893-40ad-be5d-51b20029681b.sql
+
 -- Add landlord_id column to email_templates table for landlord-specific templates
 ALTER TABLE public.email_templates 
 ADD COLUMN landlord_id UUID REFERENCES auth.users(id) ON DELETE CASCADE;
@@ -8513,7 +9145,12 @@ USING (
   (landlord_id IS NULL AND enabled = true AND has_role(auth.uid(), 'Landlord'::app_role)) OR
   (landlord_id = auth.uid() AND has_role(auth.uid(), 'Landlord'::app_role)) OR
   has_role(auth.uid(), 'Admin'::app_role)
-);-- Create database triggers for automatic notification generation
+);
+
+
+-- Migration: 20250814091905_02d033db-4d5a-434b-896f-a856e9782bb6.sql
+
+-- Create database triggers for automatic notification generation
 
 -- Function to create payment notifications
 CREATE OR REPLACE FUNCTION create_payment_notification()
@@ -8714,7 +9351,12 @@ DROP TRIGGER IF EXISTS invoice_notification_trigger ON invoices;
 CREATE TRIGGER invoice_notification_trigger
   AFTER INSERT OR UPDATE OF status ON invoices
   FOR EACH ROW
-  EXECUTE FUNCTION create_invoice_notification();-- Fix database function security issues by adding proper search_path settings
+  EXECUTE FUNCTION create_invoice_notification();
+
+
+-- Migration: 20250814093047_2a792421-da02-4ec9-8a23-fcdd476b9c5c.sql
+
+-- Fix database function security issues by adding proper search_path settings
 -- This prevents SQL injection through search path manipulation
 
 -- Update all existing functions to include SECURITY DEFINER SET search_path = ''
@@ -8804,7 +9446,12 @@ AS $$
   ) VALUES (
     _service, _status, _response_time_ms, _error_count, _metadata
   );
-$$;-- Fix critical security vulnerabilities by implementing proper RLS policies for user data tables
+$$;
+
+
+-- Migration: 20250814105614_1801b14f-3192-4bc4-87eb-4e99bb4c6de5.sql
+
+-- Fix critical security vulnerabilities by implementing proper RLS policies for user data tables
 
 -- 1. Enable RLS on profiles table (if not already enabled)
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
@@ -8968,7 +9615,12 @@ COMMENT ON POLICY "Property stakeholders can manage tenants" ON public.tenants I
 'Security: Property owners/managers can only access tenants for their own properties';
 
 COMMENT ON TABLE public.data_access_logs IS 
-'Security: Audit trail for accessing sensitive user data';-- Fix function search path security issues by updating existing functions
+'Security: Audit trail for accessing sensitive user data';
+
+
+-- Migration: 20250814105756_3d9a1ae3-2333-4647-b78d-4f1c55bdc1dc.sql
+
+-- Fix function search path security issues by updating existing functions
 -- This addresses the "Function Search Path Mutable" security warnings
 
 -- Update functions that don't have SET search_path = '' for security
@@ -9190,7 +9842,12 @@ COMMENT ON FUNCTION public.get_trial_status(uuid) IS
 'Security: Function updated with SET search_path = '''' to prevent search path attacks';
 
 COMMENT ON FUNCTION public.check_trial_limitation(uuid, text, integer) IS 
-'Security: Function updated with SET search_path = '''' to prevent search path attacks';-- Fix infinite recursion in RLS policies by simplifying them
+'Security: Function updated with SET search_path = '''' to prevent search path attacks';
+
+
+-- Migration: 20250814110229_f7c83271-9e39-423d-abc3-aabea1c98cd3.sql
+
+-- Fix infinite recursion in RLS policies by simplifying them
 
 -- 1. Drop the problematic policies that are causing infinite recursion
 DROP POLICY IF EXISTS "Property stakeholders can manage tenants" ON public.tenants;
@@ -9285,7 +9942,12 @@ COMMENT ON POLICY "Tenants can view own leases" ON public.leases IS
 'Security: Uses EXISTS subquery to check tenant ownership without complex joins that cause recursion';
 
 COMMENT ON FUNCTION public.user_owns_property(UUID, UUID) IS 
-'Security: Security definer function to safely check property ownership without causing RLS recursion';-- Fix infinite recursion by completely rebuilding RLS policies
+'Security: Security definer function to safely check property ownership without causing RLS recursion';
+
+
+-- Migration: 20250814110249_17f1d105-2ce9-4040-b4ba-ba002005a3fd.sql
+
+-- Fix infinite recursion by completely rebuilding RLS policies
 
 -- 1. Drop ALL existing policies for problematic tables
 DROP POLICY IF EXISTS "Tenants can view own record" ON public.tenants;
@@ -9360,7 +10022,12 @@ CREATE POLICY "Property stakeholders can manage units" ON public.units
   USING (
     has_role(auth.uid(), 'Admin'::app_role) OR
     public.user_owns_property(units.property_id, auth.uid())
-  );-- Fix infinite recursion by completely rebuilding RLS policies
+  );
+
+
+-- Migration: 20250814110317_97a7360f-c256-41eb-94d1-86deaf8a705b.sql
+
+-- Fix infinite recursion by completely rebuilding RLS policies
 
 -- 1. Drop ALL existing policies for problematic tables
 DROP POLICY IF EXISTS "Tenants can view own record" ON public.tenants;
@@ -9435,7 +10102,12 @@ CREATE POLICY "Property stakeholders can manage units" ON public.units
   USING (
     has_role(auth.uid(), 'Admin'::app_role) OR
     public.user_owns_property(units.property_id, auth.uid())
-  );-- Temporarily disable RLS to clean up policies completely
+  );
+
+
+-- Migration: 20250814110344_d180446b-691f-42ab-a900-fb0f18178cf5.sql
+
+-- Temporarily disable RLS to clean up policies completely
 
 -- Disable RLS temporarily to allow policy cleanup
 ALTER TABLE public.tenants DISABLE ROW LEVEL SECURITY;
@@ -9526,7 +10198,12 @@ CREATE POLICY "Property stakeholders can manage units" ON public.units
   USING (
     has_role(auth.uid(), 'Admin'::app_role) OR
     public.user_owns_property(units.property_id, auth.uid())
-  );-- Temporarily disable RLS to clean up policies completely
+  );
+
+
+-- Migration: 20250814110402_f6fa7a27-88ad-4732-a5e1-4803e97a4dcd.sql
+
+-- Temporarily disable RLS to clean up policies completely
 
 -- Disable RLS temporarily to allow policy cleanup
 ALTER TABLE public.tenants DISABLE ROW LEVEL SECURITY;
@@ -9617,7 +10294,12 @@ CREATE POLICY "Property stakeholders can manage units" ON public.units
   USING (
     has_role(auth.uid(), 'Admin'::app_role) OR
     public.user_owns_property(units.property_id, auth.uid())
-  );-- Continue security fixes for remaining database functions
+  );
+
+
+-- Migration: 20250814110904_67578ad0-e40d-4421-a73f-95c49dcb6639.sql
+
+-- Continue security fixes for remaining database functions
 
 -- Update update_service_invoice_updated_at function
 CREATE OR REPLACE FUNCTION public.update_service_invoice_updated_at()
@@ -9644,7 +10326,12 @@ BEGIN
   NEW.created_by := auth.uid();
   RETURN NEW;
 END;
-$function$;-- Security Fix: Add search_path protection to database functions
+$function$;
+
+
+-- Migration: 20250814110933_af74c5ee-2951-4cfe-9ce4-512cb31595a9.sql
+
+-- Security Fix: Add search_path protection to database functions
 -- This prevents SQL injection attacks through search_path manipulation
 
 -- Update create_payment_notification function
@@ -9868,7 +10555,12 @@ BEGIN
   
   RETURN NEW;
 END;
-$function$;-- Fix remaining database functions that don't have SET search_path = '' protection
+$function$;
+
+
+-- Migration: 20250814110950_6357eee8-a970-4af8-8b2e-4f7608ba5d4b.sql
+
+-- Fix remaining database functions that don't have SET search_path = '' protection
 
 -- Update check_email_uniqueness function
 CREATE OR REPLACE FUNCTION public.check_email_uniqueness()
@@ -9962,7 +10654,12 @@ BEGIN
     
     RETURN NULL;
 END;
-$function$;-- Continue security hardening for remaining database functions
+$function$;
+
+
+-- Migration: 20250814111017_f1d97186-e42a-475f-8e87-939ba8876295.sql
+
+-- Continue security hardening for remaining database functions
 
 -- Update update_service_invoice_updated_at function
 CREATE OR REPLACE FUNCTION public.update_service_invoice_updated_at()
@@ -9989,7 +10686,12 @@ BEGIN
   NEW.created_by := auth.uid();
   RETURN NEW;
 END;
-$function$;-- Fix remaining functions without SET search_path
+$function$;
+
+
+-- Migration: 20250814111042_f3e05357-cbc6-4864-a40a-bef785c1f888.sql
+
+-- Fix remaining functions without SET search_path
 -- This includes some critical functions that need hardening
 
 -- Fix check_email_uniqueness function
@@ -10084,7 +10786,12 @@ BEGIN
     
     RETURN NULL;
 END;
-$function$;-- Fix final database function that needs security update
+$function$;
+
+
+-- Migration: 20250814111108_d70efdc2-5e6b-41df-9969-dcd77151af69.sql
+
+-- Fix final database function that needs security update
 CREATE OR REPLACE FUNCTION public.generate_service_invoice_number()
 RETURNS text
 LANGUAGE plpgsql
@@ -10094,7 +10801,12 @@ AS $function$
 BEGIN
     RETURN public.generate_invoice_number();
 END;
-$function$;-- Fix the remaining function that needs proper search_path
+$function$;
+
+
+-- Migration: 20250814111146_606fd066-2340-4880-a781-b34804e84e10.sql
+
+-- Fix the remaining function that needs proper search_path
 CREATE OR REPLACE FUNCTION public.create_default_landlord_subscription()
 RETURNS trigger
 LANGUAGE plpgsql
@@ -10184,7 +10896,12 @@ AS $function$
 BEGIN
     RETURN public.generate_invoice_number();
 END;
-$function$;-- Fix critical privilege escalation vulnerability in user_roles table
+$function$;
+
+
+-- Migration: 20250814111655_5f7c89e2-8a75-4a58-8564-12760c513054.sql
+
+-- Fix critical privilege escalation vulnerability in user_roles table
 -- Remove the overly permissive policy that allows Landlords to manage all roles
 
 DROP POLICY IF EXISTS "Landlords can manage user roles" ON public.user_roles;
@@ -10396,7 +11113,12 @@ VALUES (
     'severity', 'critical',
     'description', 'Removed overly permissive RLS policies and added secure role management functions'
   )
-);-- Fix critical privilege escalation vulnerability in user_roles table
+);
+
+
+-- Migration: 20250814113232_af180356-634f-4654-87cc-c1fcf1fda5c4.sql
+
+-- Fix critical privilege escalation vulnerability in user_roles table
 -- First, check and remove existing problematic policies
 
 DROP POLICY IF EXISTS "Landlords can manage user roles" ON public.user_roles;
@@ -10589,7 +11311,12 @@ VALUES (
     'description', 'Removed overly permissive RLS policies and added secure role management functions',
     'timestamp', now()
   )
-);-- Fix critical privilege escalation vulnerability in user_roles table
+);
+
+
+-- Migration: 20250814113529_d695d12b-7308-4017-89c1-15a1be771f63.sql
+
+-- Fix critical privilege escalation vulnerability in user_roles table
 -- First, remove existing problematic policies
 
 DROP POLICY IF EXISTS "Landlords can manage user roles" ON public.user_roles;
@@ -10781,7 +11508,12 @@ PERFORM public.log_system_event(
     'description', 'Removed overly permissive RLS policies and added secure role management functions',
     'timestamp', now()
   )
-);-- Fix critical privilege escalation vulnerability in user_roles table
+);
+
+
+-- Migration: 20250814113602_6bb20b8c-f79d-4988-9894-3f5f16937ae2.sql
+
+-- Fix critical privilege escalation vulnerability in user_roles table
 -- Remove existing problematic policies
 
 DROP POLICY IF EXISTS "Landlords can manage user roles" ON public.user_roles;
@@ -10960,7 +11692,12 @@ CREATE TRIGGER audit_role_changes_trigger
 -- Add constraint to prevent multiple admin roles for the same user
 CREATE UNIQUE INDEX IF NOT EXISTS unique_admin_per_user 
 ON public.user_roles (user_id) 
-WHERE role = 'Admin';-- Fix critical privilege escalation vulnerability in user_roles table
+WHERE role = 'Admin';
+
+
+-- Migration: 20250814113741_920079c9-f0fd-423c-9759-222b01d10427.sql
+
+-- Fix critical privilege escalation vulnerability in user_roles table
 -- Remove existing problematic policies
 
 DROP POLICY IF EXISTS "Landlords can manage user roles" ON public.user_roles;
@@ -11139,7 +11876,12 @@ CREATE TRIGGER audit_role_changes_trigger
 -- Add constraint to prevent multiple admin roles for the same user
 CREATE UNIQUE INDEX IF NOT EXISTS unique_admin_per_user 
 ON public.user_roles (user_id) 
-WHERE role = 'Admin';-- Create the master PDF template with Zira Homes professional layout
+WHERE role = 'Admin';
+
+
+-- Migration: 20250814192939_06aa2ff6-cf0c-41fb-bc6c-d51aedb1528d.sql
+
+-- Create the master PDF template with Zira Homes professional layout
 INSERT INTO public.pdf_templates (
     id,
     name,
@@ -11272,7 +12014,12 @@ SELECT
     true
 FROM template_data t
 CROSS JOIN document_types d
-CROSS JOIN user_roles r;-- Create the master PDF template with Zira Homes professional layout
+CROSS JOIN user_roles r;
+
+
+-- Migration: 20250814193020_abe479c2-68ba-4c87-8267-cf45e4d8eb72.sql
+
+-- Create the master PDF template with Zira Homes professional layout
 INSERT INTO public.pdf_templates (
     id,
     name,
@@ -11441,7 +12188,12 @@ SELECT
     r.priority,
     true
 FROM template_data t
-CROSS JOIN user_roles r;UPDATE pdf_templates 
+CROSS JOIN user_roles r;
+
+
+-- Migration: 20250814193539_bdb2c3f4-5b3f-4d14-99db-a727308b6d9c.sql
+
+UPDATE pdf_templates 
 SET content = '{
   "layout": {
     "type": "professional",
@@ -11586,6 +12338,11 @@ SET content = '{
   }
 }'::jsonb
 WHERE name = 'Zira Professional Template'
+
+
+-- Migration: 20250818185838_1b141ffe-d601-4ce6-8c05-20231329b0d4.sql
+
+
 -- Rent Collection Report (Live Data)
 -- Returns JSON in the shape expected by ReportData:
 -- {
@@ -11776,6 +12533,11 @@ begin
   return v_result;
 end;
 $$;
+
+
+
+-- Migration: 20250821111756_ebd93cdb-2173-4aac-8b25-5d83c7f55d4e.sql
+
 
 -- 1) Occupancy Report
 CREATE OR REPLACE FUNCTION public.get_occupancy_report(p_start_date date DEFAULT NULL::date, p_end_date date DEFAULT NULL::date)
@@ -12313,6 +13075,11 @@ BEGIN
   RETURN v_result;
 END;
 $$;
+
+
+
+-- Migration: 20250821112615_a01508a5-1fb9-4fe2-8681-645ffcd48cac.sql
+
 -- Financial Summary Report
 CREATE OR REPLACE FUNCTION public.get_financial_summary_report(p_start_date date DEFAULT NULL::date, p_end_date date DEFAULT NULL::date)
  RETURNS jsonb
@@ -12879,7 +13646,12 @@ BEGIN
 
   RETURN v_result;
 END;
-$function$-- Financial Summary Report
+$function$
+
+
+-- Migration: 20250821112640_e4e643fd-3056-403a-b22f-324543094a3a.sql
+
+-- Financial Summary Report
 CREATE OR REPLACE FUNCTION public.get_financial_summary_report(p_start_date date DEFAULT NULL::date, p_end_date date DEFAULT NULL::date)
  RETURNS jsonb
  LANGUAGE plpgsql
@@ -12961,7 +13733,12 @@ BEGIN
 
   RETURN v_result;
 END;
-$function$;-- Financial Summary Report
+$function$;
+
+
+-- Migration: 20250821112706_be8d7dd7-3782-4db9-ac72-34bb6beddd36.sql
+
+-- Financial Summary Report
 CREATE OR REPLACE FUNCTION public.get_financial_summary_report(p_start_date date DEFAULT NULL::date, p_end_date date DEFAULT NULL::date)
  RETURNS jsonb
  LANGUAGE plpgsql
@@ -13527,7 +14304,12 @@ BEGIN
 
   RETURN v_result;
 END;
-$function$-- Financial Summary Report
+$function$
+
+
+-- Migration: 20250821112740_f5941efa-7f16-4d1c-b2e1-4aba26791255.sql
+
+-- Financial Summary Report
 CREATE OR REPLACE FUNCTION public.get_financial_summary_report(p_start_date date DEFAULT NULL::date, p_end_date date DEFAULT NULL::date)
  RETURNS jsonb
  LANGUAGE plpgsql
@@ -13609,7 +14391,12 @@ BEGIN
 
   RETURN v_result;
 END;
-$function$-- Profit & Loss Report
+$function$
+
+
+-- Migration: 20250821112803_c3591076-0309-4522-b877-436b5c983740.sql
+
+-- Profit & Loss Report
 CREATE OR REPLACE FUNCTION public.get_profit_loss_report(p_start_date date DEFAULT NULL::date, p_end_date date DEFAULT NULL::date)
  RETURNS jsonb
  LANGUAGE plpgsql
@@ -13682,7 +14469,12 @@ BEGIN
 
   RETURN v_result;
 END;
-$function$-- Profit & Loss Report
+$function$
+
+
+-- Migration: 20250821112851_100dde6d-92da-472e-85ba-b1b3b4d5f774.sql
+
+-- Profit & Loss Report
 CREATE OR REPLACE FUNCTION public.get_profit_loss_report(p_start_date date DEFAULT NULL::date, p_end_date date DEFAULT NULL::date)
  RETURNS jsonb
  LANGUAGE plpgsql
@@ -13755,7 +14547,12 @@ BEGIN
 
   RETURN v_result;
 END;
-$function$-- Cash Flow Report  
+$function$
+
+
+-- Migration: 20250821112911_7c8a81c6-f3a4-4590-afec-849cc1174c84.sql
+
+-- Cash Flow Report  
 CREATE OR REPLACE FUNCTION public.get_cash_flow_report(p_start_date date DEFAULT NULL::date, p_end_date date DEFAULT NULL::date)
  RETURNS jsonb
  LANGUAGE plpgsql
@@ -13824,7 +14621,12 @@ BEGIN
 
   RETURN v_result;
 END;
-$function$-- Cash Flow Report
+$function$
+
+
+-- Migration: 20250821112946_3290672f-3b35-412a-bb2d-330e632acc70.sql
+
+-- Cash Flow Report
 CREATE OR REPLACE FUNCTION public.get_cash_flow_report(p_start_date date DEFAULT NULL::date, p_end_date date DEFAULT NULL::date)
  RETURNS jsonb
  LANGUAGE plpgsql
@@ -13893,7 +14695,12 @@ BEGIN
 
   RETURN v_result;
 END;
-$function$-- Revenue vs Expenses Report
+$function$
+
+
+-- Migration: 20250821113814_6d91892d-8276-4a27-b3c2-516546edbc27.sql
+
+-- Revenue vs Expenses Report
 CREATE OR REPLACE FUNCTION public.get_revenue_vs_expenses_report(p_start_date date DEFAULT NULL::date, p_end_date date DEFAULT NULL::date)
  RETURNS jsonb
  LANGUAGE plpgsql
@@ -14047,7 +14854,12 @@ BEGIN
 
   RETURN v_result;
 END;
-$function$;-- Tenant Turnover Report
+$function$;
+
+
+-- Migration: 20250821113854_f8b7b232-395f-49ae-977d-c8ec319d957b.sql
+
+-- Tenant Turnover Report
 CREATE OR REPLACE FUNCTION public.get_tenant_turnover_report(p_start_date date DEFAULT NULL::date, p_end_date date DEFAULT NULL::date)
  RETURNS jsonb
  LANGUAGE plpgsql
@@ -14227,7 +15039,12 @@ BEGIN
 
   RETURN v_result;
 END;
-$function$;-- Step 1: Add foreign key constraints (NOT VALID initially to avoid blocking)
+$function$;
+
+
+-- Migration: 20250821123118_c942d97b-5563-42a8-a674-47c7d029d47e.sql
+
+-- Step 1: Add foreign key constraints (NOT VALID initially to avoid blocking)
 ALTER TABLE public.payments 
 ADD CONSTRAINT fk_payments_lease_id 
 FOREIGN KEY (lease_id) REFERENCES public.leases(id) NOT VALID;
@@ -14497,7 +15314,12 @@ BEGIN
   
   RETURN v_result;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;-- Fix the existing notification trigger type issue first
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+
+-- Migration: 20250821123232_50c67fde-c073-4769-90c9-1a8bf986af65.sql
+
+-- Fix the existing notification trigger type issue first
 CREATE OR REPLACE FUNCTION public.create_invoice_notification()
 RETURNS TRIGGER AS $$
 DECLARE
@@ -14583,7 +15405,12 @@ FOREIGN KEY (tenant_id) REFERENCES public.tenants(id) NOT VALID;
 
 ALTER TABLE public.units 
 ADD CONSTRAINT fk_units_property_id 
-FOREIGN KEY (property_id) REFERENCES public.properties(id) NOT VALID;-- Step 2: Create trigger function to auto-link payments to invoices
+FOREIGN KEY (property_id) REFERENCES public.properties(id) NOT VALID;
+
+
+-- Migration: 20250821123315_00f5ad8d-3f97-49c2-96df-657e2cdec0eb.sql
+
+-- Step 2: Create trigger function to auto-link payments to invoices
 CREATE OR REPLACE FUNCTION public.auto_link_payment_to_invoice()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -14667,7 +15494,12 @@ DROP TRIGGER IF EXISTS trigger_sync_invoice_status ON public.payments;
 CREATE TRIGGER trigger_sync_invoice_status
   AFTER INSERT OR UPDATE OR DELETE ON public.payments
   FOR EACH ROW
-  EXECUTE FUNCTION public.sync_invoice_status();-- Step 4: Backfill existing data - link payments to invoices
+  EXECUTE FUNCTION public.sync_invoice_status();
+
+
+-- Migration: 20250821125140_92d2d075-c9b2-4fad-88db-efd906a339d6.sql
+
+-- Step 4: Backfill existing data - link payments to invoices
 UPDATE public.payments 
 SET invoice_id = (
   SELECT inv.id 
@@ -14809,6 +15641,11 @@ BEGIN
   RETURN v_result;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = '';
+
+
+-- Migration: 20250821154058_e0288eb3-dd88-4a8b-bbf1-a087e3c38121.sql
+
+
 -- Give property owners/managers full control over their leases
 -- Existing policies:
 -- - Admins can manage all leases (ALL)
@@ -14879,6 +15716,11 @@ USING (
       AND (p.owner_id = auth.uid() OR p.manager_id = auth.uid())
   )
 );
+
+
+
+-- Migration: 20250821164236_3ecab560-72fc-4f28-a5aa-23b2d6cf2fbc.sql
+
 -- Update get_profit_loss_report to include Admin visibility
 CREATE OR REPLACE FUNCTION public.get_profit_loss_report(p_start_date date DEFAULT NULL::date, p_end_date date DEFAULT NULL::date)
  RETURNS jsonb
@@ -15323,7 +16165,12 @@ begin
 
   return v_result;
 end;
-$function$;-- Create missing report functions with proper Admin scope and JSONB structure
+$function$;
+
+
+-- Migration: 20250821165641_b6e827be-933a-4ef4-83ee-d2a9c283c9b3.sql
+
+-- Create missing report functions with proper Admin scope and JSONB structure
 
 -- 1. Profit & Loss Report
 CREATE OR REPLACE FUNCTION public.get_profit_loss_report(p_start_date date DEFAULT NULL::date, p_end_date date DEFAULT NULL::date)
@@ -15887,6 +16734,11 @@ BEGIN
   ), '[]'::jsonb);
 END;
 $function$;
+
+
+-- Migration: 20250821182018_8df8929d-ee60-4817-82fa-a6388de066f8.sql
+
+
 -- Fix: qualify has_role and app_role in rent collection report so it runs with search_path disabled
 
 CREATE OR REPLACE FUNCTION public.get_rent_collection_report(p_start_date date DEFAULT NULL::date, p_end_date date DEFAULT NULL::date)
@@ -16067,6 +16919,11 @@ begin
   return v_result;
 end;
 $function$;
+
+
+
+-- Migration: 20250821190429_510b21c8-af95-4934-a96d-3af3438b61b3.sql
+
 -- Drop the existing function if it exists
 DROP FUNCTION IF EXISTS public.get_executive_summary_report(date, date);
 
@@ -16206,7 +17063,12 @@ BEGIN
 
   RETURN result;
 END;
-$$;-- Fix the Executive Summary report function with correct column names
+$$;
+
+
+-- Migration: 20250821190515_cf5e54ef-73a1-4064-a411-8c2187048033.sql
+
+-- Fix the Executive Summary report function with correct column names
 CREATE OR REPLACE FUNCTION public.get_executive_summary_report(
   p_start_date DATE,
   p_end_date DATE
@@ -16343,7 +17205,12 @@ BEGIN
 
   RETURN result;
 END;
-$$;-- Fix Executive Summary report function with proper query structure
+$$;
+
+
+-- Migration: 20250821190557_dc777725-e821-46c9-87cc-20d344c6f6bf.sql
+
+-- Fix Executive Summary report function with proper query structure
 CREATE OR REPLACE FUNCTION public.get_executive_summary_report(
   p_start_date DATE,
   p_end_date DATE
@@ -16471,7 +17338,12 @@ BEGIN
 
   RETURN result;
 END;
-$$;-- Final fix for Executive Summary report function
+$$;
+
+
+-- Migration: 20250821190646_9b6a2fea-a9e2-4cf4-a57e-fd62663bfecc.sql
+
+-- Final fix for Executive Summary report function
 CREATE OR REPLACE FUNCTION public.get_executive_summary_report(
   p_start_date DATE,
   p_end_date DATE
@@ -16603,7 +17475,12 @@ BEGIN
 
   RETURN result;
 END;
-$$;-- Fix Financial Summary report function
+$$;
+
+
+-- Migration: 20250821192542_162f3a51-fdde-484d-ad0e-6814cfe0546c.sql
+
+-- Fix Financial Summary report function
 CREATE OR REPLACE FUNCTION public.get_financial_summary_report(
   p_start_date DATE,
   p_end_date DATE
@@ -16737,7 +17614,12 @@ BEGIN
 
   RETURN result;
 END;
-$$;-- Drop and recreate Financial Summary report function
+$$;
+
+
+-- Migration: 20250821192622_2b0eeff9-72cb-487e-95ea-a35d69cd61ab.sql
+
+-- Drop and recreate Financial Summary report function
 DROP FUNCTION IF EXISTS public.get_financial_summary_report(date, date);
 
 CREATE OR REPLACE FUNCTION public.get_financial_summary_report(
@@ -16874,6 +17756,11 @@ BEGIN
   RETURN result;
 END;
 $$;
+
+
+-- Migration: 20250821193131_f589d13c-da54-4ad3-8aab-e71c246efdb9.sql
+
+
 -- Replace Financial Summary report with admin-aware filters and monthly series
 
 DROP FUNCTION IF EXISTS public.get_financial_summary_report(date, date);
@@ -16991,6 +17878,11 @@ BEGIN
   RETURN v_result;
 END;
 $function$;
+
+
+
+-- Migration: 20250821194324_108fd84f-b65b-4bca-9ba1-7a145150d57d.sql
+
 -- Fix Lease Expiry report with admin-aware filters
 
 DROP FUNCTION IF EXISTS public.get_lease_expiry_report(date, date);
@@ -17079,6 +17971,11 @@ BEGIN
   RETURN v_result;
 END;
 $function$;
+
+
+-- Migration: 20250821194850_8e9bdf72-e4ab-422e-9244-efaae53c3588.sql
+
+
 -- 1) Helper: robust admin check without enum cast
 CREATE OR REPLACE FUNCTION public.is_admin(_user_id uuid)
 RETURNS boolean
@@ -17183,6 +18080,11 @@ BEGIN
   RETURN v_result;
 END;
 $function$;
+
+
+
+-- Migration: 20250821195817_44145094-3d4b-4703-ada3-82a2d9ab6004.sql
+
 CREATE OR REPLACE FUNCTION public.get_tenant_turnover_report(p_start_date date DEFAULT NULL::date, p_end_date date DEFAULT NULL::date)
  RETURNS jsonb
  LANGUAGE plpgsql
@@ -17304,6 +18206,11 @@ BEGIN
   RETURN v_result;
 END;
 $function$
+
+
+-- Migration: 20250821200354_39cbd2ba-dda8-49de-a5a1-6dfe6014902a.sql
+
+
 CREATE OR REPLACE FUNCTION public.get_outstanding_balances_report(p_start_date date DEFAULT NULL::date, p_end_date date DEFAULT NULL::date)
  RETURNS jsonb
  LANGUAGE plpgsql
@@ -17441,6 +18348,11 @@ BEGIN
 END;
 $function$;
 
+
+
+-- Migration: 20250821200843_96973dca-601d-4f12-99b0-0ddebbaea8ae.sql
+
+
 CREATE OR REPLACE FUNCTION public.get_property_performance_report(p_start_date date DEFAULT NULL::date, p_end_date date DEFAULT NULL::date)
  RETURNS jsonb
  LANGUAGE plpgsql
@@ -17562,6 +18474,11 @@ BEGIN
   RETURN v_result;
 END;
 $function$;
+
+
+
+-- Migration: 20250821201326_e2c30a37-8a35-4ac3-b90b-319f9dcd0d03.sql
+
 
 CREATE OR REPLACE FUNCTION public.get_profit_loss_report(p_start_date date DEFAULT NULL::date, p_end_date date DEFAULT NULL::date)
  RETURNS jsonb
@@ -17700,6 +18617,11 @@ BEGIN
   RETURN v_result;
 END;
 $function$;
+
+
+
+-- Migration: 20250821201507_aad0ce4b-b924-4a7f-9af6-b7212f12a8ed.sql
+
 -- Financial Summary Report Function
 CREATE OR REPLACE FUNCTION public.get_financial_summary_report(p_start_date date DEFAULT NULL::date, p_end_date date DEFAULT NULL::date)
  RETURNS jsonb
@@ -18045,7 +18967,12 @@ BEGIN
 
   RETURN v_result;
 END;
-$function$;-- Executive Summary Report Function
+$function$;
+
+
+-- Migration: 20250821201553_2e133459-bc36-4590-bd72-f8d01b1b9f9d.sql
+
+-- Executive Summary Report Function
 CREATE OR REPLACE FUNCTION public.get_executive_summary_report(p_start_date date DEFAULT NULL::date, p_end_date date DEFAULT NULL::date)
  RETURNS jsonb
  LANGUAGE plpgsql
@@ -18277,6 +19204,11 @@ BEGIN
   RETURN v_result;
 END;
 $function$;
+
+
+-- Migration: 20250821201926_1e2550c7-e331-452d-bad0-f9f817f53b13.sql
+
+
 CREATE OR REPLACE FUNCTION public.get_expense_summary_report(p_start_date date DEFAULT NULL::date, p_end_date date DEFAULT NULL::date)
 RETURNS jsonb
 LANGUAGE plpgsql
@@ -18396,6 +19328,11 @@ BEGIN
 END;
 $function$;
 
+
+
+-- Migration: 20250821202329_4a1e0e77-3b30-4ab6-abd3-b83954e84e79.sql
+
+
 CREATE OR REPLACE FUNCTION public.get_cash_flow_report(p_start_date date DEFAULT NULL::date, p_end_date date DEFAULT NULL::date)
 RETURNS jsonb
 LANGUAGE plpgsql
@@ -18485,6 +19422,11 @@ BEGIN
   RETURN v_result;
 END;
 $function$;
+
+
+
+-- Migration: 20250821202732_52a0b8fd-7ef3-491a-8786-d299542c4c52.sql
+
 
 CREATE OR REPLACE FUNCTION public.get_market_rent_report(p_start_date date DEFAULT NULL::date, p_end_date date DEFAULT NULL::date)
 RETURNS jsonb
@@ -18629,6 +19571,11 @@ BEGIN
   RETURN v_result;
 END;
 $function$;
+
+
+
+-- Migration: 20250821203353_74350a51-5c50-4a06-98b2-4d4f1f09e0de.sql
+
 -- Create market rent analysis function
 CREATE OR REPLACE FUNCTION public.get_market_rent_report(p_start_date date DEFAULT NULL::date, p_end_date date DEFAULT NULL::date)
  RETURNS jsonb
@@ -18696,6 +19643,11 @@ BEGIN
   RETURN v_result;
 END;
 $function$
+
+
+-- Migration: 20250822090844_6fc2ef93-96e6-4a3b-b97a-2a4529aa41c0.sql
+
+
 -- Allow tenants to view invoices via the lease->tenant relationship
 -- This fixes cases where invoices.tenant_id doesn't match the current tenant record,
 -- but the invoice lease still belongs to the same user.
@@ -18711,6 +19663,11 @@ using (
       and t.user_id = auth.uid()
   )
 );
+
+
+
+-- Migration: 20250822092516_90debe20-a472-4148-84b6-b5cbb2a8c703.sql
+
 
 -- 1) Backfill tenants.user_id for existing tenants by matching email to profiles.email
 UPDATE public.tenants t
@@ -18749,6 +19706,11 @@ CREATE POLICY "Tenants can view payments via email match"
         AND lower(t.email) = lower(p.email)
     )
   );
+
+
+
+-- Migration: 20250822093328_f4f43e27-8ea9-470b-9c45-a158d62e955a.sql
+
 
 -- Use JWT email instead of public.profiles for tenant visibility
 -- This avoids missing-profile issues and still respects RLS security.
@@ -18792,6 +19754,11 @@ USING (
       )
   )
 );
+
+
+
+-- Migration: 20250822104011_2f99a538-c453-4f81-800c-1666a6cf6e70.sql
+
 -- One-time SQL to backfill tenants.user_id by matching email addresses
 -- This will help align tenant visibility for historical invoices without affecting landlord reports
 
@@ -18807,6 +19774,11 @@ FROM (
 WHERE tenants.user_id IS NULL 
   AND tenants.email IS NOT NULL
   AND LOWER(tenants.email) = LOWER(auth_users.email);
+
+
+-- Migration: 20250822111456_60373d30-2bb2-486f-92eb-00db02a31b7b.sql
+
+
 -- 1) Create unit_types table
 create table if not exists public.unit_types (
   id uuid primary key default gen_random_uuid(),
@@ -18906,6 +19878,11 @@ values
   ('Office', 'Commercial', '{}', true, true),
   ('Shop', 'Commercial', '{}', true, true)
 on conflict do nothing;
+
+
+
+-- Migration: 20250822113243_b11f2329-61a5-43d5-894a-f347dbc26834.sql
+
 -- Create unit type preferences table for landlords to enable/disable unit types
 CREATE TABLE public.unit_type_preferences (
   id UUID NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
@@ -18938,6 +19915,11 @@ CREATE TRIGGER update_unit_type_preferences_updated_at
 BEFORE UPDATE ON public.unit_type_preferences
 FOR EACH ROW
 EXECUTE FUNCTION public.update_updated_at_column();
+
+
+-- Migration: 20250822124815_f0e0ef9a-a802-487d-94d6-64a90edc762a.sql
+
+
 -- 1) Allow 'perpetual' as a valid billing_cycle
 ALTER TABLE public.billing_plans
   DROP CONSTRAINT IF EXISTS billing_plans_billing_cycle_check;
@@ -18973,9 +19955,19 @@ SELECT
 WHERE NOT EXISTS (
   SELECT 1 FROM public.billing_plans WHERE lower(name) = 'perpetual license'
 );
+
+
+
+-- Migration: 20250822130649_8e5d8627-740f-4b27-a0e9-a1a566c09d20.sql
+
 -- Add payment_instructions column to landlord_payment_preferences if it doesn't exist
 ALTER TABLE public.landlord_payment_preferences 
 ADD COLUMN IF NOT EXISTS payment_instructions text;
+
+
+-- Migration: 20250822142320_d26b1f0c-2731-4f1a-9750-6945e6a79ac6.sql
+
+
 -- 1) Ensure columns exist on landlord_payment_preferences (only if the table exists)
 DO $$
 BEGIN
@@ -19080,6 +20072,11 @@ BEGIN
 END
 $$;
 
+
+
+-- Migration: 20250822144658_bcdb4349-9282-4bb7-9e08-78e0c11ec9a4.sql
+
+
 -- 1) Create landlord-specific M-Pesa credentials table
 CREATE TABLE IF NOT EXISTS public.landlord_mpesa_configs (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -19141,6 +20138,11 @@ BEGIN
       WITH CHECK (landlord_id = auth.uid());
   END IF;
 END$$;
+
+
+
+-- Migration: 20250822172659_5bab182c-f791-497e-9fb8-7ab50e63d8d6.sql
+
 -- Create optimized RPC function for tenant payments data
 CREATE OR REPLACE FUNCTION public.get_tenant_payments_data(
   p_user_id uuid DEFAULT auth.uid(),
@@ -19323,7 +20325,12 @@ CREATE INDEX IF NOT EXISTS idx_properties_owner_manager ON public.properties(own
 
 -- Grant execute permissions
 GRANT EXECUTE ON FUNCTION public.get_tenant_payments_data(uuid, integer) TO authenticated;
-GRANT EXECUTE ON FUNCTION public.get_landlord_tenants_summary(uuid, text, text, text, integer, integer) TO authenticated;-- Create optimized tenant profile data RPC
+GRANT EXECUTE ON FUNCTION public.get_landlord_tenants_summary(uuid, text, text, text, integer, integer) TO authenticated;
+
+
+-- Migration: 20250822185408_71e1225e-280a-4118-9d49-649e4678a8d0.sql
+
+-- Create optimized tenant profile data RPC
 CREATE OR REPLACE FUNCTION public.get_tenant_profile_data(p_user_id uuid DEFAULT auth.uid())
 RETURNS jsonb
 LANGUAGE plpgsql
@@ -19516,7 +20523,12 @@ CREATE INDEX IF NOT EXISTS idx_units_property_id ON public.units(property_id);
 -- Add composite indexes for common queries
 CREATE INDEX IF NOT EXISTS idx_payments_date_status ON public.payments(payment_date DESC, status);
 CREATE INDEX IF NOT EXISTS idx_maintenance_date_priority ON public.maintenance_requests(submitted_date DESC, priority);
-CREATE INDEX IF NOT EXISTS idx_invoices_date_status ON public.invoices(invoice_date DESC, status);-- Create a dedicated RPC for tenant contacts that's more reliable
+CREATE INDEX IF NOT EXISTS idx_invoices_date_status ON public.invoices(invoice_date DESC, status);
+
+
+-- Migration: 20250822191459_3cef33b2-8cf8-471d-9d89-4b2a0b664669.sql
+
+-- Create a dedicated RPC for tenant contacts that's more reliable
 CREATE OR REPLACE FUNCTION public.get_tenant_contacts(p_user_id uuid DEFAULT auth.uid())
 RETURNS jsonb
 LANGUAGE plpgsql
@@ -19599,6 +20611,11 @@ BEGIN
   ));
 END;
 $function$
+
+
+-- Migration: 20250822192414_f1d86d37-744f-43c3-97d2-5c72236d34df.sql
+
+
 -- Fix over-counting in landlord dashboard RPC by using DISTINCT and counting units directly
 CREATE OR REPLACE FUNCTION public.get_landlord_dashboard_data(p_user_id uuid DEFAULT auth.uid())
 RETURNS jsonb
@@ -19678,6 +20695,11 @@ BEGIN
   RETURN v_result;
 END;
 $function$;
+
+
+
+-- Migration: 20250822194516_87a7d3c3-5074-4440-ae88-27f97d518328.sql
+
 -- Fix the get_tenant_profile_data RPC function by removing non-existent u.floor column
 CREATE OR REPLACE FUNCTION public.get_tenant_profile_data(p_user_id uuid DEFAULT auth.uid())
  RETURNS jsonb
@@ -19737,66 +20759,12 @@ BEGIN
 
   RETURN v_result;
 END;
-$function$-- Fix the get_tenant_profile_data RPC function by removing non-existent u.floor column
-CREATE OR REPLACE FUNCTION public.get_tenant_profile_data(p_user_id uuid DEFAULT auth.uid())
- RETURNS jsonb
- LANGUAGE plpgsql
- SECURITY DEFINER
- SET search_path TO 'public'
-AS $function$
-DECLARE
-  v_result jsonb;
-BEGIN
-  WITH tenant_info AS (
-    SELECT 
-      t.id, t.first_name, t.last_name, t.email, t.phone,
-      t.emergency_contact_name, t.emergency_contact_phone,
-      t.employment_status, t.employer_name, t.monthly_income,
-      t.profession, t.national_id, t.previous_address
-    FROM public.tenants t
-    WHERE t.user_id = p_user_id
-    LIMIT 1
-  ),
-  lease_info AS (
-    SELECT 
-      l.id, l.lease_start_date, l.lease_end_date, l.monthly_rent,
-      l.security_deposit, l.status, l.lease_terms,
-      u.unit_number, u.rent_amount as unit_rent,
-      p.name as property_name, p.address, p.city, p.state,
-      p.amenities, p.description as property_description
-    FROM public.leases l
-    JOIN public.tenants t ON l.tenant_id = t.id  
-    JOIN public.units u ON l.unit_id = u.id
-    JOIN public.properties p ON u.property_id = p.id
-    WHERE t.user_id = p_user_id
-      AND COALESCE(l.status, 'active') = 'active'
-    ORDER BY l.lease_start_date DESC
-    LIMIT 1
-  ),
-  landlord_info AS (
-    SELECT 
-      pr.first_name as landlord_first_name,
-      pr.last_name as landlord_last_name,
-      pr.email as landlord_email,
-      pr.phone as landlord_phone
-    FROM public.leases l
-    JOIN public.tenants t ON l.tenant_id = t.id
-    JOIN public.units u ON l.unit_id = u.id  
-    JOIN public.properties p ON u.property_id = p.id
-    JOIN public.profiles pr ON p.owner_id = pr.id
-    WHERE t.user_id = p_user_id
-      AND COALESCE(l.status, 'active') = 'active'
-    LIMIT 1
-  )
-  SELECT jsonb_build_object(
-    'tenant', COALESCE((SELECT row_to_json(tenant_info) FROM tenant_info), null),
-    'lease', COALESCE((SELECT row_to_json(lease_info) FROM lease_info), null),
-    'landlord', COALESCE((SELECT row_to_json(landlord_info) FROM landlord_info), null)
-  ) INTO v_result;
+$function$
 
-  RETURN v_result;
-END;
-$function$-- Fix the get_tenant_profile_data RPC function by removing non-existent u.floor column
+
+-- Migration: 20250822194537_0e639c37-36a9-4fbe-a27f-4250c49781b4.sql
+
+-- Fix the get_tenant_profile_data RPC function by removing non-existent u.floor column
 CREATE OR REPLACE FUNCTION public.get_tenant_profile_data(p_user_id uuid DEFAULT auth.uid())
  RETURNS jsonb
  LANGUAGE plpgsql
@@ -19856,6 +20824,75 @@ BEGIN
   RETURN v_result;
 END;
 $function$
+
+
+-- Migration: 20250822194553_25a2ec69-c083-4865-9016-ebbb1f3f90c6.sql
+
+-- Fix the get_tenant_profile_data RPC function by removing non-existent u.floor column
+CREATE OR REPLACE FUNCTION public.get_tenant_profile_data(p_user_id uuid DEFAULT auth.uid())
+ RETURNS jsonb
+ LANGUAGE plpgsql
+ SECURITY DEFINER
+ SET search_path TO 'public'
+AS $function$
+DECLARE
+  v_result jsonb;
+BEGIN
+  WITH tenant_info AS (
+    SELECT 
+      t.id, t.first_name, t.last_name, t.email, t.phone,
+      t.emergency_contact_name, t.emergency_contact_phone,
+      t.employment_status, t.employer_name, t.monthly_income,
+      t.profession, t.national_id, t.previous_address
+    FROM public.tenants t
+    WHERE t.user_id = p_user_id
+    LIMIT 1
+  ),
+  lease_info AS (
+    SELECT 
+      l.id, l.lease_start_date, l.lease_end_date, l.monthly_rent,
+      l.security_deposit, l.status, l.lease_terms,
+      u.unit_number, u.rent_amount as unit_rent,
+      p.name as property_name, p.address, p.city, p.state,
+      p.amenities, p.description as property_description
+    FROM public.leases l
+    JOIN public.tenants t ON l.tenant_id = t.id  
+    JOIN public.units u ON l.unit_id = u.id
+    JOIN public.properties p ON u.property_id = p.id
+    WHERE t.user_id = p_user_id
+      AND COALESCE(l.status, 'active') = 'active'
+    ORDER BY l.lease_start_date DESC
+    LIMIT 1
+  ),
+  landlord_info AS (
+    SELECT 
+      pr.first_name as landlord_first_name,
+      pr.last_name as landlord_last_name,
+      pr.email as landlord_email,
+      pr.phone as landlord_phone
+    FROM public.leases l
+    JOIN public.tenants t ON l.tenant_id = t.id
+    JOIN public.units u ON l.unit_id = u.id  
+    JOIN public.properties p ON u.property_id = p.id
+    JOIN public.profiles pr ON p.owner_id = pr.id
+    WHERE t.user_id = p_user_id
+      AND COALESCE(l.status, 'active') = 'active'
+    LIMIT 1
+  )
+  SELECT jsonb_build_object(
+    'tenant', COALESCE((SELECT row_to_json(tenant_info) FROM tenant_info), null),
+    'lease', COALESCE((SELECT row_to_json(lease_info) FROM lease_info), null),
+    'landlord', COALESCE((SELECT row_to_json(landlord_info) FROM landlord_info), null)
+  ) INTO v_result;
+
+  RETURN v_result;
+END;
+$function$
+
+
+-- Migration: 20250822202748_b6229e25-99e8-47ef-a27b-f2d779e35487.sql
+
+
 -- 1) Central tables for self-hosted visibility
 
 -- Self-hosted deployments registry
@@ -20000,6 +21037,11 @@ CREATE TRIGGER set_updated_at_on_self_hosted_instances
   BEFORE UPDATE ON public.self_hosted_instances
   FOR EACH ROW
   EXECUTE FUNCTION public.update_updated_at_column();
+
+
+
+-- Migration: 20250822223942_31e0ad6b-4f0a-47e4-a38c-410491c3398e.sql
+
 
 -- 1) Expand RLS to include Manager and Agent for published, targeted articles
 ALTER POLICY "Users can view published articles for their user type"
@@ -20165,6 +21207,11 @@ SELECT
   ARRAY['Admin','Landlord','Manager','Agent','Tenant']::text[],
   true, now()
 WHERE NOT EXISTS (SELECT 1 FROM public.knowledge_base_articles WHERE title = 'Notifications and alerts');
+
+
+
+-- Migration: 20250822232248_6284d989-698d-4b8d-a6c8-3a6e0e137a0e.sql
+
 -- 1) Make David (user_id a53f69a5-104e-489b-9b0a-48a56d6b011d) a Tenant only
 
 -- Assign Tenant role if not already present
@@ -20213,7 +21260,12 @@ DROP TRIGGER IF EXISTS trg_prevent_conflicting_roles ON public.user_roles;
 
 CREATE TRIGGER trg_prevent_conflicting_roles
 BEFORE INSERT OR UPDATE ON public.user_roles
-FOR EACH ROW EXECUTE FUNCTION public.prevent_conflicting_landlord_tenant_roles();-- Temporarily disable the audit trigger to allow the migration
+FOR EACH ROW EXECUTE FUNCTION public.prevent_conflicting_landlord_tenant_roles();
+
+
+-- Migration: 20250822232313_62523dc4-8c0e-4074-9522-0d7d2664983c.sql
+
+-- Temporarily disable the audit trigger to allow the migration
 DROP TRIGGER IF EXISTS audit_role_changes_trigger ON public.user_roles;
 
 -- 1) Remove Landlord role from David
@@ -20286,7 +21338,12 @@ $$;
 
 CREATE TRIGGER trg_prevent_conflicting_roles
 BEFORE INSERT OR UPDATE ON public.user_roles
-FOR EACH ROW EXECUTE FUNCTION public.prevent_conflicting_landlord_tenant_roles();-- Disable all triggers temporarily
+FOR EACH ROW EXECUTE FUNCTION public.prevent_conflicting_landlord_tenant_roles();
+
+
+-- Migration: 20250822232335_a75f9845-9432-4263-ac6f-bfe60ab936ee.sql
+
+-- Disable all triggers temporarily
 ALTER TABLE public.user_roles DISABLE TRIGGER ALL;
 ALTER TABLE public.role_change_logs DISABLE TRIGGER ALL;
 
@@ -20333,7 +21390,12 @@ $$;
 DROP TRIGGER IF EXISTS trg_prevent_conflicting_roles ON public.user_roles;
 CREATE TRIGGER trg_prevent_conflicting_roles
 BEFORE INSERT OR UPDATE ON public.user_roles
-FOR EACH ROW EXECUTE FUNCTION public.prevent_conflicting_landlord_tenant_roles();-- First fix the role_change_logs table to allow NULL new_role for DELETE operations
+FOR EACH ROW EXECUTE FUNCTION public.prevent_conflicting_landlord_tenant_roles();
+
+
+-- Migration: 20250822232428_7552da11-8a44-4d4e-b2c4-0af79540d766.sql
+
+-- First fix the role_change_logs table to allow NULL new_role for DELETE operations
 ALTER TABLE public.role_change_logs ALTER COLUMN new_role DROP NOT NULL;
 
 -- Now make the changes to David's data
@@ -20375,7 +21437,12 @@ $$;
 DROP TRIGGER IF EXISTS trg_prevent_conflicting_roles ON public.user_roles;
 CREATE TRIGGER trg_prevent_conflicting_roles
 BEFORE INSERT OR UPDATE ON public.user_roles
-FOR EACH ROW EXECUTE FUNCTION public.prevent_conflicting_landlord_tenant_roles();-- Drop and recreate the function with proper parameters
+FOR EACH ROW EXECUTE FUNCTION public.prevent_conflicting_landlord_tenant_roles();
+
+
+-- Migration: 20250822232607_ae3eb1f5-0e58-4fcd-a98e-d2b891873762.sql
+
+-- Drop and recreate the function with proper parameters
 DROP FUNCTION IF EXISTS public.log_user_audit(uuid,text,text,uuid,jsonb,uuid,inet,text);
 
 CREATE OR REPLACE FUNCTION public.log_user_audit(
@@ -20415,7 +21482,12 @@ ON CONFLICT (user_id, role) DO NOTHING;
 
 UPDATE public.tenants
 SET email = 'dmwangui@gmail.com'
-WHERE id = 'ca46b00f-5532-45b7-b77e-3ae028701d0e'::uuid;-- Fix the get_landlord_tenants_summary function
+WHERE id = 'ca46b00f-5532-45b7-b77e-3ae028701d0e'::uuid;
+
+
+-- Migration: 20250822232758_d6125d11-6583-4c68-9ecd-b41441d21eef.sql
+
+-- Fix the get_landlord_tenants_summary function
 CREATE OR REPLACE FUNCTION public.get_landlord_tenants_summary(
   p_user_id uuid DEFAULT auth.uid(), 
   p_search text DEFAULT ''::text, 
@@ -20502,7 +21574,12 @@ BEGIN
 
   RETURN v_result;
 END;
-$$;-- Create sub_users table for sub-user management
+$$;
+
+
+-- Migration: 20250906083458_7bf01309-c21f-4608-a343-a14a23b208d4.sql
+
+-- Create sub_users table for sub-user management
 CREATE TABLE IF NOT EXISTS public.sub_users (
   id uuid NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
   landlord_id uuid NOT NULL,
@@ -20636,7 +21713,12 @@ CREATE TRIGGER update_landlord_payment_preferences_updated_at
 
 CREATE TRIGGER update_approved_payment_methods_updated_at 
   BEFORE UPDATE ON public.approved_payment_methods 
-  FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();-- Create sub_users table for sub-user management
+  FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+
+
+-- Migration: 20250906083522_95544f17-d931-4841-89b3-d6456f7544fc.sql
+
+-- Create sub_users table for sub-user management
 CREATE TABLE IF NOT EXISTS public.sub_users (
   id uuid NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
   landlord_id uuid NOT NULL,
@@ -20751,7 +21833,12 @@ INSERT INTO public.approved_payment_methods (payment_method_type, provider_name,
   ('mpesa', 'M-Pesa', 'KE'),
   ('airtel_money', 'Airtel Money', 'KE'),
   ('equitel', 'Equitel', 'KE')
-ON CONFLICT DO NOTHING;-- Create missing report functions referenced in the queries.ts file
+ON CONFLICT DO NOTHING;
+
+
+-- Migration: 20250906085611_1d9efaf0-5671-4ac1-b754-7d62c86235cc.sql
+
+-- Create missing report functions referenced in the queries.ts file
 
 -- Expense Summary Report
 CREATE OR REPLACE FUNCTION public.get_expense_summary_report(p_start_date date DEFAULT NULL::date, p_end_date date DEFAULT NULL::date)
@@ -21079,7 +22166,12 @@ BEGIN
   SELECT public.get_executive_summary_report(v_start, v_end) INTO v_result;
   RETURN v_result;
 END;
-$function$;-- Create missing report functions referenced in the queries.ts file
+$function$;
+
+
+-- Migration: 20250906085810_1658837a-2ae5-4d93-b7c1-5fabccb2d23f.sql
+
+-- Create missing report functions referenced in the queries.ts file
 
 -- Expense Summary Report
 CREATE OR REPLACE FUNCTION public.get_expense_summary_report(p_start_date date DEFAULT NULL::date, p_end_date date DEFAULT NULL::date)
@@ -21407,7 +22499,12 @@ BEGIN
   SELECT public.get_executive_summary_report(v_start, v_end) INTO v_result;
   RETURN v_result;
 END;
-$function$;-- Fix leases table to have proper defaults and constraints
+$function$;
+
+
+-- Migration: 20250906091218_c376276a-c537-414a-99a6-c1f959167423.sql
+
+-- Fix leases table to have proper defaults and constraints
 ALTER TABLE public.leases 
 ADD COLUMN IF NOT EXISTS status text NOT NULL DEFAULT 'active';
 
@@ -21449,7 +22546,12 @@ EXECUTE FUNCTION public.update_updated_at_column();
 
 -- Ensure invoices use the proper invoice number generation
 ALTER TABLE public.invoices 
-ALTER COLUMN invoice_number SET DEFAULT generate_invoice_number();-- Fix the M-Pesa configuration table to use correct column name and constraint
+ALTER COLUMN invoice_number SET DEFAULT generate_invoice_number();
+
+
+-- Migration: 20250906091620_b8d32e89-dd5f-4a31-a39e-e711f351e21e.sql
+
+-- Fix the M-Pesa configuration table to use correct column name and constraint
 ALTER TABLE public.landlord_mpesa_configs 
 RENAME COLUMN shortcode TO business_shortcode;
 
@@ -21466,7 +22568,12 @@ $$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
 DROP TRIGGER IF EXISTS set_landlord_id_trigger ON public.landlord_mpesa_configs;
 CREATE TRIGGER set_landlord_id_trigger
   BEFORE INSERT ON public.landlord_mpesa_configs
-  FOR EACH ROW EXECUTE FUNCTION public.set_landlord_id();-- Update the trigger function to set landlord_id automatically
+  FOR EACH ROW EXECUTE FUNCTION public.set_landlord_id();
+
+
+-- Migration: 20250906092416_75eefd08-2160-4061-bb40-59d35711571e.sql
+
+-- Update the trigger function to set landlord_id automatically
 CREATE OR REPLACE FUNCTION public.set_landlord_id()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -21480,6 +22587,11 @@ DROP TRIGGER IF EXISTS set_landlord_id_trigger ON public.landlord_mpesa_configs;
 CREATE TRIGGER set_landlord_id_trigger
   BEFORE INSERT ON public.landlord_mpesa_configs
   FOR EACH ROW EXECUTE FUNCTION public.set_landlord_id();
+
+
+-- Migration: 20250906095001_42ea3f42-3f8c-44d9-83c2-f8335bd1e468.sql
+
+
 -- 1) Function to sync unit.status from leases
 CREATE OR REPLACE FUNCTION public.sync_unit_status(p_unit_id uuid)
 RETURNS void
@@ -21548,6 +22660,11 @@ EXECUTE FUNCTION public.trg_sync_unit_status_from_leases();
 -- We intentionally do NOT block manual updates to units.status here,
 -- so the UI can still set 'maintenance'. We will adjust the frontend
 -- to stop manually setting 'occupied'/'vacant' and only toggle maintenance.
+
+
+
+-- Migration: 20250906102258_de06a7d2-ee0f-4e6a-8a40-c10a3677aafb.sql
+
 -- Update get_tenant_profile_data to support multiple leases per tenant
 CREATE OR REPLACE FUNCTION public.get_tenant_profile_data(p_user_id uuid DEFAULT auth.uid())
 RETURNS jsonb
@@ -21693,7 +22810,12 @@ BEGIN
 
   RETURN v_result;
 END;
-$function$;-- Add partial unique index to prevent duplicate active leases per unit
+$function$;
+
+
+-- Migration: 20250906102957_9adc986c-0c54-48bb-90a1-5023209599ec.sql
+
+-- Add partial unique index to prevent duplicate active leases per unit
 CREATE UNIQUE INDEX CONCURRENTLY idx_unique_active_lease_per_unit 
 ON public.leases (unit_id) 
 WHERE status = 'active';
@@ -21762,7 +22884,12 @@ SET status = CASE
     AND status = 'active'
   ) THEN 'occupied'
   ELSE 'vacant'
-END;-- Add partial unique index to prevent duplicate active leases per unit
+END;
+
+
+-- Migration: 20250906103014_76610e70-c18f-4206-a885-6445ca014ae8.sql
+
+-- Add partial unique index to prevent duplicate active leases per unit
 CREATE UNIQUE INDEX CONCURRENTLY idx_unique_active_lease_per_unit 
 ON public.leases (unit_id) 
 WHERE status = 'active';
@@ -21831,7 +22958,12 @@ SET status = CASE
     AND status = 'active'
   ) THEN 'occupied'
   ELSE 'vacant'
-END;-- Add partial unique index to prevent duplicate active leases per unit
+END;
+
+
+-- Migration: 20250906103047_7a8060cb-0a8e-4304-8fc9-fbc80aaaceba.sql
+
+-- Add partial unique index to prevent duplicate active leases per unit
 CREATE UNIQUE INDEX idx_unique_active_lease_per_unit 
 ON public.leases (unit_id) 
 WHERE status = 'active';
@@ -21900,7 +23032,12 @@ SET status = CASE
     AND status = 'active'
   ) THEN 'occupied'
   ELSE 'vacant'
-END;-- Add partial unique index to prevent duplicate active leases per unit
+END;
+
+
+-- Migration: 20250906103104_03a7a592-e4dd-4459-9b83-3ba9f760d1a6.sql
+
+-- Add partial unique index to prevent duplicate active leases per unit
 CREATE UNIQUE INDEX idx_unique_active_lease_per_unit 
 ON public.leases (unit_id) 
 WHERE status = 'active';
@@ -21969,7 +23106,12 @@ SET status = CASE
     AND status = 'active'
   ) THEN 'occupied'
   ELSE 'vacant'
-END;-- First, clean up existing duplicate active leases (keep the most recent one)
+END;
+
+
+-- Migration: 20250906103209_adb8ec9e-fb03-45d4-ab2c-4697e8ef6617.sql
+
+-- First, clean up existing duplicate active leases (keep the most recent one)
 WITH duplicate_leases AS (
   SELECT 
     l.id,
@@ -22038,7 +23180,12 @@ SET status = CASE
     AND status = 'active'
   ) THEN 'occupied'
   ELSE 'vacant'
-END;-- Clean up existing duplicate active leases (keep the most recent one)
+END;
+
+
+-- Migration: 20250906103239_8482ee88-ae62-4657-9df3-7f85542b5897.sql
+
+-- Clean up existing duplicate active leases (keep the most recent one)
 WITH duplicate_leases AS (
   SELECT 
     l.id,
@@ -22107,7 +23254,12 @@ SET status = CASE
     AND status = 'active'
   ) THEN 'occupied'
   ELSE 'vacant'
-END;-- Clean up existing duplicate active leases (keep the most recent one)
+END;
+
+
+-- Migration: 20250906103258_45d77e33-e0d5-427f-97e1-237b3a10a17e.sql
+
+-- Clean up existing duplicate active leases (keep the most recent one)
 WITH duplicate_leases AS (
   SELECT 
     l.id,
@@ -22174,7 +23326,12 @@ SET status = CASE
     AND status = 'active'
   ) THEN 'occupied'
   ELSE 'vacant'
-END;-- Add unique partial index to prevent duplicate active sub-users for same landlord
+END;
+
+
+-- Migration: 20250906110125_4d37e11d-db52-4ab4-acfd-d4aee07e7e83.sql
+
+-- Add unique partial index to prevent duplicate active sub-users for same landlord
 CREATE UNIQUE INDEX CONCURRENTLY idx_sub_users_unique_active_email_per_landlord 
 ON public.sub_users (landlord_id, (
   SELECT email FROM public.profiles WHERE profiles.id = sub_users.user_id
@@ -22207,7 +23364,12 @@ BEGIN
     LIMIT 0;
   END IF;
 END;
-$$;-- Add unique constraint to prevent duplicate active sub-users for same landlord and user
+$$;
+
+
+-- Migration: 20250906110340_f906e27d-2860-47ef-a747-607f67758fac.sql
+
+-- Add unique constraint to prevent duplicate active sub-users for same landlord and user
 CREATE UNIQUE INDEX CONCURRENTLY idx_sub_users_unique_active_landlord_user 
 ON public.sub_users (landlord_id, user_id) 
 WHERE status = 'active';
@@ -22231,7 +23393,12 @@ BEGIN
   WHERE lower(p.email) = lower(_email)
   LIMIT 1;
 END;
-$$;-- Add unique constraint to prevent duplicate active sub-users for same landlord and user
+$$;
+
+
+-- Migration: 20250906110403_ff545397-0d5e-41d5-b8fc-9f7355de3f58.sql
+
+-- Add unique constraint to prevent duplicate active sub-users for same landlord and user
 CREATE UNIQUE INDEX idx_sub_users_unique_active_landlord_user 
 ON public.sub_users (landlord_id, user_id) 
 WHERE status = 'active';
@@ -22255,7 +23422,12 @@ BEGIN
   WHERE lower(p.email) = lower(_email)
   LIMIT 1;
 END;
-$$;-- Drop existing function if it exists
+$$;
+
+
+-- Migration: 20250906132451_337f0c37-14c2-47ad-bdd7-2dcf50214c83.sql
+
+-- Drop existing function if it exists
 DROP FUNCTION IF EXISTS get_rent_collection_report(date, date);
 
 -- Create improved rent collection report function
@@ -22375,7 +23547,12 @@ BEGIN
     
     RETURN result;
 END;
-$$;-- Drop existing function if it exists
+$$;
+
+
+-- Migration: 20250906132550_e446e2d2-cbdf-481b-afab-7b550cdc105c.sql
+
+-- Drop existing function if it exists
 DROP FUNCTION IF EXISTS get_rent_collection_report(date, date);
 
 -- Create improved rent collection report function
@@ -22495,7 +23672,12 @@ BEGIN
     
     RETURN result;
 END;
-$$;-- Fix rent collection report function with correct column names
+$$;
+
+
+-- Migration: 20250906132631_48572808-a942-467b-b587-bd7cca91676b.sql
+
+-- Fix rent collection report function with correct column names
 CREATE OR REPLACE FUNCTION get_rent_collection_report(p_start_date date, p_end_date date)
 RETURNS json
 LANGUAGE plpgsql
@@ -22612,7 +23794,12 @@ BEGIN
     
     RETURN result;
 END;
-$$;-- Fix rent collection report function with correct column names
+$$;
+
+
+-- Migration: 20250906132721_42697413-1a60-4682-81fb-efad0dfca8e6.sql
+
+-- Fix rent collection report function with correct column names
 CREATE OR REPLACE FUNCTION get_rent_collection_report(p_start_date date, p_end_date date)
 RETURNS json
 LANGUAGE plpgsql
@@ -22729,7 +23916,12 @@ BEGIN
     
     RETURN result;
 END;
-$$;-- Fix rent collection report function SQL syntax
+$$;
+
+
+-- Migration: 20250906132801_c591a6fe-1449-45e9-9550-d20f17d59c87.sql
+
+-- Fix rent collection report function SQL syntax
 CREATE OR REPLACE FUNCTION get_rent_collection_report(p_start_date date, p_end_date date)
 RETURNS json
 LANGUAGE plpgsql
@@ -22846,7 +24038,12 @@ BEGIN
     
     RETURN result;
 END;
-$$;-- Fix chart data query GROUP BY issue in rent collection report
+$$;
+
+
+-- Migration: 20250906132908_7d4dec9f-d1e0-4dc6-82ad-0b645425bf77.sql
+
+-- Fix chart data query GROUP BY issue in rent collection report
 CREATE OR REPLACE FUNCTION get_rent_collection_report(p_start_date date, p_end_date date)
 RETURNS json
 LANGUAGE plpgsql
@@ -22963,7 +24160,12 @@ BEGIN
     
     RETURN result;
 END;
-$$;-- Create Financial Summary Report Function
+$$;
+
+
+-- Migration: 20250906143321_83a7322b-6add-4469-8d70-3a540be0d12e.sql
+
+-- Create Financial Summary Report Function
 CREATE OR REPLACE FUNCTION public.get_financial_summary_report(
   p_start_date date DEFAULT NULL::date, 
   p_end_date date DEFAULT NULL::date
@@ -23134,7 +24336,12 @@ BEGIN
 
   RETURN v_result;
 END;
-$function$;-- Fix get_financial_summary_report function with proper casting and relaxed payment status filters
+$function$;
+
+
+-- Migration: 20250906144437_1c6db0ef-6827-4126-ba4c-9e978cfff865.sql
+
+-- Fix get_financial_summary_report function with proper casting and relaxed payment status filters
 CREATE OR REPLACE FUNCTION public.get_financial_summary_report(p_start_date date DEFAULT NULL::date, p_end_date date DEFAULT NULL::date, p_property_id uuid DEFAULT NULL::uuid)
  RETURNS jsonb
  LANGUAGE plpgsql
@@ -23287,6 +24494,11 @@ BEGIN
   RETURN v_result;
 END;
 $function$
+
+
+-- Migration: 20250906161203_0b4f0f9c-116a-4a06-9b6f-d6f3d341f2dd.sql
+
+
 -- 1) Fix Property Performance: aggregate revenue/expenses per property before combining (avoids double-counting)
 CREATE OR REPLACE FUNCTION public.get_property_performance_report(p_start_date date DEFAULT NULL::date, p_end_date date DEFAULT NULL::date)
 RETURNS jsonb
@@ -23812,6 +25024,11 @@ BEGIN
   RETURN v_result;
 END;
 $function$;
+
+
+
+-- Migration: 20250906162002_8eb950e3-05bd-4481-83ac-d00884b27b00.sql
+
 -- Update Executive Summary Report function
 CREATE OR REPLACE FUNCTION public.get_executive_summary_report(p_start_date date DEFAULT NULL::date, p_end_date date DEFAULT NULL::date)
  RETURNS jsonb
@@ -24032,7 +25249,12 @@ BEGIN
 
   RETURN v_result;
 END;
-$function$;-- Create comprehensive executive summary report function
+$function$;
+
+
+-- Migration: 20250906163152_d3be3032-3fe7-4b15-a52a-833c67ba7e2e.sql
+
+-- Create comprehensive executive summary report function
 CREATE OR REPLACE FUNCTION public.get_executive_summary_report(
   p_start_date date DEFAULT NULL::date, 
   p_end_date date DEFAULT NULL::date
@@ -24205,7 +25427,12 @@ BEGIN
 
   RETURN v_result;
 END;
-$function$;-- Add report_runs table to track actual report generation
+$function$;
+
+
+-- Migration: 20250906164147_0f48d09a-f04b-4670-a9ae-44ccbb1d8c68.sql
+
+-- Add report_runs table to track actual report generation
 CREATE TABLE IF NOT EXISTS public.report_runs (
   id uuid NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
   user_id uuid NOT NULL,
@@ -24360,7 +25587,12 @@ BEGIN
 
   RETURN v_result;
 END;
-$function$;-- Update get_executive_summary_report to handle tenant scope and provide better fallbacks
+$function$;
+
+
+-- Migration: 20250906165134_a4635965-b486-4654-830c-acd8c78564c6.sql
+
+-- Update get_executive_summary_report to handle tenant scope and provide better fallbacks
 CREATE OR REPLACE FUNCTION public.get_executive_summary_report(
   p_start_date date DEFAULT NULL::date, 
   p_end_date date DEFAULT NULL::date,
@@ -24514,7 +25746,12 @@ BEGIN
 
   RETURN v_result;
 END;
-$function$;-- Update get_executive_summary_report to handle tenant scope and provide better fallbacks
+$function$;
+
+
+-- Migration: 20250906165314_2689d9ea-ed99-4f04-9296-d1d373eaa987.sql
+
+-- Update get_executive_summary_report to handle tenant scope and provide better fallbacks
 CREATE OR REPLACE FUNCTION public.get_executive_summary_report(
   p_start_date date DEFAULT NULL::date, 
   p_end_date date DEFAULT NULL::date,
@@ -24668,7 +25905,12 @@ BEGIN
 
   RETURN v_result;
 END;
-$function$;-- Fix get_executive_summary_report to properly calculate revenue, expenses, and outstanding amounts
+$function$;
+
+
+-- Migration: 20250906170205_bfc55031-ede8-4118-b354-1b6a95b13882.sql
+
+-- Fix get_executive_summary_report to properly calculate revenue, expenses, and outstanding amounts
 CREATE OR REPLACE FUNCTION public.get_executive_summary_report(p_start_date date DEFAULT NULL::date, p_end_date date DEFAULT NULL::date)
  RETURNS jsonb
  LANGUAGE plpgsql
@@ -24841,6 +26083,11 @@ BEGIN
   RETURN v_result;
 END;
 $function$;
+
+
+-- Migration: 20250906171754_0c6089ba-e4f1-4998-af8e-1f0cc812b9b5.sql
+
+
 -- 1) Executive Summary: broaden scope + fix revenue/expenses/outstanding + return meta
 
 create or replace function public.get_executive_summary_report(
@@ -25100,6 +26347,11 @@ begin
 end;
 $$;
 
+
+
+-- Migration: 20250906172238_472bdaac-1c63-43cb-8c08-aa27aadaeba3.sql
+
+
 -- Allow property owners/managers to SELECT payments that are linked via invoice_id
 -- (so rows without lease_id but with invoice_id are still visible)
 create policy "Owners can view payments via invoice mapping"
@@ -25117,6 +26369,11 @@ using (
       and (p.owner_id = auth.uid() or p.manager_id = auth.uid())
   )
 );
+
+
+
+-- Migration: 20250906172917_c7afbdf8-ffbe-4a96-8e45-d7153c81db9a.sql
+
 
 -- Update get_executive_summary_report to include total_properties and total_units KPIs
 create or replace function public.get_executive_summary_report(
@@ -25298,6 +26555,11 @@ begin
   return v_result;
 end;
 $$;
+
+
+
+-- Migration: 20250906173425_c125761b-e0c7-4698-adb6-977f007ce3fa.sql
+
 -- Update get_executive_summary_report to include Portfolio Summary table
 create or replace function public.get_executive_summary_report(
   p_start_date date default null,
@@ -25514,7 +26776,12 @@ begin
 
   return v_result;
 end;
-$$;-- Update get_executive_summary_report to include Portfolio Summary table
+$$;
+
+
+-- Migration: 20250906173442_16395e48-cfcd-4d49-ac8e-5ab9086c7cc9.sql
+
+-- Update get_executive_summary_report to include Portfolio Summary table
 create or replace function public.get_executive_summary_report(
   p_start_date date default null,
   p_end_date date default null,
@@ -25730,7 +26997,12 @@ begin
 
   return v_result;
 end;
-$$;-- Update get_executive_summary_report to include Portfolio Summary table
+$$;
+
+
+-- Migration: 20250906173513_e0d6f95c-64a5-42d3-9210-612d634dc4a1.sql
+
+-- Update get_executive_summary_report to include Portfolio Summary table
 create or replace function public.get_executive_summary_report(
   p_start_date date default null,
   p_end_date date default null,
@@ -25946,7 +27218,12 @@ begin
 
   return v_result;
 end;
-$$;-- Create function to get platform-wide market rent analysis (anonymized and aggregated)
+$$;
+
+
+-- Migration: 20250906175648_10217b53-f55d-4ebd-80a6-d704d41eaf3b.sql
+
+-- Create function to get platform-wide market rent analysis (anonymized and aggregated)
 CREATE OR REPLACE FUNCTION public.get_platform_market_rent(p_start_date date DEFAULT NULL::date, p_end_date date DEFAULT NULL::date)
  RETURNS jsonb
  LANGUAGE plpgsql
@@ -26070,7 +27347,12 @@ BEGIN
 
   RETURN v_result;
 END;
-$function$;-- Fix RPC functions with correct unit table column references
+$function$;
+
+
+-- Migration: 20250906182332_20445419-f42a-4459-b5ac-98e476166457.sql
+
+-- Fix RPC functions with correct unit table column references
 CREATE OR REPLACE FUNCTION public.get_tenant_profile_data(p_user_id uuid DEFAULT auth.uid())
 RETURNS jsonb
 LANGUAGE plpgsql
@@ -26214,7 +27496,12 @@ BEGIN
 
   RETURN v_result;
 END;
-$function$;-- Fix RPC functions with correct unit table column references
+$function$;
+
+
+-- Migration: 20250906182352_995ba3ee-4bd3-43ff-b1c9-fc492a8cd027.sql
+
+-- Fix RPC functions with correct unit table column references
 CREATE OR REPLACE FUNCTION public.get_tenant_profile_data(p_user_id uuid DEFAULT auth.uid())
 RETURNS jsonb
 LANGUAGE plpgsql
@@ -26358,13 +27645,23 @@ BEGIN
 
   RETURN v_result;
 END;
-$function$;-- Add unique constraint to prevent duplicate active sub-users per landlord-user combination
+$function$;
+
+
+-- Migration: 20250906183107_a595ea17-c8b8-4bb9-b72e-8e6aeee415e0.sql
+
+-- Add unique constraint to prevent duplicate active sub-users per landlord-user combination
 CREATE UNIQUE INDEX IF NOT EXISTS idx_sub_users_landlord_user_active 
 ON public.sub_users (landlord_id, user_id) 
 WHERE status = 'active';
 
 -- Add comment for documentation
 COMMENT ON INDEX idx_sub_users_landlord_user_active IS 'Ensures a user can only be an active sub-user once per landlord';
+
+
+-- Migration: 20250906183914_2acbc73a-a8bb-4aa1-b844-22d085f87a32.sql
+
+
 -- 1) User sessions table to back "Sessions" feature
 CREATE TABLE IF NOT EXISTS public.user_sessions (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -26571,6 +27868,11 @@ AS $function$
     _user_agent
   );
 $function$;
+
+
+
+-- Migration: 20250906194155_04194cf9-543e-40af-99ff-730d5560c236.sql
+
 -- Security fixes: RLS policy tightening and search path hardening
 
 -- 1. Fix email_templates RLS policies to prevent access to system templates
@@ -26809,7 +28111,12 @@ BEGIN
     'reset_time', v_window_start + make_interval(mins => _window_minutes)
   );
 END;
-$function$;-- Security fixes: RLS policy tightening and search path hardening (fixed)
+$function$;
+
+
+-- Migration: 20250906194233_d938ebdf-d060-4448-a837-8bd8420eaa6a.sql
+
+-- Security fixes: RLS policy tightening and search path hardening (fixed)
 
 -- 1. Fix email_templates RLS policies to prevent access to system templates
 DROP POLICY IF EXISTS "Admins can manage all email templates" ON public.email_templates;
@@ -26960,7 +28267,12 @@ BEGIN
     'reset_time', v_window_start + make_interval(mins => _window_minutes)
   );
 END;
-$function$;-- Fix RLS policies and add security improvements
+$function$;
+
+
+-- Migration: 20250906195457_637d43c6-a54d-4a24-9c81-ed5815e38c9f.sql
+
+-- Fix RLS policies and add security improvements
 
 -- Update api_rate_limits policy to restrict access properly
 DROP POLICY IF EXISTS "Users can manage their own rate limits" ON public.api_rate_limits;
@@ -27103,7 +28415,12 @@ AS $$
     WHERE t.id = _tenant_id
       AND (p.owner_id = _user_id OR p.manager_id = _user_id)
   ) OR has_role(_user_id, 'Admin'::app_role);
-$$;-- Fix RLS policies and add security improvements
+$$;
+
+
+-- Migration: 20250906195534_01009aa4-d076-4778-baf5-d7a3c32d322d.sql
+
+-- Fix RLS policies and add security improvements
 
 -- Update api_rate_limits policy to restrict access properly
 DROP POLICY IF EXISTS "Users can manage their own rate limits" ON public.api_rate_limits;
@@ -27246,7 +28563,12 @@ AS $$
     WHERE t.id = _tenant_id
       AND (p.owner_id = _user_id OR p.manager_id = _user_id)
   ) OR has_role(_user_id, 'Admin'::app_role);
-$$;-- Fix RLS policies and add security improvements (handle existing policies)
+$$;
+
+
+-- Migration: 20250906195610_22113b03-c715-46e0-9f39-3b45ece0437c.sql
+
+-- Fix RLS policies and add security improvements (handle existing policies)
 
 -- Update api_rate_limits policy to restrict access properly
 DROP POLICY IF EXISTS "Users can manage their own rate limits" ON public.api_rate_limits;
@@ -27424,7 +28746,12 @@ AS $$
     WHERE t.id = _tenant_id
       AND (p.owner_id = _user_id OR p.manager_id = _user_id)
   ) OR has_role(_user_id, 'Admin'::app_role);
-$$;-- Security fixes - Drop and recreate function with proper signature
+$$;
+
+
+-- Migration: 20250906195637_4e079da3-6d1e-4ddb-ab7c-1ccc91e8a668.sql
+
+-- Security fixes - Drop and recreate function with proper signature
 
 -- Drop existing function first to avoid conflicts
 DROP FUNCTION IF EXISTS public.get_user_audit_history(uuid, integer, integer);
@@ -27463,7 +28790,12 @@ AS $$
   ORDER BY performed_at DESC
   LIMIT p_limit
   OFFSET p_offset;
-$$;-- Critical Security Fixes
+$$;
+
+
+-- Migration: 20250906200756_3ec97197-d1b0-4bf8-b2c3-d96b98e03ca2.sql
+
+-- Critical Security Fixes
 
 -- 1. Fix overpermissive RLS policy on approved_payment_methods
 DROP POLICY IF EXISTS "Everyone can view active payment methods" ON public.approved_payment_methods;
@@ -27534,7 +28866,12 @@ SECURITY DEFINER
 AS $$
   DELETE FROM public.security_event_rate_limits 
   WHERE window_start < now() - interval '1 hour';
-$$;-- Critical Security Fixes
+$$;
+
+
+-- Migration: 20250906200815_87bd7a24-529e-4a08-9bb5-0dece03d03c9.sql
+
+-- Critical Security Fixes
 
 -- 1. Fix overpermissive RLS policy on approved_payment_methods
 DROP POLICY IF EXISTS "Everyone can view active payment methods" ON public.approved_payment_methods;
@@ -27605,7 +28942,12 @@ SECURITY DEFINER
 AS $$
   DELETE FROM public.security_event_rate_limits 
   WHERE window_start < now() - interval '1 hour';
-$$;-- Critical Security Fixes (Fixed)
+$$;
+
+
+-- Migration: 20250906200842_e3e3b3c6-d92e-4f33-b5d1-612dbae1feee.sql
+
+-- Critical Security Fixes (Fixed)
 
 -- 1. Fix overpermissive RLS policy on approved_payment_methods
 DROP POLICY IF EXISTS "Authenticated users can view payment methods" ON public.approved_payment_methods;
@@ -27654,7 +28996,12 @@ ON public.security_event_rate_limits (ip_address, window_start);
 -- 4. Update triggers for new tables
 CREATE TRIGGER update_mpesa_credentials_updated_at 
   BEFORE UPDATE ON public.mpesa_credentials 
-  FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();-- Fix critical security linter issues
+  FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+
+
+-- Migration: 20250906201023_5a4f9556-dfa4-4db4-8e8d-a6abf12cf638.sql
+
+-- Fix critical security linter issues
 
 -- 1. Enable RLS on tables that might be missing it
 DO $$
@@ -27709,7 +29056,12 @@ AS $$
     WHERE ur.user_id = _user_id
       AND ur.role::text = 'Admin'
   );
-$$;-- Add RLS policies for tables that have RLS enabled but no policies
+$$;
+
+
+-- Migration: 20250906201137_d45a06b1-25a1-483c-935c-f606ea1c5c43.sql
+
+-- Add RLS policies for tables that have RLS enabled but no policies
 
 -- Add policies for security_event_rate_limits
 CREATE POLICY "System can manage rate limits" ON public.security_event_rate_limits
@@ -27733,7 +29085,12 @@ CREATE POLICY "Admins only" ON public.security_event_rate_limits
 FOR ALL USING (has_role(auth.uid(), 'Admin'::public.app_role));
 
 -- Drop the overly permissive policy we just created
-DROP POLICY IF EXISTS "System can manage rate limits" ON public.security_event_rate_limits;-- Remove hardcoded SMS credentials and clean up policies
+DROP POLICY IF EXISTS "System can manage rate limits" ON public.security_event_rate_limits;
+
+
+-- Migration: 20250906202035_9ff387c5-5a43-4e5d-a849-3dda7ae47c65.sql
+
+-- Remove hardcoded SMS credentials and clean up policies
 -- First, update sms_providers to remove any hardcoded credentials
 UPDATE public.sms_providers 
 SET authorization_token = '[REDACTED]'
@@ -27773,7 +29130,12 @@ SELECT
   CASE WHEN consumer_key IS NOT NULL THEN '***configured***' ELSE NULL END as has_consumer_key,
   CASE WHEN consumer_secret IS NOT NULL THEN '***configured***' ELSE NULL END as has_consumer_secret,
   CASE WHEN passkey IS NOT NULL THEN '***configured***' ELSE NULL END as has_passkey
-FROM public.mpesa_credentials;-- Remove hardcoded SMS credentials and clean up policies
+FROM public.mpesa_credentials;
+
+
+-- Migration: 20250906202117_8792884d-3ca7-41fd-bf80-3583b59a5601.sql
+
+-- Remove hardcoded SMS credentials and clean up policies
 -- First, update sms_providers to remove any hardcoded credentials  
 UPDATE public.sms_providers 
 SET authorization_token = '[REDACTED]'
@@ -27792,7 +29154,12 @@ SELECT
   CASE WHEN consumer_key IS NOT NULL THEN '***configured***' ELSE NULL END as has_consumer_key,
   CASE WHEN consumer_secret IS NOT NULL THEN '***configured***' ELSE NULL END as has_consumer_secret,
   CASE WHEN passkey IS NOT NULL THEN '***configured***' ELSE NULL END as has_passkey
-FROM public.mpesa_credentials;-- Fix security linter warnings
+FROM public.mpesa_credentials;
+
+
+-- Migration: 20250906202328_b5245ce5-4312-456e-bd66-f806eeab1d16.sql
+
+-- Fix security linter warnings
 -- 1. Fix function search path issues by setting explicit search_path to empty string
 ALTER FUNCTION public.has_role(uuid, app_role) SET search_path TO '';
 ALTER FUNCTION public.can_assign_role(uuid, app_role) SET search_path TO '';
@@ -27833,7 +29200,12 @@ AS $$
   FROM public.mpesa_credentials mc
   WHERE mc.landlord_id = _landlord_id
     AND (auth.uid() = _landlord_id OR public.has_role(auth.uid(), 'Admin'::app_role));
-$$;-- Fix security linter warnings
+$$;
+
+
+-- Migration: 20250906202350_8ae9a222-aba9-4eac-9cd6-1d8f9722f8dd.sql
+
+-- Fix security linter warnings
 -- 1. Fix function search path issues by setting explicit search_path to empty string
 ALTER FUNCTION public.has_role(uuid, app_role) SET search_path TO '';
 ALTER FUNCTION public.can_assign_role(uuid, app_role) SET search_path TO '';
@@ -27874,7 +29246,12 @@ AS $$
   FROM public.mpesa_credentials mc
   WHERE mc.landlord_id = _landlord_id
     AND (auth.uid() = _landlord_id OR public.has_role(auth.uid(), 'Admin'::app_role));
-$$;-- Fix security linter warnings (fixed version)
+$$;
+
+
+-- Migration: 20250906202413_fada2968-b83d-42ca-904b-7b9ad99635ef.sql
+
+-- Fix security linter warnings (fixed version)
 -- 1. Fix function search path issues by setting explicit search_path to empty string
 ALTER FUNCTION public.has_role(uuid, app_role) SET search_path TO '';
 ALTER FUNCTION public.can_assign_role(uuid, app_role) SET search_path TO '';
@@ -27912,7 +29289,12 @@ AS $$
   FROM public.mpesa_credentials mc
   WHERE mc.landlord_id = _landlord_id
     AND (auth.uid() = _landlord_id OR public.has_role(auth.uid(), 'Admin'));
-$$;-- Fix function search path security warnings
+$$;
+
+
+-- Migration: 20250906202513_3658ccef-5718-49ed-909e-8cb24fbd3116.sql
+
+-- Fix function search path security warnings
 ALTER FUNCTION public.has_role(uuid, app_role) SET search_path TO '';
 ALTER FUNCTION public.can_assign_role(uuid, app_role) SET search_path TO '';
 ALTER FUNCTION public.can_remove_role(uuid, uuid, app_role) SET search_path TO '';
@@ -27955,7 +29337,12 @@ AS $$
 $$;
 
 -- Drop the unsafe view
-DROP VIEW IF EXISTS public.mpesa_credentials_safe;-- SECURITY FIX: Address remaining function search path warnings
+DROP VIEW IF EXISTS public.mpesa_credentials_safe;
+
+
+-- Migration: 20250906205236_18c3f5a8-69dc-4efa-9fab-0b2f73cbd3d3.sql
+
+-- SECURITY FIX: Address remaining function search path warnings
 -- These functions need SET search_path TO '' to prevent search path manipulation
 
 -- Fix any remaining functions that might not have proper search path set
@@ -28046,7 +29433,12 @@ BEGIN
   DELETE FROM public.security_events 
   WHERE created_at < now() - interval '90 days';
 END;
-$function$;-- SECURITY FIX: Remove publicly accessible security dashboard view
+$function$;
+
+
+-- Migration: 20250906205404_3205a3e4-dd9a-4c55-ba76-0b45386a48b2.sql
+
+-- SECURITY FIX: Remove publicly accessible security dashboard view
 -- and replace with Admin-only secure function
 
 -- Step 1: Drop the insecure view and revoke permissions
@@ -28157,7 +29549,12 @@ BEGIN
     'generated_by', auth.uid()
   );
 END;
-$function$;-- SECURITY FIX: Create secure Admin-only function for security dashboard
+$function$;
+
+
+-- Migration: 20250906205434_ab1b2095-1757-48d9-a0d7-190db5438440.sql
+
+-- SECURITY FIX: Create secure Admin-only function for security dashboard
 -- This replaces any insecure view that may expose security statistics
 
 -- Revoke any broad permissions that may exist (ignore errors if doesn't exist)
@@ -28302,7 +29699,12 @@ BEGIN
   
   RETURN warning_text;
 END;
-$function$;-- SECURITY FIX: Create secure Admin-only function for security dashboard
+$function$;
+
+
+-- Migration: 20250906205504_6a83d6f6-928a-432d-b9e5-f6c18a3eaccc.sql
+
+-- SECURITY FIX: Create secure Admin-only function for security dashboard
 -- This replaces any insecure view that may expose security statistics
 
 -- Revoke any broad permissions that may exist (ignore errors if doesn't exist)
@@ -28447,7 +29849,12 @@ BEGIN
   
   RETURN warning_text;
 END;
-$function$;-- SECURITY FIX: Remove publicly accessible security dashboard view
+$function$;
+
+
+-- Migration: 20250906205524_211e2111-ff35-45df-9fb8-bc23433f01f8.sql
+
+-- SECURITY FIX: Remove publicly accessible security dashboard view
 -- and replace with Admin-only secure function
 
 -- Step 1: Drop the insecure view and revoke permissions
@@ -28558,7 +29965,12 @@ BEGIN
     'generated_by', auth.uid()
   );
 END;
-$function$;-- SECURITY FIX: Remove any remaining insecure views that may expose security data
+$function$;
+
+
+-- Migration: 20250906205555_7abb8ebf-a79f-4032-9544-668d19a2bc83.sql
+
+-- SECURITY FIX: Remove any remaining insecure views that may expose security data
 -- This addresses the "Security Definer View" linter error
 
 -- Check for and remove any security-related views
@@ -28655,7 +30067,12 @@ BEGIN
   
   RETURN audit_results;
 END;
-$function$;-- SECURITY FIX: Remove any remaining insecure views that may expose security data
+$function$;
+
+
+-- Migration: 20250906205617_7c4f5032-9701-4715-ba88-22460ed783da.sql
+
+-- SECURITY FIX: Remove any remaining insecure views that may expose security data
 -- This addresses the "Security Definer View" linter error
 
 -- Check for and remove any security-related views
@@ -28752,7 +30169,12 @@ BEGIN
   
   RETURN audit_results;
 END;
-$function$;-- SECURITY FIX: Create secure Admin-only function for security dashboard statistics
+$function$;
+
+
+-- Migration: 20250906205647_4d562f82-bae8-4007-a60d-4bd6ed1f306d.sql
+
+-- SECURITY FIX: Create secure Admin-only function for security dashboard statistics
 -- This replaces any insecure views or functions that might expose security data
 
 CREATE OR REPLACE FUNCTION public.get_security_dashboard_stats()
@@ -28886,7 +30308,12 @@ BEGIN
     LOOP
         EXECUTE format('REVOKE ALL ON %I FROM public, authenticated', view_name);
     END LOOP;
-END $$;-- SECURITY FIX: Create secure Admin-only function for security dashboard statistics
+END $$;
+
+
+-- Migration: 20250906205723_d0f67ce9-fdee-4c57-948d-44cc0c3dee42.sql
+
+-- SECURITY FIX: Create secure Admin-only function for security dashboard statistics
 -- This replaces any insecure views or functions that might expose security data
 
 CREATE OR REPLACE FUNCTION public.get_security_dashboard_stats()
@@ -29021,6 +30448,11 @@ BEGIN
         EXECUTE format('REVOKE ALL ON %I FROM public, authenticated', view_name);
     END LOOP;
 END $$;
+
+
+-- Migration: 20250907062914_3caffefc-8b33-4d7c-b813-e4d72cd9f442.sql
+
+
 -- Create a secure function to check plan-based feature access for subscribed users
 -- Uses existing billing_plans columns:
 --   - features (jsonb array of feature keys)
@@ -29109,6 +30541,11 @@ end;
 $$;
 
 -- No RLS changes needed (function runs as definer). Keep plan data managed via Admin UI.
+
+
+
+-- Migration: 20250907063309_45534006-6cc5-4764-887a-e9e60921e157.sql
+
 -- Pre-populate billing plans with the suggested tiered structure
 -- This creates starter, professional, and enterprise plans with appropriate features
 
@@ -29225,6 +30662,11 @@ INSERT INTO public.billing_plans (
   true,
   'KES'
 );
+
+
+-- Migration: 20250907064322_8cfc49e1-9af0-4b6f-a6fa-c27b8727fabb.sql
+
+
 -- 1) Add custom pricing columns
 ALTER TABLE public.billing_plans
   ADD COLUMN IF NOT EXISTS is_custom boolean NOT NULL DEFAULT false,
@@ -29235,6 +30677,11 @@ UPDATE public.billing_plans
 SET is_custom = true,
     contact_link = COALESCE(contact_link, '/support?topic=enterprise')
 WHERE lower(name) LIKE 'enterprise%';
+
+
+
+-- Migration: 20250907094116_c58a11b5-996c-4e9b-9393-96eb46f245e2.sql
+
 -- Update Starter plan to be more generous and useful
 UPDATE public.billing_plans 
 SET 
@@ -29268,6 +30715,11 @@ SET
   ),
   updated_at = now()
 WHERE name = 'Free Trial' AND is_active = true;
+
+
+-- Migration: 20250907190913_efeb0243-a229-442f-9950-5bb22c2e7163.sql
+
+
 -- 1) Payment allocations table
 create table if not exists public.payment_allocations (
   id uuid primary key default gen_random_uuid(),
@@ -29544,6 +30996,11 @@ begin
   );
 end;
 $$;
+
+
+
+-- Migration: 20250907193041_4d8edbd7-6616-42e3-a593-7a9aff7e663e.sql
+
 -- Create invoice_overview view for efficient invoice data with payment tracking
 -- (Simplified version without payment_allocations table)
 CREATE OR REPLACE VIEW public.invoice_overview AS
@@ -29754,7 +31211,12 @@ EXCEPTION WHEN OTHERS THEN
     'skipped_count', v_skipped_count
   );
 END;
-$function$;-- Create payment_allocations table for tracking payment-to-invoice allocations
+$function$;
+
+
+-- Migration: 20250907193109_40fa504c-b33d-4a33-861e-dfb4194b5494.sql
+
+-- Create payment_allocations table for tracking payment-to-invoice allocations
 CREATE TABLE IF NOT EXISTS public.payment_allocations (
   id uuid NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
   payment_id uuid NOT NULL REFERENCES public.payments(id) ON DELETE CASCADE,
@@ -29894,7 +31356,12 @@ EXCEPTION WHEN OTHERS THEN
     'tenant_id', p_tenant_id
   );
 END;
-$function$;-- Create invoice_overview view for efficient invoice data with payment tracking
+$function$;
+
+
+-- Migration: 20250907193201_38beaf1f-0324-48a4-9701-c05321aadd68.sql
+
+-- Create invoice_overview view for efficient invoice data with payment tracking
 CREATE OR REPLACE VIEW public.invoice_overview AS
 SELECT 
   i.id,
@@ -30070,7 +31537,12 @@ EXCEPTION WHEN OTHERS THEN
     'skipped_count', v_skipped_count
   );
 END;
-$function$;-- Fix security issues from linter
+$function$;
+
+
+-- Migration: 20250907193418_3155e70c-942c-45aa-86cd-3ad0829040c8.sql
+
+-- Fix security issues from linter
 
 -- 1. Fix the security definer view issue by removing security invoker setting
 -- Views automatically inherit security context from underlying tables
@@ -30109,7 +31581,12 @@ AS $function$
 BEGIN
     RETURN public.generate_invoice_number();
 END;
-$function$;-- Recreate the invoice_overview view without security_invoker setting
+$function$;
+
+
+-- Migration: 20250907193443_9c016503-b899-4711-8235-57c762f478a7.sql
+
+-- Recreate the invoice_overview view without security_invoker setting
 DROP VIEW IF EXISTS public.invoice_overview;
 
 CREATE VIEW public.invoice_overview AS
@@ -30160,7 +31637,12 @@ LEFT JOIN (
   WHERE status IN ('completed', 'paid', 'success')
     AND invoice_id IS NOT NULL
   GROUP BY invoice_id
-) pd ON i.id = pd.invoice_id;-- CRITICAL SECURITY FIXES
+) pd ON i.id = pd.invoice_id;
+
+
+-- Migration: 20250908094332_b319320f-90ff-4dc7-97b2-4126b9c47263.sql
+
+-- CRITICAL SECURITY FIXES
 
 -- 1. Fix invoice_overview view - recreate as SECURITY INVOKER to prevent cross-tenant exposure
 DROP VIEW IF EXISTS public.invoice_overview;
@@ -30352,7 +31834,12 @@ SET search_path = 'public'
 AS $$
   INSERT INTO public.security_events (event_type, severity, details, user_id, ip_address)
   VALUES (_event_type, _severity, _details, _user_id, _ip_address);
-$$;-- Drop and recreate get_user_permissions function with proper security
+$$;
+
+
+-- Migration: 20250908094443_19a196e1-3569-469f-b52f-591e24e647d7.sql
+
+-- Drop and recreate get_user_permissions function with proper security
 DROP FUNCTION IF EXISTS public.get_user_permissions(uuid);
 
 CREATE OR REPLACE FUNCTION public.get_user_permissions(_user_id uuid DEFAULT auth.uid())
@@ -30368,7 +31855,12 @@ AS $$
   JOIN public.permissions p ON rp.permission_id = p.id
   WHERE ur.user_id = COALESCE(_user_id, auth.uid())
     AND ur.user_id = auth.uid(); -- CRITICAL: Only allow querying own permissions
-$$;-- Security Fix for SMS Usage Table: Enhanced RLS and Data Protection
+$$;
+
+
+-- Migration: 20250908095817_7be29c35-8f9b-4527-9743-c062740f5075.sql
+
+-- Security Fix for SMS Usage Table: Enhanced RLS and Data Protection
 
 -- First, let's enhance the existing RLS policies for sms_usage table
 
@@ -30550,7 +32042,12 @@ USING (
 
 -- Grant necessary permissions
 GRANT EXECUTE ON FUNCTION public.insert_sms_usage_secure TO authenticated;
-GRANT EXECUTE ON FUNCTION public.insert_sms_usage_secure TO service_role;-- Security Fix for SMS Usage Table: Enhanced RLS and Data Protection
+GRANT EXECUTE ON FUNCTION public.insert_sms_usage_secure TO service_role;
+
+
+-- Migration: 20250908095945_64c32139-a82e-4fe6-9cb6-acebca7290d9.sql
+
+-- Security Fix for SMS Usage Table: Enhanced RLS and Data Protection
 
 -- First, let's enhance the existing RLS policies for sms_usage table
 
@@ -30707,7 +32204,12 @@ $$;
 
 -- Grant necessary permissions
 GRANT EXECUTE ON FUNCTION public.insert_sms_usage_secure TO authenticated;
-GRANT EXECUTE ON FUNCTION public.insert_sms_usage_secure TO service_role;-- Fix critical security issues from the linter
+GRANT EXECUTE ON FUNCTION public.insert_sms_usage_secure TO service_role;
+
+
+-- Migration: 20250908100013_ddbe986e-f7ba-4a25-a544-37dda516f691.sql
+
+-- Fix critical security issues from the linter
 
 -- Remove the security definer view and create a regular view instead
 DROP VIEW IF EXISTS public.sms_usage_admin_view;
@@ -30807,7 +32309,12 @@ $$;
 -- Grant permissions
 GRANT EXECUTE ON FUNCTION public.get_sms_usage_for_admin TO authenticated;
 GRANT EXECUTE ON FUNCTION public.insert_sms_usage_secure TO authenticated;
-GRANT EXECUTE ON FUNCTION public.insert_sms_usage_secure TO service_role;-- Fix remaining security issues: search paths for functions
+GRANT EXECUTE ON FUNCTION public.insert_sms_usage_secure TO service_role;
+
+
+-- Migration: 20250908102946_491e70c2-a0ed-4d68-b926-7a5914a6da32.sql
+
+-- Fix remaining security issues: search paths for functions
 
 -- Fix get_user_permissions function search path
 CREATE OR REPLACE FUNCTION public.get_user_permissions(_user_id uuid DEFAULT auth.uid())
@@ -30875,7 +32382,12 @@ BEGIN
     s.created_at
   FROM public.sms_usage s;
 END;
-$$;-- Add security logging for edge functions
+$$;
+
+
+-- Migration: 20250908104635_27b5885c-cd8a-484b-8663-59d8dba984a5.sql
+
+-- Add security logging for edge functions
 CREATE OR REPLACE FUNCTION public.log_security_event(
   p_event_type TEXT,
   p_severity TEXT DEFAULT 'medium',
@@ -30978,7 +32490,12 @@ USING (
         AND t.user_id = auth.uid()
     )
   )
-);-- Fix log_security_event function conflict by dropping and recreating
+);
+
+
+-- Migration: 20250908104703_88666e77-304e-4988-9857-1d5fcbb1a21e.sql
+
+-- Fix log_security_event function conflict by dropping and recreating
 DROP FUNCTION IF EXISTS public.log_security_event(text,text,jsonb,uuid,inet);
 
 -- Create the security logging function with proper signature
@@ -31084,7 +32601,12 @@ USING (
         AND t.user_id = auth.uid()
     )
   )
-);-- Phase 1: Database Security Hardening
+);
+
+
+-- Migration: 20250908112121_978e5cec-ceed-43c7-ad35-34e1396e4031.sql
+
+-- Phase 1: Database Security Hardening
 
 -- 1. Add encrypted columns for PII data
 ALTER TABLE public.tenants 
@@ -31439,7 +32961,12 @@ $$;
 CREATE TRIGGER encrypt_mpesa_pii_trigger
   BEFORE INSERT OR UPDATE ON public.mpesa_transactions
   FOR EACH ROW
-  EXECUTE FUNCTION public.encrypt_mpesa_pii();-- Phase 1: Database Security Hardening (Fixed)
+  EXECUTE FUNCTION public.encrypt_mpesa_pii();
+
+
+-- Migration: 20250908112229_9ecfeeef-837b-4ee9-b65e-03bb6ebcdeeb.sql
+
+-- Phase 1: Database Security Hardening (Fixed)
 
 -- 1. Add encrypted columns for PII data  
 ALTER TABLE public.tenants 
@@ -31816,7 +33343,12 @@ DROP TRIGGER IF EXISTS encrypt_mpesa_pii_trigger ON public.mpesa_transactions;
 CREATE TRIGGER encrypt_mpesa_pii_trigger
   BEFORE INSERT OR UPDATE ON public.mpesa_transactions
   FOR EACH ROW
-  EXECUTE FUNCTION public.encrypt_mpesa_pii();-- Phase 1: Database Security Hardening (Fixed)
+  EXECUTE FUNCTION public.encrypt_mpesa_pii();
+
+
+-- Migration: 20250908112252_36677a71-72be-4bae-a5cf-64e2bb943e20.sql
+
+-- Phase 1: Database Security Hardening (Fixed)
 
 -- 1. Add encrypted columns for PII data  
 ALTER TABLE public.tenants 
@@ -32193,7 +33725,12 @@ DROP TRIGGER IF EXISTS encrypt_mpesa_pii_trigger ON public.mpesa_transactions;
 CREATE TRIGGER encrypt_mpesa_pii_trigger
   BEFORE INSERT OR UPDATE ON public.mpesa_transactions
   FOR EACH ROW
-  EXECUTE FUNCTION public.encrypt_mpesa_pii();-- Phase 1: Database Security Hardening
+  EXECUTE FUNCTION public.encrypt_mpesa_pii();
+
+
+-- Migration: 20250908112312_ae6ce08c-4330-4681-981d-98bf53fb723b.sql
+
+-- Phase 1: Database Security Hardening
 
 -- 1. Add encrypted columns for PII data
 ALTER TABLE public.tenants 
@@ -32548,7 +34085,12 @@ $$;
 CREATE TRIGGER encrypt_mpesa_pii_trigger
   BEFORE INSERT OR UPDATE ON public.mpesa_transactions
   FOR EACH ROW
-  EXECUTE FUNCTION public.encrypt_mpesa_pii();-- Phase 1: Database Security Hardening (Fixed)
+  EXECUTE FUNCTION public.encrypt_mpesa_pii();
+
+
+-- Migration: 20250908112329_4a65c59e-176c-4080-9070-4b81ec69f931.sql
+
+-- Phase 1: Database Security Hardening (Fixed)
 
 -- 1. Add encrypted columns for PII data  
 ALTER TABLE public.tenants 
@@ -32925,7 +34467,12 @@ DROP TRIGGER IF EXISTS encrypt_mpesa_pii_trigger ON public.mpesa_transactions;
 CREATE TRIGGER encrypt_mpesa_pii_trigger
   BEFORE INSERT OR UPDATE ON public.mpesa_transactions
   FOR EACH ROW
-  EXECUTE FUNCTION public.encrypt_mpesa_pii();-- Phase 1: Database Security Hardening (Update existing and add missing)
+  EXECUTE FUNCTION public.encrypt_mpesa_pii();
+
+
+-- Migration: 20250908112441_5f347adf-e6a1-4832-a67d-c84a0bcd255a.sql
+
+-- Phase 1: Database Security Hardening (Update existing and add missing)
 
 -- Check and add missing encrypted columns
 DO $$
@@ -33239,7 +34786,12 @@ BEGIN
         CREATE INDEX idx_mpesa_phone_encrypted ON public.mpesa_transactions(phone_number_encrypted);
     END IF;
 END
-$$;-- Phase 1: Fix Security Definer View and secure invoice_overview
+$$;
+
+
+-- Migration: 20250908122546_f79d0b90-a745-4184-ade8-edff3189038a.sql
+
+-- Phase 1: Fix Security Definer View and secure invoice_overview
 
 -- Step 1: Revoke public access from invoice_overview
 REVOKE ALL ON public.invoice_overview FROM PUBLIC;
@@ -33319,7 +34871,12 @@ GRANT SELECT ON public.invoice_overview TO service_role;
 
 -- Step 5: Ensure no public access
 REVOKE ALL ON public.invoice_overview FROM PUBLIC;
-REVOKE ALL ON public.invoice_overview FROM anon;-- Phase 2: Function Search Path Hardening + Final invoice_overview security
+REVOKE ALL ON public.invoice_overview FROM anon;
+
+
+-- Migration: 20250908122817_9be14fd2-93dd-46d1-860c-a65c1f93677a.sql
+
+-- Phase 2: Function Search Path Hardening + Final invoice_overview security
 
 -- First, let's enable RLS on invoice_overview and add policies
 -- Note: RLS on views requires underlying tables to have RLS (which they do)
@@ -33394,7 +34951,12 @@ ALTER FUNCTION public.get_tenant_unit_ids(uuid) SET search_path = public, pg_tem
 ALTER FUNCTION public.get_tenant_property_ids(uuid) SET search_path = public, pg_temp;
 
 -- Function: get_user_profile_safe
-ALTER FUNCTION public.get_user_profile_safe(uuid) SET search_path = public, pg_temp;-- Phase 2: Function Search Path Hardening + Final invoice_overview security
+ALTER FUNCTION public.get_user_profile_safe(uuid) SET search_path = public, pg_temp;
+
+
+-- Migration: 20250908122909_6d679892-3774-437d-a7c9-a4cc2187bc16.sql
+
+-- Phase 2: Function Search Path Hardening + Final invoice_overview security
 
 -- First, let's enable RLS on invoice_overview and add policies
 -- Note: RLS on views requires underlying tables to have RLS (which they do)
@@ -33469,7 +35031,12 @@ ALTER FUNCTION public.get_tenant_unit_ids(uuid) SET search_path = public, pg_tem
 ALTER FUNCTION public.get_tenant_property_ids(uuid) SET search_path = public, pg_temp;
 
 -- Function: get_user_profile_safe
-ALTER FUNCTION public.get_user_profile_safe(uuid) SET search_path = public, pg_temp;-- Phase 3 & 4: Move Extensions + Lock Public Schema + More Function Hardening
+ALTER FUNCTION public.get_user_profile_safe(uuid) SET search_path = public, pg_temp;
+
+
+-- Migration: 20250908123052_346ff4d7-9f18-4529-8953-67f220dbd781.sql
+
+-- Phase 3 & 4: Move Extensions + Lock Public Schema + More Function Hardening
 
 -- Phase 3: Move extensions out of public schema
 CREATE SCHEMA IF NOT EXISTS db_extensions;
@@ -33550,7 +35117,12 @@ ALTER FUNCTION public.reconcile_unallocated_payments_for_tenant(uuid) SET search
 ALTER FUNCTION public.get_transaction_status(text) SET search_path = public, pg_temp;
 ALTER FUNCTION public.create_service_charge_invoice(uuid, date, date, numeric, numeric, numeric) SET search_path = public, pg_temp;
 ALTER FUNCTION public.generate_monthly_service_invoices() SET search_path = public, pg_temp;
-ALTER FUNCTION public.generate_monthly_invoices_for_landlord(uuid, date, boolean) SET search_path = public, pg_temp;-- Phase 5: Final Function Hardening + Email Templates RLS
+ALTER FUNCTION public.generate_monthly_invoices_for_landlord(uuid, date, boolean) SET search_path = public, pg_temp;
+
+
+-- Migration: 20250908123129_95327110-1e64-4b18-8795-87ce109812be.sql
+
+-- Phase 5: Final Function Hardening + Email Templates RLS
 
 -- Continue fixing remaining functions with mutable search_path
 -- More complex reporting/business logic functions that likely need hardening
@@ -33621,7 +35193,12 @@ CREATE POLICY "Users can view enabled global templates" ON public.email_template
 
 -- Revoke any public access from email_templates
 REVOKE ALL ON public.email_templates FROM PUBLIC;
-REVOKE ALL ON public.email_templates FROM anon;-- Phase 5: Final Function Hardening + Email Templates RLS
+REVOKE ALL ON public.email_templates FROM anon;
+
+
+-- Migration: 20250908123201_b0e478d9-3001-486c-98af-75b3f9af6b6f.sql
+
+-- Phase 5: Final Function Hardening + Email Templates RLS
 
 -- Continue fixing remaining functions with mutable search_path
 -- More complex reporting/business logic functions that likely need hardening
@@ -33692,7 +35269,12 @@ CREATE POLICY "Users can view enabled global templates" ON public.email_template
 
 -- Revoke any public access from email_templates
 REVOKE ALL ON public.email_templates FROM PUBLIC;
-REVOKE ALL ON public.email_templates FROM anon;-- Phase 5: Email Templates RLS + Unit Types RLS (Targeted Fix)
+REVOKE ALL ON public.email_templates FROM anon;
+
+
+-- Migration: 20250908123238_50cdbb50-61e8-4ee5-9464-2b9e58f76aa9.sql
+
+-- Phase 5: Email Templates RLS + Unit Types RLS (Targeted Fix)
 
 -- First, let's check and enable RLS on email_templates if the table exists
 DO $$
@@ -33791,7 +35373,12 @@ BEGIN
     -- Note: plpgsql usually can't be moved, it's built-in
     NULL;
   END IF;
-END $$;-- Phase 5: Email Templates RLS + Remaining Function Hardening (Safe)
+END $$;
+
+
+-- Migration: 20250908123301_eb825a13-86e1-40b2-99a7-ad9f26606712.sql
+
+-- Phase 5: Email Templates RLS + Remaining Function Hardening (Safe)
 
 -- Phase 5a: Email Templates RLS (resolve "Email Templates Could Be Stolen by Competitors")
 -- Check if email_templates table exists and enable RLS
@@ -33903,7 +35490,12 @@ BEGIN
     REVOKE ALL ON public.unit_types FROM PUBLIC;
     REVOKE ALL ON public.unit_types FROM anon;
   END IF;
-END $$;-- Phase 5: Email Templates RLS + Remaining Function Hardening (Safe)
+END $$;
+
+
+-- Migration: 20250908123403_d92098db-cf37-4f58-ae7d-00c46a36de31.sql
+
+-- Phase 5: Email Templates RLS + Remaining Function Hardening (Safe)
 
 -- Phase 5a: Email Templates RLS (resolve "Email Templates Could Be Stolen by Competitors")
 -- Check if email_templates table exists and enable RLS
@@ -34015,7 +35607,12 @@ BEGIN
     REVOKE ALL ON public.unit_types FROM PUBLIC;
     REVOKE ALL ON public.unit_types FROM anon;
   END IF;
-END $$;-- Phase 6: Critical Data Security - Address all sensitive table exposures
+END $$;
+
+
+-- Migration: 20250908123620_5891e21b-796a-472d-97fb-fba538a49b7d.sql
+
+-- Phase 6: Critical Data Security - Address all sensitive table exposures
 
 -- 1. Secure tenants table (Customer Personal Information)
 ALTER TABLE public.tenants ENABLE ROW LEVEL SECURITY;
@@ -34102,7 +35699,12 @@ GRANT USAGE ON ALL SEQUENCES IN SCHEMA public TO authenticated;
 REVOKE EXECUTE ON ALL FUNCTIONS IN SCHEMA public FROM PUBLIC;
 REVOKE EXECUTE ON ALL FUNCTIONS IN SCHEMA public FROM anon;
 -- Grant execute to authenticated users (they still need RLS checks inside functions)
-GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA public TO authenticated;-- Phase 6: Critical Data Security - Address all sensitive table exposures
+GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA public TO authenticated;
+
+
+-- Migration: 20250908123743_04f4aa6c-3d0f-480d-a44c-eb4fdbc938e2.sql
+
+-- Phase 6: Critical Data Security - Address all sensitive table exposures
 
 -- 1. Secure tenants table (Customer Personal Information)
 ALTER TABLE public.tenants ENABLE ROW LEVEL SECURITY;
@@ -34189,7 +35791,12 @@ GRANT USAGE ON ALL SEQUENCES IN SCHEMA public TO authenticated;
 REVOKE EXECUTE ON ALL FUNCTIONS IN SCHEMA public FROM PUBLIC;
 REVOKE EXECUTE ON ALL FUNCTIONS IN SCHEMA public FROM anon;
 -- Grant execute to authenticated users (they still need RLS checks inside functions)
-GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA public TO authenticated;-- Final Security Migration: Comprehensive RLS Policies + Documentation
+GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA public TO authenticated;
+
+
+-- Migration: 20250908123933_6becef70-ddf8-4c75-8105-e5d4d17ceff6.sql
+
+-- Final Security Migration: Comprehensive RLS Policies + Documentation
 
 -- Create additional restrictive RLS policies for remaining ERRORs
 
@@ -34392,7 +35999,12 @@ JOIN public.properties p ON u.property_id = p.id;
 -- Ensure proper access to invoice_overview
 REVOKE ALL ON public.invoice_overview FROM PUBLIC;
 REVOKE ALL ON public.invoice_overview FROM anon;
-GRANT SELECT ON public.invoice_overview TO authenticated;-- Final Comprehensive Security Fix: Direct RLS Policies Without Complex Dependencies
+GRANT SELECT ON public.invoice_overview TO authenticated;
+
+
+-- Migration: 20250908124205_7993b9cc-cd85-4be1-85d6-6224e1706e73.sql
+
+-- Final Comprehensive Security Fix: Direct RLS Policies Without Complex Dependencies
 
 -- 1. Fix tenants table with direct, simple RLS policy
 DROP POLICY IF EXISTS "Enhanced tenant data protection" ON public.tenants;
@@ -34614,7 +36226,12 @@ JOIN public.properties p ON u.property_id = p.id;
 -- Secure invoice_overview access
 REVOKE ALL ON public.invoice_overview FROM PUBLIC;
 REVOKE ALL ON public.invoice_overview FROM anon;
-GRANT SELECT ON public.invoice_overview TO authenticated;-- Final Comprehensive Security Fix: Direct RLS Policies Without Complex Dependencies
+GRANT SELECT ON public.invoice_overview TO authenticated;
+
+
+-- Migration: 20250908124329_1aec7e3b-8664-440e-9534-7a8e5f839772.sql
+
+-- Final Comprehensive Security Fix: Direct RLS Policies Without Complex Dependencies
 
 -- 1. Fix tenants table with direct, simple RLS policy
 DROP POLICY IF EXISTS "Enhanced tenant data protection" ON public.tenants;
@@ -34836,7 +36453,12 @@ JOIN public.properties p ON u.property_id = p.id;
 -- Secure invoice_overview access
 REVOKE ALL ON public.invoice_overview FROM PUBLIC;
 REVOKE ALL ON public.invoice_overview FROM anon;
-GRANT SELECT ON public.invoice_overview TO authenticated;-- Final Security Fix: Clean RLS Policy Recreation with Unique Names
+GRANT SELECT ON public.invoice_overview TO authenticated;
+
+
+-- Migration: 20250908124419_03d40b63-1ea2-402b-b33d-e79572aef006.sql
+
+-- Final Security Fix: Clean RLS Policy Recreation with Unique Names
 
 -- 1. Clean up all existing tenant policies and create new one with unique name
 DO $$
@@ -35002,7 +36624,12 @@ BEGIN
         (landlord_id = auth.uid())
       )';
   END IF;
-END $$;-- Fix critical security vulnerability: Secure invoice_overview table
+END $$;
+
+
+-- Migration: 20250908124725_9c35567c-c98f-44fa-bf1d-b053f930c2cd.sql
+
+-- Fix critical security vulnerability: Secure invoice_overview table
 -- This table contains sensitive financial data and needs proper access controls
 
 -- Enable RLS on invoice_overview
@@ -35036,7 +36663,12 @@ USING (
 );
 
 -- Policy 4: Block all other access (implicit, but explicit for clarity)
--- No INSERT/UPDATE/DELETE policies needed as this appears to be a read-only view-- Fix critical security: Secure invoice_overview by updating underlying table policies
+-- No INSERT/UPDATE/DELETE policies needed as this appears to be a read-only view
+
+
+-- Migration: 20250908130312_e6eca043-f54b-400a-b12e-02b22b31b2cf.sql
+
+-- Fix critical security: Secure invoice_overview by updating underlying table policies
 -- Since invoice_overview is a view, we need to ensure the underlying tables are properly secured
 
 -- First, let's check and fix the invoices table policies to ensure they're watertight
@@ -35198,6 +36830,11 @@ GRANT EXECUTE ON FUNCTION public.get_invoice_overview TO authenticated;
 
 -- Add comment explaining the security approach
 COMMENT ON FUNCTION public.get_invoice_overview IS 'Secure invoice overview function that respects RLS policies on underlying tables. Replaces the public invoice_overview view to prevent data exposure.';
+
+
+-- Migration: 20250908134512_b72491ae-ed17-4dd3-8350-9948cfa5c81d.sql
+
+
 -- 1) Lock down the invoice_overview view to authenticated users only
 ALTER VIEW public.invoice_overview SET (security_invoker = true);
 
@@ -35265,6 +36902,11 @@ CREATE POLICY "Tenants can view their own payments"
         AND t.user_id = auth.uid()
     )
   );
+
+
+
+-- Migration: 20250908135955_da51755b-82bc-4e51-8dca-64e4f236b051.sql
+
 -- Fix SMS Usage Table Security: Harden access to prevent phone number harvesting
 -- Remove any default permissions for anon/public and ensure strict authenticated-only access
 
@@ -35317,14 +36959,24 @@ DROP TRIGGER IF EXISTS set_sms_landlord_id_trigger ON public.sms_usage;
 CREATE TRIGGER set_sms_landlord_id_trigger
   BEFORE INSERT OR UPDATE ON public.sms_usage
   FOR EACH ROW
-  EXECUTE FUNCTION public.set_sms_landlord_id();-- CRITICAL SECURITY FIX: Drop the vulnerable invoice_overview view
+  EXECUTE FUNCTION public.set_sms_landlord_id();
+
+
+-- Migration: 20250908140508_a89a1566-16d6-43a8-b1d8-55059c510daa.sql
+
+-- CRITICAL SECURITY FIX: Drop the vulnerable invoice_overview view
 -- All application code now uses the secure get_invoice_overview() RPC function
 
 -- Drop the publicly accessible view that was exposing sensitive financial data
 DROP VIEW IF EXISTS public.invoice_overview;
 
 -- Double-check that the secure RPC function exists and is properly protected
--- (The function already has proper RLS enforcement built-in)-- COMPREHENSIVE SECURITY FIX: Part 1 - Field-Level Encryption & Access Control
+-- (The function already has proper RLS enforcement built-in)
+
+
+-- Migration: 20250908141013_72fa82e8-1e84-481f-b74c-b86dc7e4c283.sql
+
+-- COMPREHENSIVE SECURITY FIX: Part 1 - Field-Level Encryption & Access Control
 -- Fix critical security vulnerabilities in sensitive data handling
 
 -- 1. Create encryption functions using pgcrypto (if not already available)
@@ -35417,7 +37069,12 @@ BEGIN
   
   RETURN '****' || right(data, visible_chars);
 END;
-$$;-- COMPREHENSIVE SECURITY FIX: Part 1 - Field-Level Encryption & Access Control
+$$;
+
+
+-- Migration: 20250908141042_458327c8-e38a-4e6e-9667-fc73eb55b1b1.sql
+
+-- COMPREHENSIVE SECURITY FIX: Part 1 - Field-Level Encryption & Access Control
 -- Fix critical security vulnerabilities in sensitive data handling
 
 -- 1. Create encryption functions using pgcrypto (if not already available)
@@ -35510,7 +37167,12 @@ BEGIN
   
   RETURN '****' || right(data, visible_chars);
 END;
-$$;-- SECURITY FIX Part 2: Database Hardening & Access Control
+$$;
+
+
+-- Migration: 20250908141108_d6b1289f-18f2-442c-9b83-42246ccd718b.sql
+
+-- SECURITY FIX Part 2: Database Hardening & Access Control
 -- Fix RLS policies and remove overly broad access
 
 -- 1. Fix payment_transactions policies - remove 'public' role access
@@ -35572,7 +37234,12 @@ CREATE POLICY "Property stakeholders can view tenant profiles"
       WHERE t.user_id = profiles.id
         AND (p.owner_id = auth.uid() OR p.manager_id = auth.uid())
     )
-  );-- COMPREHENSIVE SECURITY FIX: Part 2 - Encrypt Existing Data & Fix RLS Policies
+  );
+
+
+-- Migration: 20250908141128_82012358-cb4f-4a32-b685-7e502b737e2a.sql
+
+-- COMPREHENSIVE SECURITY FIX: Part 2 - Encrypt Existing Data & Fix RLS Policies
 -- Encrypt sensitive fields and implement proper access control
 
 -- 1. First, let's clean up duplicate and overly permissive policies on profiles table
@@ -35662,7 +37329,12 @@ ADD COLUMN IF NOT EXISTS message_content_encrypted text;
 
 -- Add search token for phone lookups
 ALTER TABLE public.sms_usage 
-ADD COLUMN IF NOT EXISTS recipient_phone_token text;-- COMPREHENSIVE SECURITY FIX: Part 3 - Fix Warnings & Complete Encryption Setup
+ADD COLUMN IF NOT EXISTS recipient_phone_token text;
+
+
+-- Migration: 20250908141208_89e8f5ac-f205-479f-b8de-5601e73971c9.sql
+
+-- COMPREHENSIVE SECURITY FIX: Part 3 - Fix Warnings & Complete Encryption Setup
 
 -- Step C: Fix Warning 1 - Function Search Path Mutable
 -- Update all functions to have explicit search_path set to prevent SQL injection
@@ -35757,7 +37429,12 @@ BEGIN
   ORDER BY i.created_at DESC
   LIMIT p_limit OFFSET p_offset;
 END;
-$$;-- COMPREHENSIVE SECURITY FIX: Part 4 - Fix Extension in Public Warning
+$$;
+
+
+-- Migration: 20250908141230_744f86a2-4039-47e3-8824-81d3583fc71c.sql
+
+-- COMPREHENSIVE SECURITY FIX: Part 4 - Fix Extension in Public Warning
 -- Move extensions to dedicated schema and fix remaining function search paths
 
 -- Step C: Fix Warning 2 - Extension in Public
@@ -35843,7 +37520,12 @@ BEGIN
   NEW.created_by := auth.uid();
   RETURN NEW;
 END;
-$$;-- COMPREHENSIVE SECURITY FIX: Part 5 - Fix All Remaining Functions & Create Encryption Triggers
+$$;
+
+
+-- Migration: 20250908141307_7224c73a-d4a0-4a7c-886d-66dd4cc79f00.sql
+
+-- COMPREHENSIVE SECURITY FIX: Part 5 - Fix All Remaining Functions & Create Encryption Triggers
 -- Complete the security hardening by fixing all remaining functions
 
 -- Fix remaining critical functions with proper search_path
@@ -35936,7 +37618,12 @@ BEGIN
 
   RETURN NEW;
 END;
-$$;-- COMPREHENSIVE SECURITY FIX: Part 4 - Fix Extension in Public Warning
+$$;
+
+
+-- Migration: 20250908141338_d539f8e0-d7a5-4303-9b3e-226818c920c4.sql
+
+-- COMPREHENSIVE SECURITY FIX: Part 4 - Fix Extension in Public Warning
 -- Move extensions to dedicated schema and fix remaining function search paths
 
 -- Step C: Fix Warning 2 - Extension in Public
@@ -36022,7 +37709,12 @@ BEGIN
   NEW.created_by := auth.uid();
   RETURN NEW;
 END;
-$$;-- COMPREHENSIVE SECURITY FIX: Part 6 - Fix ALL Functions with Mutable Search Paths
+$$;
+
+
+-- Migration: 20250908141414_7d0156ea-5d03-43ca-b1a5-4262f280b495.sql
+
+-- COMPREHENSIVE SECURITY FIX: Part 6 - Fix ALL Functions with Mutable Search Paths
 -- This addresses the remaining Function Search Path Mutable warnings
 
 -- Fix all remaining functions that don't have search_path configured
@@ -36119,7 +37811,12 @@ BEGIN
   DELETE FROM public.rate_limits 
   WHERE created_at < now() - interval '24 hours';
 END;
-$$;-- COMPREHENSIVE SECURITY FIX: Part 5 - Final Warning Fixes & Encryption Triggers
+$$;
+
+
+-- Migration: 20250908141454_67638ee9-642b-4551-86f8-2e288b567a54.sql
+
+-- COMPREHENSIVE SECURITY FIX: Part 5 - Final Warning Fixes & Encryption Triggers
 -- Fix the last function search path issue and complete encryption setup
 
 -- Fix the remaining function without proper search_path
@@ -36237,7 +37934,12 @@ CREATE TRIGGER encrypt_tenant_pii_trigger
 DROP TRIGGER IF EXISTS encrypt_sms_data_trigger ON public.sms_usage;
 CREATE TRIGGER encrypt_sms_data_trigger
   BEFORE INSERT OR UPDATE ON public.sms_usage
-  FOR EACH ROW EXECUTE FUNCTION public.encrypt_sms_data();-- COMPREHENSIVE SECURITY FIX: Part 7 - Final Encryption & Access Control Implementation
+  FOR EACH ROW EXECUTE FUNCTION public.encrypt_sms_data();
+
+
+-- Migration: 20250908141527_a3f153fb-1971-4913-b283-248397c9d09d.sql
+
+-- COMPREHENSIVE SECURITY FIX: Part 7 - Final Encryption & Access Control Implementation
 -- Complete the security hardening with encryption triggers and final access restrictions
 
 -- 1. Create encryption triggers for automatic data protection
@@ -36381,7 +38083,12 @@ REVOKE ALL ON ALL SEQUENCES IN SCHEMA public FROM PUBLIC;
 GRANT USAGE ON SCHEMA public TO authenticated;
 GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO authenticated;
 GRANT USAGE ON ALL SEQUENCES IN SCHEMA public TO authenticated;
-GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA public TO authenticated;-- COMPREHENSIVE SECURITY FIX: Part 7 - Final Encryption & Access Control Implementation
+GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA public TO authenticated;
+
+
+-- Migration: 20250908141624_59d27ea6-ed93-44ce-bb41-6fe52b5a9d8f.sql
+
+-- COMPREHENSIVE SECURITY FIX: Part 7 - Final Encryption & Access Control Implementation
 -- Complete the security hardening with encryption triggers and final access restrictions
 
 -- 1. Create encryption triggers for automatic data protection
@@ -36525,7 +38232,12 @@ REVOKE ALL ON ALL SEQUENCES IN SCHEMA public FROM PUBLIC;
 GRANT USAGE ON SCHEMA public TO authenticated;
 GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO authenticated;
 GRANT USAGE ON ALL SEQUENCES IN SCHEMA public TO authenticated;
-GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA public TO authenticated;-- FINAL COMPREHENSIVE SECURITY LOCKDOWN
+GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA public TO authenticated;
+
+
+-- Migration: 20250908141908_1a766818-993c-408e-9ef6-ad140866a925.sql
+
+-- FINAL COMPREHENSIVE SECURITY LOCKDOWN
 -- Encrypt existing data and completely secure sensitive tables
 
 -- 1. Encrypt all existing tenant data
@@ -36678,7 +38390,12 @@ BEGIN
   PERFORM public.log_sensitive_data_access(TG_TABLE_NAME, 'decrypt_access', NEW.id);
   RETURN NEW;
 END;
-$$;-- Fix infinite recursion in RLS policies by creating security definer functions
+$$;
+
+
+-- Migration: 20250908142447_18949d33-f096-4f7b-9fe9-d0f0910dec5d.sql
+
+-- Fix infinite recursion in RLS policies by creating security definer functions
 -- and updating the problematic policies
 
 -- First, create a security definer function to get user role without recursion
@@ -36806,7 +38523,12 @@ $$;
 -- Grant necessary permissions for the new functions
 GRANT EXECUTE ON FUNCTION public.get_user_role_safe(uuid) TO authenticated;
 GRANT EXECUTE ON FUNCTION public.has_role_safe(uuid, public.app_role) TO authenticated;
-GRANT EXECUTE ON FUNCTION public.can_access_tenant_as_landlord(uuid, uuid) TO authenticated;-- Fix the existing has_role function to prevent recursion
+GRANT EXECUTE ON FUNCTION public.can_access_tenant_as_landlord(uuid, uuid) TO authenticated;
+
+
+-- Migration: 20250908142520_10c38370-2e6e-4d36-a405-b868a0ad4095.sql
+
+-- Fix the existing has_role function to prevent recursion
 -- Update search path and ensure it's properly isolated
 
 CREATE OR REPLACE FUNCTION public.has_role(_user_id uuid DEFAULT auth.uid(), _role public.app_role)
@@ -36848,7 +38570,12 @@ AS $$
     FROM public.tenants t
     WHERE t.user_id = _user_id
   );
-$$;-- Fix the function parameter ordering issues
+$$;
+
+
+-- Migration: 20250908142624_21a4b9d0-6bb4-4036-8d4a-6f5caa50f098.sql
+
+-- Fix the function parameter ordering issues
 -- Parameters with defaults must come last
 
 CREATE OR REPLACE FUNCTION public.has_role(_role public.app_role, _user_id uuid DEFAULT auth.uid())
@@ -36875,7 +38602,12 @@ SECURITY DEFINER
 SET search_path = 'public'
 AS $$
   SELECT public.has_role('Admin'::public.app_role, _user_id);
-$$;-- Address security warnings that can be fixed via SQL
+$$;
+
+
+-- Migration: 20250908142659_4cecece4-9673-4ec7-951a-776b33a16635.sql
+
+-- Address security warnings that can be fixed via SQL
 
 -- 1. Move extensions out of public schema where possible
 -- Note: Some extensions may need to remain in public if they're critical
@@ -36958,7 +38690,12 @@ VALUES
 ON CONFLICT (config_item) DO UPDATE SET
     status = EXCLUDED.status,
     last_checked = EXCLUDED.last_checked,
-    details = EXCLUDED.details;-- Fix critical security issues: Enable RLS on tables and fix function search paths
+    details = EXCLUDED.details;
+
+
+-- Migration: 20250908142754_c0ebe289-7791-435a-bcb9-e197fbb18433.sql
+
+-- Fix critical security issues: Enable RLS on tables and fix function search paths
 
 -- 1. First, enable RLS on the security_config_status table we just created
 ALTER TABLE public.security_config_status ENABLE ROW LEVEL SECURITY;
@@ -37042,7 +38779,12 @@ BEGIN
                      func_record.nspname, func_record.proname;
     END LOOP;
 END
-$$;-- Fix critical security issues: Enable RLS on tables and fix function search paths
+$$;
+
+
+-- Migration: 20250908142847_2d95f646-dc31-4dee-9bb4-2d9d47ea166a.sql
+
+-- Fix critical security issues: Enable RLS on tables and fix function search paths
 
 -- 1. First, enable RLS on the security_config_status table we just created
 ALTER TABLE public.security_config_status ENABLE ROW LEVEL SECURITY;
@@ -37126,7 +38868,12 @@ BEGIN
                      func_record.nspname, func_record.proname;
     END LOOP;
 END
-$$;-- Fix critical security issues with proper existence checks
+$$;
+
+
+-- Migration: 20250908143013_79bcee5c-10a8-42bc-b6a6-296a5d511808.sql
+
+-- Fix critical security issues with proper existence checks
 
 -- 1. Enable RLS on security_config_status if not already enabled, and create policy if needed
 DO $$
@@ -37227,6 +38974,11 @@ BEGIN
     END LOOP;
 END
 $$;
+
+
+-- Migration: 20250908143613_8ea88629-8ed9-403f-94b8-273fafb3b88f.sql
+
+
 -- 0) Safety: ensure RLS enabled on key tables
 ALTER TABLE public.leases ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.maintenance_requests ENABLE ROW LEVEL SECURITY;
@@ -37413,6 +39165,11 @@ BEGIN
   END IF;
 END;
 $$;
+
+
+
+-- Migration: 20250908143804_f2878e74-05ab-4168-8cee-a5be348b8e76.sql
+
 -- Replace the stub get_landlord_dashboard_data with proper implementation
 CREATE OR REPLACE FUNCTION public.get_landlord_dashboard_data(_user_id uuid DEFAULT auth.uid())
 RETURNS jsonb
@@ -37553,7 +39310,12 @@ EXCEPTION WHEN OTHERS THEN
     'timestamp', now()
   );
 END;
-$$;-- Drop and recreate get_landlord_dashboard_data with proper implementation
+$$;
+
+
+-- Migration: 20250908143910_bd981e86-b092-4d18-abfa-e3ea268fd8d9.sql
+
+-- Drop and recreate get_landlord_dashboard_data with proper implementation
 DROP FUNCTION IF EXISTS public.get_landlord_dashboard_data(uuid);
 
 CREATE OR REPLACE FUNCTION public.get_landlord_dashboard_data(_user_id uuid DEFAULT auth.uid())
@@ -37697,7 +39459,12 @@ EXCEPTION WHEN OTHERS THEN
 END;
 $$;
 
-GRANT EXECUTE ON FUNCTION public.get_landlord_dashboard_data(uuid) TO authenticated;-- Create helper functions to break RLS recursion
+GRANT EXECUTE ON FUNCTION public.get_landlord_dashboard_data(uuid) TO authenticated;
+
+
+-- Migration: 20250908144717_4a24aa4c-82ef-4277-89e4-7026dd1380f8.sql
+
+-- Create helper functions to break RLS recursion
 CREATE OR REPLACE FUNCTION public.has_role_safe(_user_id uuid, _role public.app_role)
 RETURNS boolean
 LANGUAGE sql
@@ -37800,7 +39567,12 @@ CREATE POLICY "tenants_can_view_their_properties" ON public.properties
 FOR SELECT
 USING (
   public.tenant_has_lease_on_property(id, auth.uid())
-);-- Create helper RPC to insert tenant with encryption when pgcrypto is available
+);
+
+
+-- Migration: 20250918120000_create_tenant_with_encryption.sql
+
+-- Create helper RPC to insert tenant with encryption when pgcrypto is available
 -- Falls back to plaintext in *_encrypted columns when not available
 
 CREATE OR REPLACE FUNCTION public.create_tenant_with_encryption(
@@ -37866,6 +39638,11 @@ $$;
 GRANT EXECUTE ON FUNCTION public.create_tenant_with_encryption(
   text, text, text, text, text, text, text, text, numeric, text, text, text, uuid, text
 ) TO anon, authenticated, service_role;
+
+
+
+-- Migration: 20250923120000_create_invoice_number_seq.sql
+
 -- Create invoice_number_seq if it does not exist and initialize it based on existing invoices
 -- Safe to run multiple times
 
@@ -37912,6 +39689,11 @@ BEGIN
   END IF;
 END
 $$;
+
+
+
+-- Migration: 20251002192455_6e19d926-ad6d-4074-88e6-1853a13229f8.sql
+
 -- Fix Sub-User Management System
 -- Phase 1: Fix has_role ambiguity, add SubUser role, create permission enforcement
 
@@ -38089,7 +39871,12 @@ CREATE INDEX IF NOT EXISTS idx_sub_users_landlord_id_status ON public.sub_users(
 
 -- 13. Add comment documenting the permission model
 COMMENT ON TABLE public.sub_users IS 'Stores sub-user relationships and permissions. Sub-users inherit access to their landlord''s properties based on granular permissions.';
-COMMENT ON COLUMN public.sub_users.permissions IS 'JSONB object with boolean flags: manage_properties, manage_tenants, manage_leases, manage_maintenance, view_reports';-- Fix Sub-User Management System
+COMMENT ON COLUMN public.sub_users.permissions IS 'JSONB object with boolean flags: manage_properties, manage_tenants, manage_leases, manage_maintenance, view_reports';
+
+
+-- Migration: 20251002192729_85493acc-6fb4-492d-9ecd-cfefd53376d9.sql
+
+-- Fix Sub-User Management System
 -- Phase 1: Fix has_role ambiguity, add SubUser role, create permission enforcement
 
 -- 1. Add SubUser to app_role enum if not exists
@@ -38260,7 +40047,12 @@ CREATE INDEX IF NOT EXISTS idx_sub_users_landlord_id_status ON public.sub_users(
 
 -- 12. Add comment documenting the permission model
 COMMENT ON TABLE public.sub_users IS 'Stores sub-user relationships and permissions. Sub-users inherit access to their landlord''s properties based on granular permissions.';
-COMMENT ON COLUMN public.sub_users.permissions IS 'JSONB object with boolean flags: manage_properties, manage_tenants, manage_leases, manage_maintenance, view_reports';-- Fix has_role function permissions and ensure proper grants
+COMMENT ON COLUMN public.sub_users.permissions IS 'JSONB object with boolean flags: manage_properties, manage_tenants, manage_leases, manage_maintenance, view_reports';
+
+
+-- Migration: 20251002193906_b7f71422-7952-47e9-86f4-f62c415a987e.sql
+
+-- Fix has_role function permissions and ensure proper grants
 -- Grant execute permissions explicitly to all relevant roles
 GRANT EXECUTE ON FUNCTION public.has_role(uuid, app_role) TO authenticated, anon, service_role;
 GRANT EXECUTE ON FUNCTION public.has_role_safe(uuid, app_role) TO authenticated, anon, service_role;
@@ -38296,7 +40088,12 @@ ON public.profiles
 FOR UPDATE
 TO authenticated
 USING (id = auth.uid())
-WITH CHECK (id = auth.uid());-- Create an admin-only RPC to list profiles with roles without touching tenants
+WITH CHECK (id = auth.uid());
+
+
+-- Migration: 20251002200237_5bd368d6-6f48-4efa-b118-6dfc75660f4a.sql
+
+-- Create an admin-only RPC to list profiles with roles without touching tenants
 -- This avoids RLS recursion paths and consolidates data for the UI
 
 create or replace function public.admin_list_profiles_with_roles(
@@ -38351,7 +40148,12 @@ end;
 $$;
 
 -- Ensure authenticated users can call the function (logic inside enforces Admin)
-grant execute on function public.admin_list_profiles_with_roles(integer, integer) to authenticated;-- Phase 1: Fix Tenants Recursion (CRITICAL)
+grant execute on function public.admin_list_profiles_with_roles(integer, integer) to authenticated;
+
+
+-- Migration: 20251002200815_ed2bb675-0683-40b0-805a-03db04deee4e.sql
+
+-- Phase 1: Fix Tenants Recursion (CRITICAL)
 
 -- 1. Create security definer function for sub-user tenant viewing
 CREATE OR REPLACE FUNCTION public.can_subuser_view_tenant(_tenant_id uuid, _user_id uuid)
@@ -38425,7 +40227,12 @@ FOR ALL USING (
 CREATE POLICY "user_roles_users_view_own" ON public.user_roles
 FOR SELECT USING (
   user_id = auth.uid()
-);-- Update check_plan_feature_access to give trial users full Enterprise access
+);
+
+
+-- Migration: 20251002220656_e2004b4d-4f0a-41d8-9b4f-96647c74ec90.sql
+
+-- Update check_plan_feature_access to give trial users full Enterprise access
 create or replace function public.check_plan_feature_access(
   _user_id uuid,
   _feature text,
@@ -38590,7 +40397,12 @@ begin
 
   return NEW;
 end;
-$$;-- Update check_plan_feature_access to give trial users full Enterprise access
+$$;
+
+
+-- Migration: 20251002220848_17ebaef0-aedf-443e-8ca3-d86c9e5dd435.sql
+
+-- Update check_plan_feature_access to give trial users full Enterprise access
 create or replace function public.check_plan_feature_access(
   _user_id uuid,
   _feature text,
@@ -38755,7 +40567,12 @@ begin
 
   return NEW;
 end;
-$$;-- Phase 1: Add missing communication features to billing plans
+$$;
+
+
+-- Migration: 20251002221335_aa329323-a440-4390-bdad-a376751cc254.sql
+
+-- Phase 1: Add missing communication features to billing plans
 -- This ensures trial users (linked to Enterprise) can access email/SMS templates
 
 UPDATE public.billing_plans 
@@ -38769,7 +40586,12 @@ WHERE name = 'Professional' AND is_active = true;
 -- Add basic reporting to Starter plan too
 UPDATE public.billing_plans 
 SET features = features || '["reports.basic"]'::jsonb
-WHERE name = 'Starter' AND is_active = true;-- Create helper function to check if a landlord is on trial
+WHERE name = 'Starter' AND is_active = true;
+
+
+-- Migration: 20251002222314_222cdba4-8118-4c71-aea6-4b74621f8396.sql
+
+-- Create helper function to check if a landlord is on trial
 CREATE OR REPLACE FUNCTION public.get_landlord_trial_status(_landlord_id uuid)
 RETURNS boolean
 LANGUAGE sql
@@ -39092,7 +40914,12 @@ USING (
         )
       )
   ))
-);-- Fix infinite recursion in tenants table RLS policies
+);
+
+
+-- Migration: 20251002223933_757b23c9-214b-400a-8f17-27bbdec91173.sql
+
+-- Fix infinite recursion in tenants table RLS policies
 -- Drop all existing overlapping policies
 DROP POLICY IF EXISTS "tenants_unified_access" ON public.tenants;
 DROP POLICY IF EXISTS "Sub-users can view and manage tenants during landlord trial" ON public.tenants;
@@ -39121,7 +40948,12 @@ WITH CHECK (
   OR user_id = auth.uid()
   OR public.can_access_tenant_as_landlord(id, auth.uid())
   OR public.can_subuser_view_tenant(id, auth.uid())
-);-- Normalize sub_users permissions to include all 8 required keys
+);
+
+
+-- Migration: 20251002230221_57d59084-65e2-4de2-bf83-6d446770ea87.sql
+
+-- Normalize sub_users permissions to include all 8 required keys
 -- This ensures consistent permission checking and prevents undefined values
 
 UPDATE sub_users
@@ -39139,7 +40971,12 @@ WHERE permissions IS NOT NULL;
 
 -- Add comment for documentation
 COMMENT ON COLUMN sub_users.permissions IS 
-'Must contain all 8 permission keys: manage_properties, manage_tenants, manage_leases, manage_maintenance, manage_payments, view_reports, manage_expenses, send_messages. Each key must be a boolean value.';-- Remove trial bypass for sub-users in RLS policies
+'Must contain all 8 permission keys: manage_properties, manage_tenants, manage_leases, manage_maintenance, manage_payments, view_reports, manage_expenses, send_messages. Each key must be a boolean value.';
+
+
+-- Migration: 20251002230915_b5ed70fa-7ced-467d-93a7-e858cdda2a00.sql
+
+-- Remove trial bypass for sub-users in RLS policies
 -- Sub-users should ALWAYS be restricted to their assigned permissions
 
 -- Update leases policy to remove trial bypass
@@ -39227,7 +41064,12 @@ USING (
         )
     )
   )
-);-- Clean up and recreate RLS policies to enforce sub-user permissions at all times
+);
+
+
+-- Migration: 20251002231041_ffc43981-00d8-421b-a186-0f157ab51203.sql
+
+-- Clean up and recreate RLS policies to enforce sub-user permissions at all times
 -- Remove trial bypass logic completely
 
 -- Drop all existing policies first to avoid conflicts
@@ -39315,7 +41157,12 @@ USING (
         )
     )
   )
-);-- Fix RLS policies to support sub-users accessing landlord's properties/units/tenants/leases
+);
+
+
+-- Migration: 20251002232309_6f7edff7-b397-4dd7-9fd4-11474437118e.sql
+
+-- Fix RLS policies to support sub-users accessing landlord's properties/units/tenants/leases
 -- Allow sub-users to see data when landlord is either owner or manager
 
 -- Update properties RLS for sub-users
@@ -39404,7 +41251,12 @@ USING (
     SELECT 1 FROM public.tenants t
     WHERE t.id = leases.tenant_id AND t.user_id = auth.uid()
   )
-);-- Fix infinite recursion in tenants RLS policy
+);
+
+
+-- Migration: 20251002232334_7398bb2e-37ad-43a4-8c2f-dce2bc1f5cd1.sql
+
+-- Fix infinite recursion in tenants RLS policy
 -- Remove the can_subuser_view_tenant function call that causes recursion
 
 DROP POLICY IF EXISTS "Sub-users manage tenants with permission" ON public.tenants;
@@ -39430,6 +41282,11 @@ USING (
     )
   )
 );
+
+
+-- Migration: 20251002233504_a8d7c16a-5fc8-4f84-a85a-1f7396f632b5.sql
+
+
 -- Fix RLS policies for properties table
 DROP POLICY IF EXISTS "Sub-users can view assigned properties" ON public.properties;
 DROP POLICY IF EXISTS "Owners can manage their properties" ON public.properties;
@@ -39611,201 +41468,10 @@ USING (
   )
 );
 
--- Drop ALL existing policies on properties table
-DROP POLICY IF EXISTS "Properties - delete access" ON public.properties;
-DROP POLICY IF EXISTS "Properties - insert access" ON public.properties;
-DROP POLICY IF EXISTS "Properties - select access" ON public.properties;
-DROP POLICY IF EXISTS "Properties - update access" ON public.properties;
-DROP POLICY IF EXISTS "Property managers can manage assigned properties" ON public.properties;
-DROP POLICY IF EXISTS "Property owners can manage their own properties" ON public.properties;
-DROP POLICY IF EXISTS "Property owners can manage their properties" ON public.properties;
-DROP POLICY IF EXISTS "Property stakeholders and sub-users can manage properties" ON public.properties;
-DROP POLICY IF EXISTS "tenants_can_view_their_properties" ON public.properties;
-DROP POLICY IF EXISTS "Sub-users can view assigned properties" ON public.properties;
-DROP POLICY IF EXISTS "Owners can manage their properties" ON public.properties;
-DROP POLICY IF EXISTS "Managers can view assigned properties" ON public.properties;
-DROP POLICY IF EXISTS "Admins can manage all properties" ON public.properties;
-DROP POLICY IF EXISTS "Property stakeholders can manage properties" ON public.properties;
-DROP POLICY IF EXISTS "Sub-users manage properties with permission" ON public.properties;
 
--- Drop ALL existing policies on units table
-DROP POLICY IF EXISTS "Property stakeholders and sub-users can manage units" ON public.units;
-DROP POLICY IF EXISTS "Property stakeholders can manage their units" ON public.units;
-DROP POLICY IF EXISTS "Tenants can view their own units" ON public.units;
-DROP POLICY IF EXISTS "Units - delete access" ON public.units;
-DROP POLICY IF EXISTS "Units - insert access" ON public.units;
-DROP POLICY IF EXISTS "Units - select access" ON public.units;
-DROP POLICY IF EXISTS "Units - update access" ON public.units;
-DROP POLICY IF EXISTS "Sub-users manage units with permission" ON public.units;
-DROP POLICY IF EXISTS "Property stakeholders can manage units" ON public.units;
-DROP POLICY IF EXISTS "Tenants can view their unit" ON public.units;
 
--- CREATE NEW POLICIES FOR PROPERTIES
+-- Migration: 20251002233600_7d4ca29a-aebf-4ca4-a4d3-dd091524da32.sql
 
--- SELECT: Admin, owner, manager, or sub-user whose landlord owns/manages
-CREATE POLICY "Properties - select access"
-ON public.properties FOR SELECT
-USING (
-  has_role(auth.uid(), 'Admin'::app_role)
-  OR owner_id = auth.uid()
-  OR manager_id = auth.uid()
-  OR (
-    (owner_id = get_sub_user_landlord(auth.uid()) OR manager_id = get_sub_user_landlord(auth.uid()))
-    AND (
-      get_landlord_trial_status(get_sub_user_landlord(auth.uid()))
-      OR get_sub_user_permissions(auth.uid(), 'manage_properties')
-      OR get_sub_user_permissions(auth.uid(), 'manage_tenants')
-      OR get_sub_user_permissions(auth.uid(), 'manage_leases')
-      OR get_sub_user_permissions(auth.uid(), 'manage_maintenance')
-      OR get_sub_user_permissions(auth.uid(), 'view_reports')
-    )
-  )
-);
-
-CREATE POLICY "Properties - insert access"
-ON public.properties FOR INSERT
-WITH CHECK (
-  has_role(auth.uid(), 'Admin'::app_role)
-  OR owner_id = auth.uid()
-  OR manager_id = auth.uid()
-  OR (
-    (owner_id = get_sub_user_landlord(auth.uid()) OR manager_id = get_sub_user_landlord(auth.uid()))
-    AND get_sub_user_permissions(auth.uid(), 'manage_properties')
-  )
-);
-
-CREATE POLICY "Properties - update access"
-ON public.properties FOR UPDATE
-USING (
-  has_role(auth.uid(), 'Admin'::app_role)
-  OR owner_id = auth.uid()
-  OR manager_id = auth.uid()
-  OR (
-    (owner_id = get_sub_user_landlord(auth.uid()) OR manager_id = get_sub_user_landlord(auth.uid()))
-    AND get_sub_user_permissions(auth.uid(), 'manage_properties')
-  )
-)
-WITH CHECK (
-  has_role(auth.uid(), 'Admin'::app_role)
-  OR owner_id = auth.uid()
-  OR manager_id = auth.uid()
-  OR (
-    (owner_id = get_sub_user_landlord(auth.uid()) OR manager_id = get_sub_user_landlord(auth.uid()))
-    AND get_sub_user_permissions(auth.uid(), 'manage_properties')
-  )
-);
-
-CREATE POLICY "Properties - delete access"
-ON public.properties FOR DELETE
-USING (
-  has_role(auth.uid(), 'Admin'::app_role)
-  OR owner_id = auth.uid()
-  OR manager_id = auth.uid()
-  OR (
-    (owner_id = get_sub_user_landlord(auth.uid()) OR manager_id = get_sub_user_landlord(auth.uid()))
-    AND get_sub_user_permissions(auth.uid(), 'manage_properties')
-  )
-);
-
--- CREATE NEW POLICIES FOR UNITS
-
-CREATE POLICY "Units - select access"
-ON public.units FOR SELECT
-USING (
-  has_role(auth.uid(), 'Admin'::app_role)
-  OR EXISTS (
-    SELECT 1 FROM properties p
-    WHERE p.id = units.property_id
-    AND (
-      p.owner_id = auth.uid()
-      OR p.manager_id = auth.uid()
-      OR (
-        (p.owner_id = get_sub_user_landlord(auth.uid()) OR p.manager_id = get_sub_user_landlord(auth.uid()))
-        AND (
-          get_landlord_trial_status(get_sub_user_landlord(auth.uid()))
-          OR get_sub_user_permissions(auth.uid(), 'manage_properties')
-          OR get_sub_user_permissions(auth.uid(), 'manage_tenants')
-          OR get_sub_user_permissions(auth.uid(), 'manage_leases')
-        )
-      )
-    )
-  )
-  OR EXISTS (
-    SELECT 1 FROM leases l
-    JOIN tenants t ON t.id = l.tenant_id
-    WHERE l.unit_id = units.id
-    AND t.user_id = auth.uid()
-  )
-);
-
-CREATE POLICY "Units - insert access"
-ON public.units FOR INSERT
-WITH CHECK (
-  has_role(auth.uid(), 'Admin'::app_role)
-  OR EXISTS (
-    SELECT 1 FROM properties p
-    WHERE p.id = units.property_id
-    AND (
-      p.owner_id = auth.uid()
-      OR p.manager_id = auth.uid()
-      OR (
-        (p.owner_id = get_sub_user_landlord(auth.uid()) OR p.manager_id = get_sub_user_landlord(auth.uid()))
-        AND get_sub_user_permissions(auth.uid(), 'manage_properties')
-      )
-    )
-  )
-);
-
-CREATE POLICY "Units - update access"
-ON public.units FOR UPDATE
-USING (
-  has_role(auth.uid(), 'Admin'::app_role)
-  OR EXISTS (
-    SELECT 1 FROM properties p
-    WHERE p.id = units.property_id
-    AND (
-      p.owner_id = auth.uid()
-      OR p.manager_id = auth.uid()
-      OR (
-        (p.owner_id = get_sub_user_landlord(auth.uid()) OR p.manager_id = get_sub_user_landlord(auth.uid()))
-        AND get_sub_user_permissions(auth.uid(), 'manage_properties')
-      )
-    )
-  )
-)
-WITH CHECK (
-  has_role(auth.uid(), 'Admin'::app_role)
-  OR EXISTS (
-    SELECT 1 FROM properties p
-    WHERE p.id = units.property_id
-    AND (
-      p.owner_id = auth.uid()
-      OR p.manager_id = auth.uid()
-      OR (
-        (p.owner_id = get_sub_user_landlord(auth.uid()) OR p.manager_id = get_sub_user_landlord(auth.uid()))
-        AND get_sub_user_permissions(auth.uid(), 'manage_properties')
-      )
-    )
-  )
-);
-
-CREATE POLICY "Units - delete access"
-ON public.units FOR DELETE
-USING (
-  has_role(auth.uid(), 'Admin'::app_role)
-  OR EXISTS (
-    SELECT 1 FROM properties p
-    WHERE p.id = units.property_id
-    AND (
-      p.owner_id = auth.uid()
-      OR p.manager_id = auth.uid()
-      OR (
-        (p.owner_id = get_sub_user_landlord(auth.uid()) OR p.manager_id = get_sub_user_landlord(auth.uid()))
-        AND get_sub_user_permissions(auth.uid(), 'manage_properties')
-      )
-    )
-  )
-);
 
 -- Drop ALL existing policies on properties table
 DROP POLICY IF EXISTS "Properties - delete access" ON public.properties;
@@ -40002,6 +41668,212 @@ USING (
     )
   )
 );
+
+
+
+-- Migration: 20251002233620_02b10394-a8c5-4741-bdff-6c49726eedf5.sql
+
+
+-- Drop ALL existing policies on properties table
+DROP POLICY IF EXISTS "Properties - delete access" ON public.properties;
+DROP POLICY IF EXISTS "Properties - insert access" ON public.properties;
+DROP POLICY IF EXISTS "Properties - select access" ON public.properties;
+DROP POLICY IF EXISTS "Properties - update access" ON public.properties;
+DROP POLICY IF EXISTS "Property managers can manage assigned properties" ON public.properties;
+DROP POLICY IF EXISTS "Property owners can manage their own properties" ON public.properties;
+DROP POLICY IF EXISTS "Property owners can manage their properties" ON public.properties;
+DROP POLICY IF EXISTS "Property stakeholders and sub-users can manage properties" ON public.properties;
+DROP POLICY IF EXISTS "tenants_can_view_their_properties" ON public.properties;
+DROP POLICY IF EXISTS "Sub-users can view assigned properties" ON public.properties;
+DROP POLICY IF EXISTS "Owners can manage their properties" ON public.properties;
+DROP POLICY IF EXISTS "Managers can view assigned properties" ON public.properties;
+DROP POLICY IF EXISTS "Admins can manage all properties" ON public.properties;
+DROP POLICY IF EXISTS "Property stakeholders can manage properties" ON public.properties;
+DROP POLICY IF EXISTS "Sub-users manage properties with permission" ON public.properties;
+
+-- Drop ALL existing policies on units table
+DROP POLICY IF EXISTS "Property stakeholders and sub-users can manage units" ON public.units;
+DROP POLICY IF EXISTS "Property stakeholders can manage their units" ON public.units;
+DROP POLICY IF EXISTS "Tenants can view their own units" ON public.units;
+DROP POLICY IF EXISTS "Units - delete access" ON public.units;
+DROP POLICY IF EXISTS "Units - insert access" ON public.units;
+DROP POLICY IF EXISTS "Units - select access" ON public.units;
+DROP POLICY IF EXISTS "Units - update access" ON public.units;
+DROP POLICY IF EXISTS "Sub-users manage units with permission" ON public.units;
+DROP POLICY IF EXISTS "Property stakeholders can manage units" ON public.units;
+DROP POLICY IF EXISTS "Tenants can view their unit" ON public.units;
+
+-- CREATE NEW POLICIES FOR PROPERTIES
+
+-- SELECT: Admin, owner, manager, or sub-user whose landlord owns/manages
+CREATE POLICY "Properties - select access"
+ON public.properties FOR SELECT
+USING (
+  has_role(auth.uid(), 'Admin'::app_role)
+  OR owner_id = auth.uid()
+  OR manager_id = auth.uid()
+  OR (
+    (owner_id = get_sub_user_landlord(auth.uid()) OR manager_id = get_sub_user_landlord(auth.uid()))
+    AND (
+      get_landlord_trial_status(get_sub_user_landlord(auth.uid()))
+      OR get_sub_user_permissions(auth.uid(), 'manage_properties')
+      OR get_sub_user_permissions(auth.uid(), 'manage_tenants')
+      OR get_sub_user_permissions(auth.uid(), 'manage_leases')
+      OR get_sub_user_permissions(auth.uid(), 'manage_maintenance')
+      OR get_sub_user_permissions(auth.uid(), 'view_reports')
+    )
+  )
+);
+
+CREATE POLICY "Properties - insert access"
+ON public.properties FOR INSERT
+WITH CHECK (
+  has_role(auth.uid(), 'Admin'::app_role)
+  OR owner_id = auth.uid()
+  OR manager_id = auth.uid()
+  OR (
+    (owner_id = get_sub_user_landlord(auth.uid()) OR manager_id = get_sub_user_landlord(auth.uid()))
+    AND get_sub_user_permissions(auth.uid(), 'manage_properties')
+  )
+);
+
+CREATE POLICY "Properties - update access"
+ON public.properties FOR UPDATE
+USING (
+  has_role(auth.uid(), 'Admin'::app_role)
+  OR owner_id = auth.uid()
+  OR manager_id = auth.uid()
+  OR (
+    (owner_id = get_sub_user_landlord(auth.uid()) OR manager_id = get_sub_user_landlord(auth.uid()))
+    AND get_sub_user_permissions(auth.uid(), 'manage_properties')
+  )
+)
+WITH CHECK (
+  has_role(auth.uid(), 'Admin'::app_role)
+  OR owner_id = auth.uid()
+  OR manager_id = auth.uid()
+  OR (
+    (owner_id = get_sub_user_landlord(auth.uid()) OR manager_id = get_sub_user_landlord(auth.uid()))
+    AND get_sub_user_permissions(auth.uid(), 'manage_properties')
+  )
+);
+
+CREATE POLICY "Properties - delete access"
+ON public.properties FOR DELETE
+USING (
+  has_role(auth.uid(), 'Admin'::app_role)
+  OR owner_id = auth.uid()
+  OR manager_id = auth.uid()
+  OR (
+    (owner_id = get_sub_user_landlord(auth.uid()) OR manager_id = get_sub_user_landlord(auth.uid()))
+    AND get_sub_user_permissions(auth.uid(), 'manage_properties')
+  )
+);
+
+-- CREATE NEW POLICIES FOR UNITS
+
+CREATE POLICY "Units - select access"
+ON public.units FOR SELECT
+USING (
+  has_role(auth.uid(), 'Admin'::app_role)
+  OR EXISTS (
+    SELECT 1 FROM properties p
+    WHERE p.id = units.property_id
+    AND (
+      p.owner_id = auth.uid()
+      OR p.manager_id = auth.uid()
+      OR (
+        (p.owner_id = get_sub_user_landlord(auth.uid()) OR p.manager_id = get_sub_user_landlord(auth.uid()))
+        AND (
+          get_landlord_trial_status(get_sub_user_landlord(auth.uid()))
+          OR get_sub_user_permissions(auth.uid(), 'manage_properties')
+          OR get_sub_user_permissions(auth.uid(), 'manage_tenants')
+          OR get_sub_user_permissions(auth.uid(), 'manage_leases')
+        )
+      )
+    )
+  )
+  OR EXISTS (
+    SELECT 1 FROM leases l
+    JOIN tenants t ON t.id = l.tenant_id
+    WHERE l.unit_id = units.id
+    AND t.user_id = auth.uid()
+  )
+);
+
+CREATE POLICY "Units - insert access"
+ON public.units FOR INSERT
+WITH CHECK (
+  has_role(auth.uid(), 'Admin'::app_role)
+  OR EXISTS (
+    SELECT 1 FROM properties p
+    WHERE p.id = units.property_id
+    AND (
+      p.owner_id = auth.uid()
+      OR p.manager_id = auth.uid()
+      OR (
+        (p.owner_id = get_sub_user_landlord(auth.uid()) OR p.manager_id = get_sub_user_landlord(auth.uid()))
+        AND get_sub_user_permissions(auth.uid(), 'manage_properties')
+      )
+    )
+  )
+);
+
+CREATE POLICY "Units - update access"
+ON public.units FOR UPDATE
+USING (
+  has_role(auth.uid(), 'Admin'::app_role)
+  OR EXISTS (
+    SELECT 1 FROM properties p
+    WHERE p.id = units.property_id
+    AND (
+      p.owner_id = auth.uid()
+      OR p.manager_id = auth.uid()
+      OR (
+        (p.owner_id = get_sub_user_landlord(auth.uid()) OR p.manager_id = get_sub_user_landlord(auth.uid()))
+        AND get_sub_user_permissions(auth.uid(), 'manage_properties')
+      )
+    )
+  )
+)
+WITH CHECK (
+  has_role(auth.uid(), 'Admin'::app_role)
+  OR EXISTS (
+    SELECT 1 FROM properties p
+    WHERE p.id = units.property_id
+    AND (
+      p.owner_id = auth.uid()
+      OR p.manager_id = auth.uid()
+      OR (
+        (p.owner_id = get_sub_user_landlord(auth.uid()) OR p.manager_id = get_sub_user_landlord(auth.uid()))
+        AND get_sub_user_permissions(auth.uid(), 'manage_properties')
+      )
+    )
+  )
+);
+
+CREATE POLICY "Units - delete access"
+ON public.units FOR DELETE
+USING (
+  has_role(auth.uid(), 'Admin'::app_role)
+  OR EXISTS (
+    SELECT 1 FROM properties p
+    WHERE p.id = units.property_id
+    AND (
+      p.owner_id = auth.uid()
+      OR p.manager_id = auth.uid()
+      OR (
+        (p.owner_id = get_sub_user_landlord(auth.uid()) OR p.manager_id = get_sub_user_landlord(auth.uid()))
+        AND get_sub_user_permissions(auth.uid(), 'manage_properties')
+      )
+    )
+  )
+);
+
+
+
+-- Migration: 20251003070447_221b4668-c191-4494-a3f9-397b16309750.sql
+
 -- Create secure RPC to fetch sub-user permissions
 -- This bypasses RLS issues and provides a secure way for sub-users to get their own permissions
 CREATE OR REPLACE FUNCTION public.get_my_sub_user_permissions()
@@ -40028,7 +41900,12 @@ BEGIN
   -- Return null if no sub-user record found or inactive
   RETURN v_result;
 END;
-$$;-- Migration: Secure sub-user trial access with permission checks
+$$;
+
+
+-- Migration: 20251003071641_1738d742-4763-4550-8a46-5dede03aec51.sql
+
+-- Migration: Secure sub-user trial access with permission checks
 -- Description: Sub-users get advanced features during landlord trial ONLY if landlord grants specific permissions
 
 -- Helper function: Map features to sub-user permission keys
@@ -40274,7 +42151,12 @@ end;
 $$;
 
 comment on function public.check_plan_feature_access(uuid, text, integer) is 
-'Checks feature access with permission-based trial logic. Sub-users get Enterprise features during landlord trial ONLY if landlord granted specific permissions.';-- Fix permission mapping for invoicing and communication features
+'Checks feature access with permission-based trial logic. Sub-users get Enterprise features during landlord trial ONLY if landlord granted specific permissions.';
+
+
+-- Migration: 20251003072757_be921943-14c1-489c-b918-68495fd7d5cf.sql
+
+-- Fix permission mapping for invoicing and communication features
 CREATE OR REPLACE FUNCTION public.map_feature_to_permission(_feature text)
 RETURNS text
 LANGUAGE sql
@@ -40322,7 +42204,12 @@ AS $function$
     
     else null  -- Unknown features default to landlord-only
   end;
-$function$;-- Fix infinite recursion in leases and tenants RLS policies
+$function$;
+
+
+-- Migration: 20251003073549_7806f289-43af-48dc-8f20-efe4372a69d2.sql
+
+-- Fix infinite recursion in leases and tenants RLS policies
 -- Creates security definer functions to break circular dependencies
 
 -- Step 1: Drop ALL existing policies on tenants and leases first
@@ -40447,7 +42334,12 @@ USING (
     WHERE t.id = leases.tenant_id
     AND t.user_id = auth.uid()
   )
-);-- Fix infinite recursion in leases and tenants RLS policies
+);
+
+
+-- Migration: 20251003073629_129c92c6-e60b-46e6-95d2-6953349aa216.sql
+
+-- Fix infinite recursion in leases and tenants RLS policies
 -- Creates security definer functions to break circular dependencies
 
 -- Step 1: Drop old policies that cause recursion (drop these FIRST)
@@ -40568,7 +42460,12 @@ AS $$
     false
   )
   FROM unnest(public.get_tenant_property_ids(_tenant_id)) AS property_id;
-$$;-- Fix infinite recursion in leases and tenants RLS policies
+$$;
+
+
+-- Migration: 20251003073713_e3244c30-e0c0-4edc-96bf-e763d2de49cd.sql
+
+-- Fix infinite recursion in leases and tenants RLS policies
 -- Creates security definer functions to break circular dependencies
 
 -- Step 1: Drop ALL existing policies on tenants and leases first
@@ -40693,7 +42590,12 @@ USING (
     WHERE t.id = leases.tenant_id
     AND t.user_id = auth.uid()
   )
-);-- Fix infinite recursion in leases and tenants RLS policies
+);
+
+
+-- Migration: 20251003073732_a919ec1b-2725-42ed-a07f-3607477ccab4.sql
+
+-- Fix infinite recursion in leases and tenants RLS policies
 -- Creates security definer functions to break circular dependencies
 
 -- Step 1: Drop ALL existing policies on tenants and leases first
@@ -40818,7 +42720,12 @@ USING (
     WHERE t.id = leases.tenant_id
     AND t.user_id = auth.uid()
   )
-);-- Fix infinite recursion in leases and tenants RLS policies
+);
+
+
+-- Migration: 20251003073750_42e5da17-9514-42b7-92d7-c1932ddf61fd.sql
+
+-- Fix infinite recursion in leases and tenants RLS policies
 -- Creates security definer functions to break circular dependencies
 
 -- Step 1: Drop ALL existing policies (including v2 policies)
@@ -40943,7 +42850,12 @@ USING (
     WHERE t.id = leases.tenant_id
     AND t.user_id = auth.uid()
   )
-);-- Fix infinite recursion in leases and tenants RLS policies
+);
+
+
+-- Migration: 20251003073811_ccdcab89-691c-4510-b365-b252ba8ff2c9.sql
+
+-- Fix infinite recursion in leases and tenants RLS policies
 -- Creates security definer functions to break circular dependencies
 
 -- Step 1: Drop old policies that cause recursion (drop these FIRST)
@@ -41064,7 +42976,12 @@ AS $$
     false
   )
   FROM unnest(public.get_tenant_property_ids(_tenant_id)) AS property_id;
-$$;-- Fix infinite recursion in leases and tenants RLS policies
+$$;
+
+
+-- Migration: 20251003073833_c22bb9c7-9dc9-4857-a17b-d59b208c6cfb.sql
+
+-- Fix infinite recursion in leases and tenants RLS policies
 -- Creates security definer functions to break circular dependencies
 
 -- Step 1: Drop ALL existing policies (including v2 policies)
@@ -41189,7 +43106,12 @@ USING (
     WHERE t.id = leases.tenant_id
     AND t.user_id = auth.uid()
   )
-);-- Fix infinite recursion in units and leases RLS policies
+);
+
+
+-- Migration: 20251003074923_26336506-3785-46d9-86b9-44f813091eb6.sql
+
+-- Fix infinite recursion in units and leases RLS policies
 -- Creates security definer functions to break circular dependencies
 
 -- Step 1: Drop ALL existing policies for units and leases
@@ -41284,7 +43206,12 @@ USING (
   public.has_role_safe(auth.uid(), 'Admin'::public.app_role)
   OR public.user_can_access_lease(id, auth.uid())
   OR public.is_lease_owned_by_tenant_user(id, auth.uid())
-);-- Fix infinite recursion in units and leases RLS policies
+);
+
+
+-- Migration: 20251003075009_f07afa90-5265-4849-b3c4-e5645706c17c.sql
+
+-- Fix infinite recursion in units and leases RLS policies
 -- Creates security definer functions to break circular dependencies
 
 -- Step 1: Drop ALL existing policies for units and leases
@@ -41379,7 +43306,12 @@ USING (
   public.has_role_safe(auth.uid(), 'Admin'::public.app_role)
   OR public.user_can_access_lease(id, auth.uid())
   OR public.is_lease_owned_by_tenant_user(id, auth.uid())
-);-- Create helper RPC functions for tour management
+);
+
+
+-- Migration: 20251003094309_1e19f8b1-2f64-48bc-9151-afd59f4eb82c.sql
+
+-- Create helper RPC functions for tour management
 CREATE OR REPLACE FUNCTION public.get_tour_status(p_user_id UUID, p_tour_name TEXT)
 RETURNS TEXT
 LANGUAGE plpgsql
@@ -41436,7 +43368,12 @@ BEGIN
     usage_count = EXCLUDED.usage_count,
     created_at = NOW();
 END;
-$$;-- Create user_getting_started_progress table
+$$;
+
+
+-- Migration: 20251003095532_675e7ca4-475e-428e-b0fd-4631e9e3572b.sql
+
+-- Create user_getting_started_progress table
 CREATE TABLE IF NOT EXISTS public.user_getting_started_progress (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
@@ -41485,7 +43422,12 @@ $$ LANGUAGE plpgsql;
 CREATE TRIGGER update_user_getting_started_updated_at
   BEFORE UPDATE ON public.user_getting_started_progress
   FOR EACH ROW
-  EXECUTE FUNCTION update_user_getting_started_updated_at();-- Fix map_feature_to_permission to use correct permission keys
+  EXECUTE FUNCTION update_user_getting_started_updated_at();
+
+
+-- Migration: 20251003100347_4718d69e-d38c-4eb5-800c-ad061a4c8b2d.sql
+
+-- Fix map_feature_to_permission to use correct permission keys
 -- This ensures sub-users can access features when their landlord is on trial
 
 create or replace function public.map_feature_to_permission(_feature text)
@@ -41536,7 +43478,12 @@ as $$
     
     else null  -- Unknown features default to landlord-only
   end;
-$$;-- Fix map_feature_to_permission to use correct permission keys
+$$;
+
+
+-- Migration: 20251003100406_e0b35e65-2922-49d1-8946-2f2801814c2d.sql
+
+-- Fix map_feature_to_permission to use correct permission keys
 -- This ensures sub-users can access features when their landlord is on trial
 
 create or replace function public.map_feature_to_permission(_feature text)
@@ -41587,7 +43534,12 @@ as $$
     
     else null  -- Unknown features default to landlord-only
   end;
-$$;-- Grant sub-users full Enterprise access during landlord trial
+$$;
+
+
+-- Migration: 20251003101244_f35316da-0b63-48fb-9123-459103983b19.sql
+
+-- Grant sub-users full Enterprise access during landlord trial
 -- This removes permission barriers and updates RLS policies
 
 -- 1. Update check_plan_feature_access to give sub-users unconditional Enterprise access during landlord trial
@@ -41907,7 +43859,12 @@ as $$
     and (p_status is null or i.status = p_status)
   order by i.created_at desc
   limit p_limit offset p_offset;
-$$;-- Fix check_plan_feature_access to return status='trial' for sub-users on landlord trial
+$$;
+
+
+-- Migration: 20251003101814_d44326c5-7f40-4d8b-875f-d09d029cc783.sql
+
+-- Fix check_plan_feature_access to return status='trial' for sub-users on landlord trial
 create or replace function public.check_plan_feature_access(
   _user_id uuid,
   _feature text,
@@ -42064,7 +44021,12 @@ begin
     'plan_name', v_plan.name
   );
 end;
-$$;-- Fix check_plan_feature_access to return status='trial' for sub-users on landlord trial
+$$;
+
+
+-- Migration: 20251003101917_338605f9-1a5d-4465-b4bc-4bf8d18982cf.sql
+
+-- Fix check_plan_feature_access to return status='trial' for sub-users on landlord trial
 create or replace function public.check_plan_feature_access(
   _user_id uuid,
   _feature text,
@@ -42221,7 +44183,12 @@ begin
     'plan_name', v_plan.name
   );
 end;
-$$;-- Update check_plan_feature_access to unlock all features during trial
+$$;
+
+
+-- Migration: 20251003102636_658f4243-63fd-4c3e-950b-3c52ca06613b.sql
+
+-- Update check_plan_feature_access to unlock all features during trial
 CREATE OR REPLACE FUNCTION public.check_plan_feature_access(
   _user_id uuid,
   _feature text,
@@ -42413,7 +44380,12 @@ BEGIN
     'plan_name', v_plan.name
   );
 END;
-$$;-- Update check_plan_feature_access to unlock all features during trial
+$$;
+
+
+-- Migration: 20251003102703_4c622691-b591-442e-b15d-fb7325432392.sql
+
+-- Update check_plan_feature_access to unlock all features during trial
 CREATE OR REPLACE FUNCTION public.check_plan_feature_access(
   _user_id uuid,
   _feature text,
@@ -42605,7 +44577,12 @@ BEGIN
     'plan_name', v_plan.name
   );
 END;
-$$;-- Seed default SMS templates for landlords
+$$;
+
+
+-- Migration: 20251003104730_d4435705-3aea-4f01-8c6d-9b1746f2d9da.sql
+
+-- Seed default SMS templates for landlords
 -- These templates will be available to all landlords as default templates
 
 INSERT INTO public.sms_templates (
@@ -42747,7 +44724,12 @@ INSERT INTO public.sms_templates (
     now(),
     now()
   )
-ON CONFLICT DO NOTHING;-- Fix unit status update trigger to respect maintenance status
+ON CONFLICT DO NOTHING;
+
+
+-- Migration: 20251006143755_cc6a070a-20ed-41fc-981a-c12ad99cd9c4.sql
+
+-- Fix unit status update trigger to respect maintenance status
 -- The trigger should not override maintenance status when managing lease changes
 
 DROP TRIGGER IF EXISTS trigger_update_unit_status_on_lease_change ON public.leases;
@@ -42801,7 +44783,12 @@ CREATE TRIGGER trigger_update_unit_status_on_lease_change
 
 -- Add comment to document the behavior
 COMMENT ON FUNCTION public.update_unit_status_on_lease_change() IS 
-  'Updates unit status based on lease changes. Preserves maintenance status and only updates to occupied/vacant when appropriate.';-- Create comprehensive SMS logs table
+  'Updates unit status based on lease changes. Preserves maintenance status and only updates to occupied/vacant when appropriate.';
+
+
+-- Migration: 20251007063835_62db8760-321b-459f-8419-34dccb1eef82.sql
+
+-- Create comprehensive SMS logs table
 CREATE TABLE IF NOT EXISTS public.sms_logs (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   phone_number text NOT NULL,
@@ -42875,10 +44862,20 @@ CREATE TRIGGER trigger_update_sms_logs_updated_at
 
 COMMENT ON TABLE public.sms_logs IS 'Comprehensive SMS logging with status tracking and resend capability';
 COMMENT ON COLUMN public.sms_logs.phone_number_formatted IS 'Phone number in E.164 format (254...)';
-COMMENT ON COLUMN public.sms_logs.message_type IS 'Type of SMS: general, credentials, notification, reminder';-- Drop KopoKopo tables and related objects
+COMMENT ON COLUMN public.sms_logs.message_type IS 'Type of SMS: general, credentials, notification, reminder';
+
+
+-- Migration: 20251017072830_b026605e-c81b-475c-ae72-f7e9306ed04e.sql
+
+-- Drop KopoKopo tables and related objects
 DROP TABLE IF EXISTS public.stk_push_requests CASCADE;
 DROP TABLE IF EXISTS public.kopokopo_payments CASCADE;
-DROP TABLE IF EXISTS public.orders CASCADE;-- Create billing_settings table
+DROP TABLE IF EXISTS public.orders CASCADE;
+
+
+-- Migration: 20251102181340_de49ad60-28d2-43f4-b387-2ad0a77ee3fa.sql
+
+-- Create billing_settings table
 CREATE TABLE IF NOT EXISTS billing_settings (
   setting_key TEXT PRIMARY KEY,
   setting_value JSONB NOT NULL,
@@ -42977,7 +44974,12 @@ INSERT INTO trial_notification_templates (template_name, subject, email_content,
  'Hi {{first_name}},\n\nYour trial has ended. You have a 7-day grace period. Upgrade now to restore full access.\n\nUpgrade: {{upgrade_url}}',
  '<h2>Hi {{first_name}}</h2><p>Your trial has ended. You have a <strong>7-day grace period</strong>.</p><p><a href="{{upgrade_url}}">Upgrade Now</a></p>',
  0)
-ON CONFLICT (template_name) DO NOTHING;-- P0: Clean up Simon's roles - Remove Landlord and Tenant roles, keep only Admin
+ON CONFLICT (template_name) DO NOTHING;
+
+
+-- Migration: 20251103085826_bd67ec03-b00d-4b74-bbac-7716338058da.sql
+
+-- P0: Clean up Simon's roles - Remove Landlord and Tenant roles, keep only Admin
 DELETE FROM user_roles 
 WHERE user_id = '23054b29-a494-42f2-bb35-d1bdf9cfdfcb' 
 AND role IN ('Landlord', 'Tenant');
@@ -43067,7 +45069,12 @@ DROP TRIGGER IF EXISTS enforce_role_conflicts ON user_roles;
 CREATE TRIGGER enforce_role_conflicts
   BEFORE INSERT ON user_roles
   FOR EACH ROW
-  EXECUTE FUNCTION prevent_role_conflicts();-- Enable pgcrypto extension for password hashing
+  EXECUTE FUNCTION prevent_role_conflicts();
+
+
+-- Migration: 20251104203619_8acd452d-c7ee-476f-b760-72b79ae0f1bd.sql
+
+-- Enable pgcrypto extension for password hashing
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
 -- Create SMS campaigns table for tracking bulk SMS campaigns
@@ -43102,14 +45109,24 @@ USING (public.has_role(auth.uid(), 'Admin'));
 -- Create indexes for performance
 CREATE INDEX idx_sms_campaigns_created_by ON public.sms_campaigns(created_by);
 CREATE INDEX idx_sms_campaigns_status ON public.sms_campaigns(status);
-CREATE INDEX idx_sms_campaigns_created_at ON public.sms_campaigns(created_at DESC);-- Add unique constraint on landlord_id to ensure one subscription per landlord
+CREATE INDEX idx_sms_campaigns_created_at ON public.sms_campaigns(created_at DESC);
+
+
+-- Migration: 20251105092435_cb25ad8c-f469-45f7-bed3-d07ad7e6cf4d.sql
+
+-- Add unique constraint on landlord_id to ensure one subscription per landlord
 ALTER TABLE landlord_subscriptions 
 ADD CONSTRAINT unique_landlord_subscription 
 UNIQUE (landlord_id);
 
 -- Add index for better performance on landlord_id lookups
 CREATE INDEX IF NOT EXISTS idx_landlord_subscriptions_landlord_id 
-ON landlord_subscriptions(landlord_id);-- Phase 1: Add SELECT policy for properties to fix visibility
+ON landlord_subscriptions(landlord_id);
+
+
+-- Migration: 20251105094638_cf1c6e80-1b4c-4ec6-889e-6f3b463d0332.sql
+
+-- Phase 1: Add SELECT policy for properties to fix visibility
 create policy "Properties - select access"
 on public.properties
 for select
@@ -43155,7 +45172,12 @@ $$;
 create trigger validate_property_owner_trigger
   before insert or update of owner_id on public.properties
   for each row
-  execute function public.validate_property_owner();-- Create billing_plan_audit table for tracking plan changes
+  execute function public.validate_property_owner();
+
+
+-- Migration: 20251105102537_ed5d1c6f-5d20-4bb8-9798-622de23c98be.sql
+
+-- Create billing_plan_audit table for tracking plan changes
 CREATE TABLE IF NOT EXISTS public.billing_plan_audit (
   id UUID NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
   billing_plan_id UUID NOT NULL REFERENCES public.billing_plans(id) ON DELETE CASCADE,
@@ -43220,7 +45242,12 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 CREATE TRIGGER billing_plan_audit_trigger
 AFTER INSERT OR UPDATE OR DELETE ON public.billing_plans
 FOR EACH ROW
-EXECUTE FUNCTION public.log_billing_plan_change();-- Helper function to get landlord rent total
+EXECUTE FUNCTION public.log_billing_plan_change();
+
+
+-- Migration: 20251105102629_7067a3a1-3926-4841-ab5a-96e60c6ddbb2.sql
+
+-- Helper function to get landlord rent total
 CREATE OR REPLACE FUNCTION public.get_landlord_rent_total(
   p_landlord_id UUID,
   p_start_date TIMESTAMP WITH TIME ZONE
@@ -43237,7 +45264,12 @@ BEGIN
   
   RETURN total;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;-- Phase 1: Optimize encryption triggers - only encrypt when data actually changes
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
+
+
+-- Migration: 20251105104035_ba1c3a76-1ad4-4a97-b6ff-4a72c47d9b00.sql
+
+-- Phase 1: Optimize encryption triggers - only encrypt when data actually changes
 CREATE OR REPLACE FUNCTION public.encrypt_tenant_sensitive_data()
 RETURNS trigger 
 LANGUAGE plpgsql 
@@ -43302,7 +45334,12 @@ CREATE INDEX IF NOT EXISTS idx_tenants_phone ON public.tenants (phone) WHERE pho
 CREATE INDEX IF NOT EXISTS idx_leases_unit_id_status ON public.leases (unit_id, status);
 
 -- Index for tenant_id lookups
-CREATE INDEX IF NOT EXISTS idx_leases_tenant_id ON public.leases (tenant_id);-- Fix RLS policies for tenant and lease creation
+CREATE INDEX IF NOT EXISTS idx_leases_tenant_id ON public.leases (tenant_id);
+
+
+-- Migration: 20251105105727_0b6bd16c-32c8-4c6a-9281-bc744d65ed28.sql
+
+-- Fix RLS policies for tenant and lease creation
 -- Drop problematic ALL policies and replace with specific operation policies
 
 -- =====================================================
@@ -43413,7 +45450,12 @@ BEGIN
   );
   RETURN NULL;
 END;
-$$;-- Fix user_tour_progress table schema
+$$;
+
+
+-- Migration: 20251105110746_dc8cb971-dc8f-4a74-ae99-836da34d916b.sql
+
+-- Fix user_tour_progress table schema
 -- This table is used by the interactive tours feature
 
 -- Drop the existing table if it exists with wrong schema
@@ -43466,7 +45508,12 @@ USING (has_role_safe(auth.uid(), 'Admin'::app_role));
 -- Create index for faster queries
 CREATE INDEX IF NOT EXISTS idx_user_tour_progress_user_id ON public.user_tour_progress(user_id);
 CREATE INDEX IF NOT EXISTS idx_user_tour_progress_tour_name ON public.user_tour_progress(tour_name);
-CREATE INDEX IF NOT EXISTS idx_user_tour_progress_status ON public.user_tour_progress(status);-- Update SMS bundles from USD to KES currency
+CREATE INDEX IF NOT EXISTS idx_user_tour_progress_status ON public.user_tour_progress(status);
+
+
+-- Migration: 20251105190602_14d9e218-eb32-4046-9836-1826caba139a.sql
+
+-- Update SMS bundles from USD to KES currency
 -- Conversion rate: 1 USD = 130 KES
 
 UPDATE sms_bundles 
@@ -43482,7 +45529,12 @@ SET
 WHERE currency = 'USD' OR currency IS NULL;
 
 -- Add comment for audit trail
-COMMENT ON TABLE sms_bundles IS 'SMS credit bundles for purchase. Prices are in local currency (KES for Kenya).';-- Create function to initialize SMS credits from billing plan
+COMMENT ON TABLE sms_bundles IS 'SMS credit bundles for purchase. Prices are in local currency (KES for Kenya).';
+
+
+-- Migration: 20251105191155_1f93664a-0a74-4a1c-a242-3aea388d3ee4.sql
+
+-- Create function to initialize SMS credits from billing plan
 CREATE OR REPLACE FUNCTION initialize_landlord_sms_credits()
 RETURNS TRIGGER AS $$
 DECLARE
@@ -43525,6 +45577,11 @@ WHERE sms_credits_balance = 0 OR sms_credits_balance IS NULL;
 
 -- Add comment for documentation
 COMMENT ON FUNCTION initialize_landlord_sms_credits() IS 'Automatically initializes SMS credits from billing plan when landlord subscribes or changes plan';
+
+
+
+-- Migration: 20251105191320_297013ca-031d-4f97-af66-f8d2ba418ac0.sql
+
 -- Create SMS Credit Transactions table for full audit trail
 CREATE TABLE IF NOT EXISTS sms_credit_transactions (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -43584,6 +45641,11 @@ COMMENT ON TABLE sms_credit_transactions IS 'Audit trail for all SMS credit chan
 COMMENT ON COLUMN sms_credit_transactions.credits_change IS 'Positive values for additions (purchase, refund), negative for usage';
 COMMENT ON COLUMN sms_credit_transactions.reference_id IS 'UUID linking to related record (sms_logs.id, mpesa_transactions.id, etc.)';
 COMMENT ON COLUMN sms_credit_transactions.reference_type IS 'Type of linked record for easier querying (sms_log, mpesa_transaction, subscription, manual)';
+
+
+
+-- Migration: 20251105205136_256705e5-1c16-431a-97cd-e42d3391ee82.sql
+
 -- Clean up duplicate SMS templates and add landlord personalization
 
 -- First, identify and delete duplicate default templates (keeping one of each)
@@ -43653,7 +45715,12 @@ SET
   variables = ARRAY['tenant_name', 'announcement_message', 'property_name', 'landlord_name']
 WHERE landlord_id IS NULL 
   AND name = 'General Announcement'
-  AND category = 'general';-- Fix create_default_landlord_subscription to use auth.users.created_at instead of NEW.created_at
+  AND category = 'general';
+
+
+-- Migration: 20251105205823_892d3913-ad6d-4fe9-b387-f6ecb51055ec.sql
+
+-- Fix create_default_landlord_subscription to use auth.users.created_at instead of NEW.created_at
 CREATE OR REPLACE FUNCTION create_default_landlord_subscription()
 RETURNS TRIGGER
 SECURITY DEFINER
@@ -43731,7 +45798,12 @@ BEGIN
 
   RETURN NEW;
 END;
-$$ LANGUAGE plpgsql;-- Fix Kamoni Wanjau's role from Agent to Tenant
+$$ LANGUAGE plpgsql;
+
+
+-- Migration: 20251105210503_72ca9eb0-7665-4d7f-a36a-203645831cff.sql
+
+-- Fix Kamoni Wanjau's role from Agent to Tenant
 UPDATE user_roles 
 SET role = 'Tenant'
 WHERE user_id = 'defe8caa-a1aa-4674-b6b0-3982d261b4f3'
@@ -43804,7 +45876,12 @@ $$ LANGUAGE plpgsql;
 CREATE TRIGGER prevent_tenant_role_removal
 BEFORE DELETE ON public.user_roles
 FOR EACH ROW
-EXECUTE FUNCTION public.validate_tenant_role_on_role_change();-- Create storage bucket for maintenance request images
+EXECUTE FUNCTION public.validate_tenant_role_on_role_change();
+
+
+-- Migration: 20251105213309_475a98ce-9fd0-4b32-ba75-2e4c56a969c6.sql
+
+-- Create storage bucket for maintenance request images
 INSERT INTO storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
 VALUES (
   'maintenance-images',
@@ -43853,7 +45930,12 @@ TO authenticated
 USING (
   bucket_id = 'maintenance-images'
   AND (storage.foldername(name))[1] = auth.uid()::text
-);-- Add landlord_images field to maintenance_requests table
+);
+
+
+-- Migration: 20251105214012_79c29d81-5841-489c-b56e-c2abfe1851f5.sql
+
+-- Add landlord_images field to maintenance_requests table
 ALTER TABLE public.maintenance_requests 
 ADD COLUMN IF NOT EXISTS landlord_images TEXT[] DEFAULT '{}';
 
@@ -43885,7 +45967,12 @@ USING (
     JOIN public.properties p ON mr.property_id = p.id
     WHERE p.owner_id = auth.uid() OR p.manager_id = auth.uid()
   )
-);-- Phase 1: Fix critical RLS policies for M-Pesa tables
+);
+
+
+-- Migration: 20251105224447_3af799c4-c82f-4747-a3fd-f12cf74b6de0.sql
+
+-- Phase 1: Fix critical RLS policies for M-Pesa tables
 
 -- =====================================================
 -- 1. Secure landlord_mpesa_configs table
@@ -43938,7 +46025,12 @@ WITH CHECK (
   initiated_by = auth.uid() OR 
   authorized_by = auth.uid() OR 
   has_role(auth.uid(), 'Admin'::app_role)
-);-- Phase 2: Add encrypted credential columns to landlord_mpesa_configs
+);
+
+
+-- Migration: 20251106080448_83e4447c-a882-405c-8568-371f3da8cfea.sql
+
+-- Phase 2: Add encrypted credential columns to landlord_mpesa_configs
 -- This allows storing encrypted credentials alongside plain text for migration period
 
 -- Step 1: Add encrypted credential columns (nullable during migration)
@@ -43966,7 +46058,12 @@ BEGIN
   RAISE NOTICE 'Phase 2 Security Migration: Added encrypted credential columns';
   RAISE NOTICE 'Landlords can now save encrypted credentials via secure form';
   RAISE NOTICE 'Plain text columns will be removed in Phase 3 after data migration';
-END $$;-- Phase 3: Remove plain text M-Pesa credential columns (Security Hardening)
+END $$;
+
+
+-- Migration: 20251106080811_3a26cfec-133d-4ca5-86ce-6621c9aa9591.sql
+
+-- Phase 3: Remove plain text M-Pesa credential columns (Security Hardening)
 -- This migration will archive records without encrypted credentials, then remove plain text columns
 
 -- Step 1: Log records that will be affected
@@ -44038,7 +46135,12 @@ BEGIN
   RAISE NOTICE '✅ Plain text M-Pesa credential columns removed';
   RAISE NOTICE '✅ All M-Pesa credentials are now encrypted-only';
   RAISE NOTICE '🔒 Security hardening complete - credentials cannot be exposed via database access';
-END $$;-- Fix M-Pesa availability check for tenants
+END $$;
+
+
+-- Migration: 20251106081757_7bea4aad-9eb2-4351-9754-cdcc734463ca.sql
+
+-- Fix M-Pesa availability check for tenants
 -- Allow tenants to see if their landlord has M-Pesa configured (but not credentials)
 
 -- Drop the existing restrictive policy
@@ -44081,7 +46183,12 @@ USING (
 
 -- Add comment for security audit
 COMMENT ON POLICY "tenants_check_availability" ON landlord_mpesa_configs IS 
-  'Allows tenants to check if their landlord has M-Pesa configured. Credentials are encrypted and tenants only query for existence (SELECT id), not actual credentials.';-- Add new columns for Till Number types and Kopo Kopo integration
+  'Allows tenants to check if their landlord has M-Pesa configured. Credentials are encrypted and tenants only query for existence (SELECT id), not actual credentials.';
+
+
+-- Migration: 20251106091317_1d53b75c-1d98-41fb-9b97-3cdab9115613.sql
+
+-- Add new columns for Till Number types and Kopo Kopo integration
 ALTER TABLE landlord_mpesa_configs 
 ADD COLUMN IF NOT EXISTS till_provider TEXT CHECK (till_provider IN ('safaricom', 'kopokopo'));
 
@@ -44111,7 +46218,12 @@ ON landlord_mpesa_configs(till_provider);
 -- Add comment for documentation
 COMMENT ON COLUMN landlord_mpesa_configs.till_provider IS 'Provider for till numbers: safaricom (direct) or kopokopo (payment gateway)';
 COMMENT ON COLUMN landlord_mpesa_configs.kopokopo_api_key_encrypted IS 'Encrypted Kopo Kopo API key for till payment processing';
-COMMENT ON COLUMN landlord_mpesa_configs.kopokopo_merchant_id IS 'Kopo Kopo merchant identifier';-- Create mpesa_stk_requests table if it doesn't exist
+COMMENT ON COLUMN landlord_mpesa_configs.kopokopo_merchant_id IS 'Kopo Kopo merchant identifier';
+
+
+-- Migration: 20251106091909_65a8c480-f586-4df2-a09b-711301e3e72e.sql
+
+-- Create mpesa_stk_requests table if it doesn't exist
 CREATE TABLE IF NOT EXISTS mpesa_stk_requests (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   merchant_request_id TEXT NOT NULL,
@@ -44164,7 +46276,12 @@ CREATE TRIGGER update_mpesa_stk_requests_updated_at
 -- Add comments for documentation
 COMMENT ON TABLE mpesa_stk_requests IS 'Stores M-Pesa and Kopo Kopo STK push payment requests';
 COMMENT ON COLUMN mpesa_stk_requests.provider IS 'Payment provider used: mpesa (Safaricom direct) or kopokopo (Kopo Kopo gateway)';
-COMMENT ON COLUMN mpesa_stk_requests.payment_type IS 'Type of payment: rent, service-charge, subscription, sms_bundle';-- Phase 3.1: Update Database Schema for Kopo Kopo OAuth credentials
+COMMENT ON COLUMN mpesa_stk_requests.payment_type IS 'Type of payment: rent, service-charge, subscription, sms_bundle';
+
+
+-- Migration: 20251106093127_a16c9b18-115c-4b66-9424-8d35d111d126.sql
+
+-- Phase 3.1: Update Database Schema for Kopo Kopo OAuth credentials
 -- Add new columns for OAuth-based authentication
 
 ALTER TABLE public.landlord_mpesa_configs 
@@ -44176,7 +46293,12 @@ COMMENT ON COLUMN public.landlord_mpesa_configs.kopokopo_client_id IS 'Kopo Kopo
 COMMENT ON COLUMN public.landlord_mpesa_configs.kopokopo_client_secret_encrypted IS 'Encrypted Kopo Kopo OAuth Client Secret';
 
 -- Note: Keeping old kopokopo_api_key_encrypted and kopokopo_merchant_id columns for backward compatibility
--- They can be deprecated in a future migration after all users have migrated-- Add M-Pesa configuration preference to landlord_payment_preferences
+-- They can be deprecated in a future migration after all users have migrated
+
+
+-- Migration: 20251106102406_c0618201-c3d2-41dd-b3c5-4f636d85d273.sql
+
+-- Add M-Pesa configuration preference to landlord_payment_preferences
 ALTER TABLE landlord_payment_preferences 
 ADD COLUMN IF NOT EXISTS mpesa_config_preference TEXT DEFAULT 'platform_default' CHECK (mpesa_config_preference IN ('custom', 'platform_default'));
 
@@ -44185,7 +46307,12 @@ COMMENT ON COLUMN landlord_payment_preferences.mpesa_config_preference IS 'Wheth
 -- Update existing rows to use platform_default by default
 UPDATE landlord_payment_preferences 
 SET mpesa_config_preference = 'platform_default' 
-WHERE mpesa_config_preference IS NULL;-- Backfill payment preferences for landlords without explicit preferences
+WHERE mpesa_config_preference IS NULL;
+
+
+-- Migration: 20251106124508_093b1ac0-0c16-4779-a549-1ccf2cc40c21.sql
+
+-- Backfill payment preferences for landlords without explicit preferences
 -- This ensures all existing landlords using platform defaults have a proper database record
 
 INSERT INTO landlord_payment_preferences (
@@ -44210,7 +46337,12 @@ WHERE pr.owner_id NOT IN (
   SELECT landlord_id 
   FROM landlord_payment_preferences
 )
-ON CONFLICT (landlord_id) DO NOTHING;-- Add platform configuration to billing_settings table
+ON CONFLICT (landlord_id) DO NOTHING;
+
+
+-- Migration: 20251106125332_4b75937c-3ea5-4c24-a8ae-ba1a0d01f81c.sql
+
+-- Add platform configuration to billing_settings table
 -- This makes hardcoded values like M-Pesa shortcode, phone validation, and payment defaults configurable
 
 -- Platform M-Pesa Configuration
@@ -44308,7 +46440,12 @@ SET configuration = jsonb_set(
     END
   )
 )
-WHERE configuration IS NULL OR configuration->'display' IS NULL;-- Allow tenants to view payment preferences for their landlords
+WHERE configuration IS NULL OR configuration->'display' IS NULL;
+
+
+-- Migration: 20251110065050_c4a2aaef-bd2a-4be5-be92-0040da720004.sql
+
+-- Allow tenants to view payment preferences for their landlords
 -- This enables tenants to check M-Pesa availability when making payments
 CREATE POLICY "tenants_can_check_payment_preferences" 
 ON landlord_payment_preferences
@@ -44325,7 +46462,12 @@ USING (
       AND p.owner_id = landlord_payment_preferences.landlord_id
       AND l.status = 'active'
   )
-);-- Add RLS policy to allow tenants to view properties for M-Pesa availability checks
+);
+
+
+-- Migration: 20251110070017_2f941255-695f-4968-9f46-0fc4cc776cfd.sql
+
+-- Add RLS policy to allow tenants to view properties for M-Pesa availability checks
 -- This allows tenants to read property information only for properties where they have active leases
 -- This is required for the M-Pesa payment flow to determine the landlord's payment configuration
 
@@ -44343,11 +46485,21 @@ USING (
       AND u.property_id = properties.id
       AND l.status = 'active'
   )
-);-- Enable realtime for M-Pesa transactions table
+);
+
+
+-- Migration: 20251110071029_82c2b264-607b-4e22-9648-571dabacda8e.sql
+
+-- Enable realtime for M-Pesa transactions table
 ALTER TABLE public.mpesa_transactions REPLICA IDENTITY FULL;
 
 -- Add the table to the realtime publication
-ALTER PUBLICATION supabase_realtime ADD TABLE public.mpesa_transactions;-- Fix the encrypt_pii function to use correct pgcrypto encryption
+ALTER PUBLICATION supabase_realtime ADD TABLE public.mpesa_transactions;
+
+
+-- Migration: 20251110072724_e8d79870-517b-4e8f-9c14-3350e27b497c.sql
+
+-- Fix the encrypt_pii function to use correct pgcrypto encryption
 -- The current function incorrectly uses encrypt_iv which doesn't exist
 -- Replace with proper AES encryption using encrypt function
 
@@ -44379,7 +46531,12 @@ EXCEPTION
     RAISE WARNING 'Encryption failed: %', SQLERRM;
     RETURN NULL;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;-- Fix encrypt_pii and decrypt_pii functions to use correct pgcrypto encryption
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+
+-- Migration: 20251110073711_cd2c2c5e-fa9a-4fef-b9d1-6fc7b8894ea1.sql
+
+-- Fix encrypt_pii and decrypt_pii functions to use correct pgcrypto encryption
 -- The current functions incorrectly use encrypt_iv which doesn't exist
 -- Replace with proper AES-CBC encryption with IV handling
 
@@ -44445,7 +46602,12 @@ EXCEPTION
   WHEN OTHERS THEN
     RAISE EXCEPTION 'Decryption failed: %', SQLERRM;
 END;
-$$ LANGUAGE plpgsql SECURITY INVOKER SET search_path = 'public';-- Fix encrypt_pii function with proper search_path and fully-qualified calls
+$$ LANGUAGE plpgsql SECURITY INVOKER SET search_path = 'public';
+
+
+-- Migration: 20251110112411_48f39d26-20a9-4b39-b7a2-0418fa7d0b81.sql
+
+-- Fix encrypt_pii function with proper search_path and fully-qualified calls
 DROP FUNCTION IF EXISTS public.encrypt_pii(text, text);
 CREATE OR REPLACE FUNCTION public.encrypt_pii(data TEXT, key TEXT)
 RETURNS TEXT
@@ -44548,7 +46710,12 @@ BEGIN
   ) THEN
     ALTER PUBLICATION supabase_realtime ADD TABLE public.mpesa_transactions;
   END IF;
-END $$;-- Enable full row replication for invoices table to support realtime updates
+END $$;
+
+
+-- Migration: 20251110114100_3aaa1860-e205-4989-bf2d-6da1944eb7a8.sql
+
+-- Enable full row replication for invoices table to support realtime updates
 ALTER TABLE public.invoices REPLICA IDENTITY FULL;
 
 -- Add invoices table to realtime publication (if not already added)
@@ -44561,7 +46728,12 @@ BEGIN
   ) THEN
     ALTER PUBLICATION supabase_realtime ADD TABLE public.invoices;
   END IF;
-END $$;-- Make standard M-Pesa credential fields nullable to support multiple credential types
+END $$;
+
+
+-- Migration: 20251110212815_f405e6ad-e5b8-40c8-bf22-1a0364d5d737.sql
+
+-- Make standard M-Pesa credential fields nullable to support multiple credential types
 ALTER TABLE landlord_mpesa_configs
   ALTER COLUMN consumer_key_encrypted DROP NOT NULL,
   ALTER COLUMN consumer_secret_encrypted DROP NOT NULL,
@@ -44585,7 +46757,12 @@ ALTER TABLE landlord_mpesa_configs
         AND consumer_secret_encrypted IS NOT NULL 
         AND passkey_encrypted IS NOT NULL
     END
-  );-- Remove restrictive UNIQUE constraint that prevents multiple configs per landlord
+  );
+
+
+-- Migration: 20251110220531_d0fc2968-5d4c-4f4f-ae17-80170800beac.sql
+
+-- Remove restrictive UNIQUE constraint that prevents multiple configs per landlord
 ALTER TABLE public.landlord_mpesa_configs 
   DROP CONSTRAINT IF EXISTS landlord_mpesa_configs_landlord_unique;
 
@@ -44598,7 +46775,12 @@ CREATE UNIQUE INDEX IF NOT EXISTS landlord_mpesa_configs_active_unique_idx
 
 -- Add helpful comment
 COMMENT ON INDEX landlord_mpesa_configs_active_unique_idx IS 
-  'Ensures each landlord can have only ONE active M-Pesa config at a time, but allows multiple inactive configs for different payment types';-- Add credentials_verified field to track successfully tested Kopo Kopo configs
+  'Ensures each landlord can have only ONE active M-Pesa config at a time, but allows multiple inactive configs for different payment types';
+
+
+-- Migration: 20251110222750_c9ed505d-6bd3-4729-8468-6a78718db37a.sql
+
+-- Add credentials_verified field to track successfully tested Kopo Kopo configs
 ALTER TABLE public.landlord_mpesa_configs 
 ADD COLUMN IF NOT EXISTS credentials_verified BOOLEAN DEFAULT false;
 
@@ -44612,7 +46794,12 @@ ON public.landlord_mpesa_configs(credentials_verified)
 WHERE credentials_verified = true;
 
 COMMENT ON COLUMN public.landlord_mpesa_configs.credentials_verified IS 'Indicates if credentials have been successfully tested';
-COMMENT ON COLUMN public.landlord_mpesa_configs.last_verified_at IS 'Timestamp of last successful credential verification';-- Add provider column to mpesa_transactions
+COMMENT ON COLUMN public.landlord_mpesa_configs.last_verified_at IS 'Timestamp of last successful credential verification';
+
+
+-- Migration: 20251112181133_6143b95c-d066-4300-ba23-4ec109ed518e.sql
+
+-- Add provider column to mpesa_transactions
 ALTER TABLE mpesa_transactions 
 ADD COLUMN provider text DEFAULT 'mpesa' CHECK (provider IN ('mpesa', 'kopokopo'));
 
@@ -44631,7 +46818,12 @@ SET provider = COALESCE(
 WHERE provider IS NULL OR provider = 'mpesa';
 
 -- Add comment for documentation
-COMMENT ON COLUMN mpesa_transactions.provider IS 'Payment provider: mpesa (Safaricom direct) or kopokopo (Kopo Kopo gateway)';-- Fix generate_invoice_number function to use correct year formatting
+COMMENT ON COLUMN mpesa_transactions.provider IS 'Payment provider: mpesa (Safaricom direct) or kopokopo (Kopo Kopo gateway)';
+
+
+-- Migration: 20251112194809_929014af-a283-4e35-9dc8-6cc2dfebb870.sql
+
+-- Fix generate_invoice_number function to use correct year formatting
 -- Bug: TO_CHAR(EXTRACT(YEAR FROM CURRENT_DATE), 'YYYY') returns 'YYYY' as a literal string
 -- Fix: Use EXTRACT(YEAR FROM CURRENT_DATE)::text to get the actual year
 
@@ -44659,7 +46851,12 @@ $function$;
 -- Update existing invoices with YYYY in their numbers to use current year (2025)
 UPDATE public.invoices
 SET invoice_number = REPLACE(invoice_number, 'INV-YYYY-', 'INV-2025-')
-WHERE invoice_number LIKE 'INV-YYYY-%';-- Create table to track overdue invoice reminders
+WHERE invoice_number LIKE 'INV-YYYY-%';
+
+
+-- Migration: 20251112195113_217b135a-e483-480a-9a91-4aa1e4b46e1d.sql
+
+-- Create table to track overdue invoice reminders
 CREATE TABLE IF NOT EXISTS public.invoice_overdue_reminders (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   invoice_id UUID NOT NULL REFERENCES public.invoices(id) ON DELETE CASCADE,
@@ -44695,7 +46892,12 @@ USING (
   OR public.has_role(auth.uid(), 'Admin'::public.app_role)
 );
 
-COMMENT ON TABLE public.invoice_overdue_reminders IS 'Tracks automated SMS reminders sent for overdue invoices';-- Enforce single role per user and email uniqueness
+COMMENT ON TABLE public.invoice_overdue_reminders IS 'Tracks automated SMS reminders sent for overdue invoices';
+
+
+-- Migration: 20251112200451_ccc79c9e-36fa-4443-8d02-9de7f50a2cc0.sql
+
+-- Enforce single role per user and email uniqueness
 -- This migration prevents RLS confusion by ensuring one user = one role
 
 -- Step 1: Check for existing multi-role users (will fail if any exist)
@@ -44752,7 +46954,12 @@ BEGIN
   RAISE NOTICE '  - Added unique constraint on profiles.email';
   RAISE NOTICE '  - Added performance indexes';
   RAISE NOTICE '  - System now enforces: 1 user = 1 role = 1 email';
-END $$;-- Create plan_features table to define all available features
+END $$;
+
+
+-- Migration: 20251112202605_378fe8c2-01ef-410c-a50d-2374b94ca637.sql
+
+-- Create plan_features table to define all available features
 CREATE TABLE IF NOT EXISTS plan_features (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   feature_key text UNIQUE NOT NULL,
@@ -44833,7 +47040,12 @@ BEGIN
   WHERE pf.is_active = true
   ORDER BY pf.category, pf.sort_order, pf.display_name;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;-- Seed plan_features with initial feature definitions
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+
+-- Migration: 20251112202635_564b92a1-1d69-44a9-8dae-831f83eb6924.sql
+
+-- Seed plan_features with initial feature definitions
 INSERT INTO plan_features (feature_key, display_name, description, category, icon_name, menu_item_title, sort_order) VALUES
 -- Core Features
 ('dashboard.access', 'Dashboard Access', 'Access to main dashboard with key metrics', 'core', 'LayoutDashboard', 'Dashboard', 10),
@@ -44895,7 +47107,12 @@ SELECT bp.id, pf.feature_key, true
 FROM billing_plans bp
 CROSS JOIN plan_features pf
 WHERE bp.name = 'Professional' AND pf.category IN ('core', 'advanced', 'premium')
-ON CONFLICT (billing_plan_id, feature_key) DO NOTHING;-- First, let's see what's preventing the update
+ON CONFLICT (billing_plan_id, feature_key) DO NOTHING;
+
+
+-- Migration: 20251112210203_fc466a58-7b3f-48a1-887f-894ddecc67ef.sql
+
+-- First, let's see what's preventing the update
 -- Drop the foreign key constraint temporarily, update, then recreate with CASCADE
 
 -- Drop the existing foreign key
@@ -44981,7 +47198,12 @@ FROM billing_plans bp
 CROSS JOIN plan_features pf
 WHERE bp.name IN ('Professional', 'Enterprise') 
 AND pf.feature_key LIKE 'reports.%'
-ON CONFLICT (billing_plan_id, feature_key) DO NOTHING;-- Update check_plan_feature_access to use billing_plan_features table
+ON CONFLICT (billing_plan_id, feature_key) DO NOTHING;
+
+
+-- Migration: 20251112211608_f1350966-9f50-40b0-853a-a24457b1044f.sql
+
+-- Update check_plan_feature_access to use billing_plan_features table
 CREATE OR REPLACE FUNCTION public.check_plan_feature_access(
   _user_id uuid,
   _feature text,
@@ -45260,7 +47482,12 @@ END;
 $$;
 
 COMMENT ON FUNCTION public.check_plan_feature_access(uuid, text, integer) IS 
-'Checks feature access using billing_plan_features table. Preserves trial and sub-user permission logic.';-- Fix handle_new_user function with proper security and error handling
+'Checks feature access using billing_plan_features table. Preserves trial and sub-user permission logic.';
+
+
+-- Migration: 20251115034110_89881ee2-707c-4eac-a70c-28ed6751c290.sql
+
+-- Fix handle_new_user function with proper security and error handling
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS trigger
 LANGUAGE plpgsql
@@ -45402,7 +47629,12 @@ LEFT JOIN public.user_roles ur ON au.id = ur.user_id
 WHERE p.id IS NULL OR ur.user_id IS NULL
 ORDER BY au.created_at DESC;
 
-COMMENT ON VIEW public.orphaned_users_monitor IS 'Monitor for users in auth.users missing profiles or roles';-- Create RPC function for tenant and optional lease creation
+COMMENT ON VIEW public.orphaned_users_monitor IS 'Monitor for users in auth.users missing profiles or roles';
+
+
+-- Migration: 20251115035948_1fc362a7-a07a-40d8-82e2-ace6e93d1be3.sql
+
+-- Create RPC function for tenant and optional lease creation
 CREATE OR REPLACE FUNCTION public.create_tenant_and_optional_lease(
   p_first_name text,
   p_last_name text,
@@ -45631,6 +47863,11 @@ END;
 $$;
 
 COMMENT ON FUNCTION public.create_tenant_and_optional_lease IS 'Creates a tenant record and optionally a lease in a single transaction. Also creates auth user account. Requires authenticated landlord.';
+
+
+-- Migration: 20251116043822_16ccbc83-c557-4e48-b0f1-43942b9654ac.sql
+
+
 -- Fix create_tenant_and_optional_lease to match actual tenants table schema
 CREATE OR REPLACE FUNCTION public.create_tenant_and_optional_lease(
   p_first_name text,
@@ -45888,6 +48125,11 @@ $$;
 
 -- Grant execute permission to authenticated users
 GRANT EXECUTE ON FUNCTION public.create_tenant_and_optional_lease TO authenticated;
+
+
+
+-- Migration: 20251117083229_020a586e-deb1-4574-8fba-8abfe8c7b9e2.sql
+
 -- Update lookup_tenant_in_portfolio to include national_id check
 CREATE OR REPLACE FUNCTION public.lookup_tenant_in_portfolio(
   p_email text DEFAULT NULL,
@@ -45939,7 +48181,12 @@ BEGIN
 
   RETURN v_result;
 END;
-$$;-- Drop existing buggy function(s)
+$$;
+
+
+-- Migration: 20251117084213_650c7444-eefa-4b8c-87cd-0b1240ed1f1d.sql
+
+-- Drop existing buggy function(s)
 DROP FUNCTION IF EXISTS public.lookup_tenant_in_portfolio(text, text, text);
 DROP FUNCTION IF EXISTS public.lookup_tenant_in_portfolio(text, text);
 
@@ -46005,7 +48252,12 @@ BEGIN
     'current_units', v_unit_count
   );
 END;
-$$;-- Fix create_tenant_and_optional_lease to work without auth.users creation
+$$;
+
+
+-- Migration: 20251117090612_5942e33e-340d-4faa-abe5-03c7d71e512b.sql
+
+-- Fix create_tenant_and_optional_lease to work without auth.users creation
 -- This removes the problematic auth user creation logic that was causing silent failures
 
 CREATE OR REPLACE FUNCTION public.create_tenant_and_optional_lease(
@@ -46201,7 +48453,12 @@ EXCEPTION
       'detail', SQLSTATE
     );
 END;
-$$;-- Drop the old version of create_tenant_and_optional_lease that has deprecated parameters
+$$;
+
+
+-- Migration: 20251117093952_5aab5fb0-2dbc-42dc-ad2a-5087c378b236.sql
+
+-- Drop the old version of create_tenant_and_optional_lease that has deprecated parameters
 DROP FUNCTION IF EXISTS public.create_tenant_and_optional_lease(
   p_first_name text,
   p_last_name text,
@@ -46239,7 +48496,12 @@ BEGIN
   END IF;
   
   RAISE NOTICE 'Successfully verified: Only 1 version of create_tenant_and_optional_lease exists';
-END $$;-- Drop old recursive policies on leases table that cause infinite recursion
+END $$;
+
+
+-- Migration: 20251117100040_e9efed1f-b983-4728-a763-135025e77b2b.sql
+
+-- Drop old recursive policies on leases table that cause infinite recursion
 DROP POLICY IF EXISTS "leases_select_policy" ON public.leases;
 DROP POLICY IF EXISTS "leases_insert_policy" ON public.leases;
 DROP POLICY IF EXISTS "leases_update_policy" ON public.leases;
@@ -46257,7 +48519,12 @@ USING (
     WHERE t.id = leases.tenant_id
       AND t.user_id = auth.uid()
   )
-);-- Step 1: Drop the problematic property policy that causes recursion
+);
+
+
+-- Migration: 20251117100552_2a2a16f5-c689-4c30-8969-d4fb63ba87bc.sql
+
+-- Step 1: Drop the problematic property policy that causes recursion
 DROP POLICY IF EXISTS "tenants_can_view_property_for_mpesa_check" ON public.properties;
 
 -- Step 2: Rewrite tenant_belongs_to_user to avoid recursion
@@ -46343,7 +48610,12 @@ USING (
 DO $$
 BEGIN
   RAISE NOTICE 'Migration completed. Policies updated to prevent recursion.';
-END $$;-- Drop the problematic property policy that causes infinite recursion
+END $$;
+
+
+-- Migration: 20251117101349_663b9025-42c3-4f43-8357-d7bf7751456e.sql
+
+-- Drop the problematic property policy that causes infinite recursion
 -- This policy creates a cycle: properties -> leases -> properties
 DROP POLICY IF EXISTS "tenants_can_view_property_for_mpesa_check" ON public.properties;
 
@@ -46351,7 +48623,12 @@ DROP POLICY IF EXISTS "tenants_can_view_property_for_mpesa_check" ON public.prop
 DO $$
 BEGIN
   RAISE NOTICE 'Removed tenants_can_view_property_for_mpesa_check policy to prevent infinite recursion';
-END $$;-- Remove duplicate INSERT policy on tenants table
+END $$;
+
+
+-- Migration: 20251117102047_39eb5e5d-7927-4fc2-a5fe-80019aaddc04.sql
+
+-- Remove duplicate INSERT policy on tenants table
 DROP POLICY IF EXISTS "Landlords can insert tenants" ON public.tenants;
 
 -- Verify only one INSERT policy remains
@@ -46369,7 +48646,12 @@ BEGIN
   ELSE
     RAISE WARNING 'Expected 1 INSERT policy but found %', policy_count;
   END IF;
-END $$;-- Add missing columns to tenants table
+END $$;
+
+
+-- Migration: 20251117120254_262ce90f-fe41-43d1-adca-ee849b2190c7.sql
+
+-- Add missing columns to tenants table
 ALTER TABLE public.tenants 
 ADD COLUMN IF NOT EXISTS date_of_birth date,
 ADD COLUMN IF NOT EXISTS employer_contact text,
@@ -46382,7 +48664,12 @@ COMMENT ON COLUMN public.tenants.date_of_birth IS 'Tenant date of birth';
 COMMENT ON COLUMN public.tenants.employer_contact IS 'Tenant employer contact information';
 COMMENT ON COLUMN public.tenants.emergency_contact_relationship IS 'Relationship of emergency contact to tenant';
 COMMENT ON COLUMN public.tenants.previous_landlord_name IS 'Previous landlord name for reference';
-COMMENT ON COLUMN public.tenants.previous_landlord_contact IS 'Previous landlord contact information';-- Fix ensure_tenant_role_consistency function to correctly access user_id from tenants table
+COMMENT ON COLUMN public.tenants.previous_landlord_contact IS 'Previous landlord contact information';
+
+
+-- Migration: 20251117120726_a6346ecc-58e1-4fa2-9dae-2d18a56f5f16.sql
+
+-- Fix ensure_tenant_role_consistency function to correctly access user_id from tenants table
 CREATE OR REPLACE FUNCTION public.ensure_tenant_role_consistency()
 RETURNS TRIGGER
 SECURITY DEFINER
@@ -46414,7 +48701,12 @@ BEGIN
   
   RETURN NEW;
 END;
-$$ LANGUAGE plpgsql;-- Cleanup: Fix tenant role assignments - exclude Admin users
+$$ LANGUAGE plpgsql;
+
+
+-- Migration: 20251117122943_da3d0276-7624-4587-8d6b-7ab1ff968131.sql
+
+-- Cleanup: Fix tenant role assignments - exclude Admin users
 -- Only fix users who are in tenants table AND don't have Admin role
 
 BEGIN;
@@ -46448,7 +48740,12 @@ WHERE ls.landlord_id = t.user_id
     WHERE ur.user_id = t.user_id AND ur.role = 'Admin'
   );
 
-COMMIT;-- Create role eligibility validation function
+COMMIT;
+
+
+-- Migration: 20251117124102_bde90cde-1c34-4e75-abf8-0ce27697a8b1.sql
+
+-- Create role eligibility validation function
 -- Validates whether a user should have a specific role based on database records
 
 CREATE OR REPLACE FUNCTION public.validate_role_eligibility(
@@ -46500,7 +48797,12 @@ COMMENT ON FUNCTION public.validate_role_eligibility IS
 'Validates whether a user should have a specific role based on database records. Returns true if user meets the requirements for the role.';
 
 -- Grant execute to authenticated users
-GRANT EXECUTE ON FUNCTION public.validate_role_eligibility(uuid, app_role) TO authenticated;-- Add tenant email conflict prevention trigger
+GRANT EXECUTE ON FUNCTION public.validate_role_eligibility(uuid, app_role) TO authenticated;
+
+
+-- Migration: 20251117124110_42a9c336-e676-4645-8362-26bfe094d622.sql
+
+-- Add tenant email conflict prevention trigger
 -- Warns when tenant record email matches auth user without explicit user_id link
 
 CREATE OR REPLACE FUNCTION public.prevent_tenant_email_conflict()
@@ -46549,7 +48851,12 @@ CREATE TRIGGER check_tenant_email_conflict
   EXECUTE FUNCTION public.prevent_tenant_email_conflict();
 
 COMMENT ON FUNCTION public.prevent_tenant_email_conflict IS 
-'Prevents tenant records from being created with emails matching auth users with elevated roles. Warns if email matches any auth user without explicit user_id link.';-- Update role conflict logic to allow Landlord + Tenant combination
+'Prevents tenant records from being created with emails matching auth users with elevated roles. Warns if email matches any auth user without explicit user_id link.';
+
+
+-- Migration: 20251117124226_f91ccf94-ec29-4fcd-8376-c450fe401bfc.sql
+
+-- Update role conflict logic to allow Landlord + Tenant combination
 -- A user can be both a tenant (renting) and a landlord (owning properties)
 
 CREATE OR REPLACE FUNCTION public.check_role_conflict(_user_id uuid, _new_role app_role)
@@ -46597,7 +48904,12 @@ END;
 $$;
 
 COMMENT ON FUNCTION public.check_role_conflict IS 
-'Checks for role conflicts. Admin is exclusive. Landlord + Tenant is allowed (user can rent and own). SubUser + Landlord is not allowed.';-- Fix user_roles table to allow multiple roles per user
+'Checks for role conflicts. Admin is exclusive. Landlord + Tenant is allowed (user can rent and own). SubUser + Landlord is not allowed.';
+
+
+-- Migration: 20251117124248_97de952c-7e81-42a4-b105-530943982bc4.sql
+
+-- Fix user_roles table to allow multiple roles per user
 -- The constraint should be on (user_id, role) not just user_id
 
 BEGIN;
@@ -46621,7 +48933,12 @@ END $$;
 COMMIT;
 
 COMMENT ON TABLE public.user_roles IS 
-'User roles table. Users can have multiple roles (e.g., both Landlord and Tenant). Unique constraint on (user_id, role) prevents duplicate role assignments.';-- Now add Landlord role to hawijeremiah after fixing constraints
+'User roles table. Users can have multiple roles (e.g., both Landlord and Tenant). Unique constraint on (user_id, role) prevents duplicate role assignments.';
+
+
+-- Migration: 20251117124252_f618feb1-c003-4723-91ce-689baa4169bf.sql
+
+-- Now add Landlord role to hawijeremiah after fixing constraints
 
 BEGIN;
 
@@ -46660,7 +48977,12 @@ WHERE ur.role = 'Tenant'
     WHERE ur2.user_id = ur.user_id AND ur2.role = 'Admin'
   );
 
-COMMIT;-- Swap active M-Pesa configs for landlord hawijeremiah@gmail.com
+COMMIT;
+
+
+-- Migration: 20251117135034_ef2e1bc3-4092-470b-afa6-313775155842.sql
+
+-- Swap active M-Pesa configs for landlord hawijeremiah@gmail.com
 -- Activate the verified Till (855087) and deactivate the unverified Paybill (4117923)
 
 -- Activate the verified Till config (855087)
@@ -46677,7 +48999,12 @@ SET
   is_active = false,
   updated_at = now()
 WHERE id = '93a5fc74-f160-4359-97ae-7ae8e25ebccf'
-  AND landlord_id = '48a2a4ae-ded3-4c3e-966b-c26711a6d3a9';-- Add constraint to ensure only one active M-Pesa config per landlord
+  AND landlord_id = '48a2a4ae-ded3-4c3e-966b-c26711a6d3a9';
+
+
+-- Migration: 20251117155134_9eaa7f3b-3799-4748-9a5f-b1af04cea07c.sql
+
+-- Add constraint to ensure only one active M-Pesa config per landlord
 -- This prevents multiple active payment configurations which could cause confusion
 
 CREATE UNIQUE INDEX IF NOT EXISTS idx_one_active_mpesa_config_per_landlord 
@@ -46685,7 +49012,12 @@ ON landlord_mpesa_configs (landlord_id)
 WHERE is_active = true;
 
 COMMENT ON INDEX idx_one_active_mpesa_config_per_landlord IS 
-'Ensures only one active M-Pesa configuration per landlord at any time';-- Update get_tenant_maintenance_data function to count 'resolved' status as completed
+'Ensures only one active M-Pesa configuration per landlord at any time';
+
+
+-- Migration: 20251117163140_0d1589b4-00dd-4fa9-af0c-762ed8c39e21.sql
+
+-- Update get_tenant_maintenance_data function to count 'resolved' status as completed
 CREATE OR REPLACE FUNCTION public.get_tenant_maintenance_data(
   p_user_id uuid DEFAULT auth.uid(), 
   p_limit integer DEFAULT 50
@@ -46734,7 +49066,12 @@ BEGIN
 
   RETURN v_result;
 END;
-$function$;-- Create table for Jenga PAY IPN callbacks
+$function$;
+
+
+-- Migration: 20251128073843_ed716cf9-7bef-45f6-9384-b450ee25341b.sql
+
+-- Create table for Jenga PAY IPN callbacks
 CREATE TABLE IF NOT EXISTS public.jenga_ipn_callbacks (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   callback_type TEXT NOT NULL,
@@ -46866,7 +49203,12 @@ CREATE TRIGGER update_jenga_ipn_callbacks_updated_at
 CREATE TRIGGER update_landlord_jenga_configs_updated_at
   BEFORE UPDATE ON public.landlord_jenga_configs
   FOR EACH ROW
-  EXECUTE FUNCTION update_jenga_ipn_updated_at();-- Add Jenga PAY as a distinct payment method
+  EXECUTE FUNCTION update_jenga_ipn_updated_at();
+
+
+-- Migration: 20251129094645_b5ce56df-0085-4c98-8574-4aec294fd8b3.sql
+
+-- Add Jenga PAY as a distinct payment method
 INSERT INTO approved_payment_methods (
   payment_method_type,
   provider_name,
@@ -46890,9 +49232,19 @@ INSERT INTO approved_payment_methods (
     'supported_features', json_build_array('ipn_callbacks', 'instant_notifications', 'bank_transfer')
   )
 )
-ON CONFLICT DO NOTHING;-- Add garbage_deposit column to units table
+ON CONFLICT DO NOTHING;
+
+
+-- Migration: 20251210103045_65f85358-7149-4302-837d-8dcab005acbb.sql
+
+-- Add garbage_deposit column to units table
 ALTER TABLE public.units 
-ADD COLUMN IF NOT EXISTS garbage_deposit numeric(10,2) DEFAULT NULL;-- Update get_tenant_payments_data to include lease_id and owner_id for proper landlord billing data in PDFs
+ADD COLUMN IF NOT EXISTS garbage_deposit numeric(10,2) DEFAULT NULL;
+
+
+-- Migration: 20251210153526_7fee1693-9f23-4082-803b-b30d6812f086.sql
+
+-- Update get_tenant_payments_data to include lease_id and owner_id for proper landlord billing data in PDFs
 CREATE OR REPLACE FUNCTION public.get_tenant_payments_data(
   p_user_id uuid DEFAULT auth.uid(),
   p_limit integer DEFAULT 100
@@ -46974,14 +49326,24 @@ BEGIN
 
   RETURN v_result;
 END;
-$$;-- Add missing currency fields to jenga_ipn_callbacks table
+$$;
+
+
+-- Migration: 20251210174726_bd6d3914-3e09-473e-bc28-be5faab3a546.sql
+
+-- Add missing currency fields to jenga_ipn_callbacks table
 ALTER TABLE public.jenga_ipn_callbacks 
 ADD COLUMN IF NOT EXISTS currency TEXT DEFAULT 'KES',
 ADD COLUMN IF NOT EXISTS order_currency TEXT DEFAULT 'KES';
 
 -- Add comment for documentation
 COMMENT ON COLUMN public.jenga_ipn_callbacks.currency IS 'Transaction currency from Jenga IPN (e.g., KES)';
-COMMENT ON COLUMN public.jenga_ipn_callbacks.order_currency IS 'Original order currency from Jenga IPN';-- =====================================================
+COMMENT ON COLUMN public.jenga_ipn_callbacks.order_currency IS 'Original order currency from Jenga IPN';
+
+
+-- Migration: 20251210180132_44ae0550-a9ae-4a28-91ec-781765001a9f.sql
+
+-- =====================================================
 -- UNIFIED BANK CONFIGURATION SCHEMA
 -- Supports all Kenyan banks with flexible configuration
 -- =====================================================
@@ -47300,7 +49662,12 @@ SELECT
   processed_at,
   created_at
 FROM public.jenga_ipn_callbacks
-ON CONFLICT DO NOTHING;-- Drop and recreate the RPC function to include landlord profile information
+ON CONFLICT DO NOTHING;
+
+
+-- Migration: 20251211094905_95c4864a-fb15-479e-a695-7e1b516b5639.sql
+
+-- Drop and recreate the RPC function to include landlord profile information
 DROP FUNCTION IF EXISTS public.get_tenant_payments_data(uuid, integer);
 
 CREATE FUNCTION public.get_tenant_payments_data(p_user_id uuid, p_limit integer DEFAULT 50)
@@ -47387,7 +49754,12 @@ BEGIN
 
   RETURN v_result;
 END;
-$$;-- Update RPC function to include tenant phone in the result
+$$;
+
+
+-- Migration: 20251211095423_4b1b053f-055f-44c5-a748-fce6a51e7a00.sql
+
+-- Update RPC function to include tenant phone in the result
 DROP FUNCTION IF EXISTS public.get_tenant_payments_data(UUID, INT);
 
 CREATE OR REPLACE FUNCTION public.get_tenant_payments_data(
@@ -47483,7 +49855,12 @@ BEGIN
 
   RETURN v_result;
 END;
-$$;-- Create tenant_credits table for tracking overpayments/credits
+$$;
+
+
+-- Migration: 20251211100724_64a7d1be-d424-4f38-8805-3278f693fbb5.sql
+
+-- Create tenant_credits table for tracking overpayments/credits
 CREATE TABLE public.tenant_credits (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   tenant_id UUID NOT NULL REFERENCES public.tenants(id) ON DELETE CASCADE,
@@ -47685,7 +50062,12 @@ $$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
 CREATE INDEX idx_tenant_credits_tenant_id ON public.tenant_credits(tenant_id);
 CREATE INDEX idx_tenant_credits_balance ON public.tenant_credits(balance) WHERE balance > 0;
 CREATE INDEX idx_credit_applications_credit_id ON public.credit_applications(credit_id);
-CREATE INDEX idx_credit_applications_invoice_id ON public.credit_applications(invoice_id);-- Fix invoice INV-2025-937522 that was incorrectly marked as 'paid' 
+CREATE INDEX idx_credit_applications_invoice_id ON public.credit_applications(invoice_id);
+
+
+-- Migration: 20251211104053_cb42f002-240c-4c2c-88a3-8a71656a487c.sql
+
+-- Fix invoice INV-2025-937522 that was incorrectly marked as 'paid' 
 -- Payment of KES 10 was made for a KES 15 invoice
 
 -- Create the missing payment allocation
@@ -47694,7 +50076,12 @@ VALUES ('0b830e64-42d7-41f3-a899-fa3591815b7b', '1bc4ceec-e45b-4eaf-ac67-a10a057
 ON CONFLICT DO NOTHING;
 
 -- Note: The trigger update_invoice_status_on_allocation will automatically 
--- set the invoice status to 'partially_paid' based on the allocation amount-- Fix the incorrectly marked invoice status
+-- set the invoice status to 'partially_paid' based on the allocation amount
+
+
+-- Migration: 20251211104117_54db9c38-3bb1-4150-a1d3-100274beb59c.sql
+
+-- Fix the incorrectly marked invoice status
 -- The allocation trigger doesn't update if already 'paid', so we need to manually fix this
 UPDATE public.invoices 
 SET status = 'partially_paid', updated_at = now() 
@@ -47732,7 +50119,12 @@ BEGIN
   
   RETURN NEW;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;-- Drop and recreate get_tenant_payments_data to include outstanding_amount, amount_paid, and credits
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
+
+
+-- Migration: 20251211104921_747bd663-493b-47fe-b30a-12ede94ebbb0.sql
+
+-- Drop and recreate get_tenant_payments_data to include outstanding_amount, amount_paid, and credits
 DROP FUNCTION IF EXISTS public.get_tenant_payments_data(uuid, integer);
 
 CREATE FUNCTION public.get_tenant_payments_data(
@@ -47863,7 +50255,12 @@ BEGIN
 
   RETURN v_result;
 END;
-$$;-- Fix get_tenant_payments_data: remove non-existent expires_at column reference
+$$;
+
+
+-- Migration: 20251211105643_74529bad-fea2-4d76-880d-971e01f1fbf5.sql
+
+-- Fix get_tenant_payments_data: remove non-existent expires_at column reference
 DROP FUNCTION IF EXISTS public.get_tenant_payments_data(uuid, integer);
 
 CREATE FUNCTION public.get_tenant_payments_data(
@@ -47992,7 +50389,12 @@ BEGIN
 
   RETURN v_result;
 END;
-$$;-- Manual fix for the failed payment: ws_CO_11122025141155063723301507
+$$;
+
+
+-- Migration: 20251211112055_bf0aecfa-eea1-4f8b-bda1-26506c0d9ec4.sql
+
+-- Manual fix for the failed payment: ws_CO_11122025141155063723301507
 -- Transaction: KES 20 paid, Invoice: KES 12, Overpayment: KES 8
 
 -- Step 1: Create the payment record
@@ -48061,7 +50463,12 @@ BEGIN
     WHERE tenant_id = 'f4fafcf8-63f0-4f85-8e98-8988695ef74c' 
       AND description LIKE '%TLBLU0MEG0%';
   END IF;
-END $$;-- Create partner_logos table for admin-managed company logos on landing page
+END $$;
+
+
+-- Migration: 20260106070833_d66aaca6-a0eb-4201-bc6a-a0e59e5c028d.sql
+
+-- Create partner_logos table for admin-managed company logos on landing page
 CREATE TABLE public.partner_logos (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   company_name TEXT NOT NULL,
@@ -48104,7 +50511,12 @@ ON CONFLICT (setting_key) DO NOTHING;
 CREATE TRIGGER update_partner_logos_updated_at
 BEFORE UPDATE ON public.partner_logos
 FOR EACH ROW
-EXECUTE FUNCTION public.update_updated_at_column();-- Add account_type to landlord_subscriptions to distinguish landlords from agencies
+EXECUTE FUNCTION public.update_updated_at_column();
+
+
+-- Migration: 20260116140348_6683dfca-e86f-49df-8d5d-e7ec64a9a640.sql
+
+-- Add account_type to landlord_subscriptions to distinguish landlords from agencies
 ALTER TABLE landlord_subscriptions 
 ADD COLUMN IF NOT EXISTS account_type TEXT DEFAULT 'landlord' CHECK (account_type IN ('landlord', 'agency'));
 
@@ -48137,6 +50549,11 @@ ADD COLUMN IF NOT EXISTS competitive_note TEXT;
 
 -- Create index for efficient filtering by category
 CREATE INDEX IF NOT EXISTS idx_billing_plans_category ON billing_plans(plan_category) WHERE is_active = true;
+
+
+-- Migration: 20260116141558_5663ad2a-734d-4139-a5ab-7b0830ddac30.sql
+
+
 -- Temporarily disable only the audit trigger
 ALTER TABLE billing_plans DISABLE TRIGGER billing_plan_audit_trigger;
 
@@ -48251,6 +50668,11 @@ WHERE billing_plan_id IS NULL
 
 -- Re-enable the audit trigger
 ALTER TABLE billing_plans ENABLE TRIGGER billing_plan_audit_trigger;
+
+
+
+-- Migration: 20260116204256_9910f5cf-7e13-4abb-b3db-ce141a9d5eac.sql
+
 -- Temporarily disable the audit trigger
 ALTER TABLE public.billing_plans DISABLE TRIGGER billing_plan_audit_trigger;
 
@@ -48261,7 +50683,12 @@ UPDATE billing_plans SET sms_credits_included = 400 WHERE name = 'Premium' AND p
 UPDATE billing_plans SET sms_credits_included = NULL WHERE name = 'Enterprise' AND plan_category = 'landlord';
 
 -- Re-enable the audit trigger
-ALTER TABLE public.billing_plans ENABLE TRIGGER billing_plan_audit_trigger;-- Update create_default_landlord_subscription function to handle account_type from user metadata
+ALTER TABLE public.billing_plans ENABLE TRIGGER billing_plan_audit_trigger;
+
+
+-- Migration: 20260116212618_0263625f-1913-4beb-92e9-d74f9974f6fa.sql
+
+-- Update create_default_landlord_subscription function to handle account_type from user metadata
 CREATE OR REPLACE FUNCTION public.create_default_landlord_subscription()
 RETURNS TRIGGER AS $$
 DECLARE
@@ -48344,7 +50771,12 @@ BEGIN
 
   RETURN NEW;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;-- Create table to track processed Kopo Kopo callbacks for idempotency
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
+
+
+-- Migration: 20260119104809_415a278a-b3ac-4241-a4df-873f38d8051f.sql
+
+-- Create table to track processed Kopo Kopo callbacks for idempotency
 CREATE TABLE IF NOT EXISTS kopokopo_processed_callbacks (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   kopo_reference TEXT NOT NULL,
@@ -48429,7 +50861,12 @@ DROP TRIGGER IF EXISTS trigger_sms_automation_settings_updated_at ON sms_automat
 CREATE TRIGGER trigger_sms_automation_settings_updated_at
 BEFORE UPDATE ON sms_automation_settings
 FOR EACH ROW
-EXECUTE FUNCTION update_sms_automation_settings_updated_at();-- Delete the 7 duplicate payments from today (keep original from November 2025)
+EXECUTE FUNCTION update_sms_automation_settings_updated_at();
+
+
+-- Migration: 20260119104951_378de50a-25ef-4adf-a76f-4e8f4803ae67.sql
+
+-- Delete the 7 duplicate payments from today (keep original from November 2025)
 DELETE FROM payments 
 WHERE id IN (
   'eeab68eb-919c-40c3-b287-ebb68559cd5d',
@@ -48452,3 +50889,4 @@ INSERT INTO kopokopo_processed_callbacks (kopo_reference, amount, phone_number, 
   ('TKCLU9YDOO', 10.00, '+254723301507', now()),
   ('TKCLU9YBCD', 10.00, '+254723301507', now())
 ON CONFLICT (kopo_reference) DO NOTHING;
+
