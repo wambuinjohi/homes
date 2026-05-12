@@ -72,9 +72,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       console.log("🧹 Clearing local state");
       setSession(null);
       setUser(null);
-      
-      // Clear browser storage manually
+
+      // Clear browser storage manually - clean both old and new project tokens
       console.log("🗑️ Clearing browser storage");
+      localStorage.removeItem('sb-kdpqimetajnhcqseajok-auth-token');
+      sessionStorage.removeItem('sb-kdpqimetajnhcqseajok-auth-token');
       localStorage.removeItem('sb-tbmzwmgsvshfdxdoyrcr-auth-token');
       sessionStorage.removeItem('sb-tbmzwmgsvshfdxdoyrcr-auth-token');
       

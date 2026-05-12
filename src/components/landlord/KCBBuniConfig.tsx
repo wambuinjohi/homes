@@ -31,7 +31,7 @@ export const KCBBuniConfig: React.FC = () => {
   useEffect(() => {
     checkAvailability();
     loadConfig();
-    const callbackUrl = `https://kdpqimetajnhcqseajok.supabase.co/functions/v1/kcb-ipn-callback`;
+    const callbackUrl = `https://tbmzwmgsvshfdxdoyrcr.supabase.co/functions/v1/kcb-ipn-callback`;
     setIpnUrl(callbackUrl);
   }, []);
 

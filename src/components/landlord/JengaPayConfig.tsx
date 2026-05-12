@@ -35,7 +35,7 @@ export const JengaPayConfig: React.FC = () => {
     checkAvailability();
     loadConfig();
     // Generate IPN URL - always use the Supabase project URL
-    const callbackUrl = `https://kdpqimetajnhcqseajok.supabase.co/functions/v1/jenga-ipn-callback`;
+    const callbackUrl = `https://tbmzwmgsvshfdxdoyrcr.supabase.co/functions/v1/jenga-ipn-callback`;
     setIpnUrl(callbackUrl);
   }, []);
 

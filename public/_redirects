@@ -1,7 +1,7 @@
 # Netlify & Cloudflare Pages SPA fallback
 # API routes - prevent rewriting to index.html
 /api/*   /.netlify/functions/:splat  200
-/supabase/*  https://kdpqimetajnhcqseajok.supabase.co/:splat  200!
+/supabase/*  https://tbmzwmgsvshfdxdoyrcr.supabase.co/:splat  200!
 
 # Static assets - serve directly, no fallback
 /favicon.ico  /favicon.ico  200
